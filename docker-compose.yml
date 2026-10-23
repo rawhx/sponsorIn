@@ -1,0 +1,103 @@
+name: sponsorin
+
+x-app-environment: &app-environment
+    APP_NAME: SponsorIn
+    APP_ENV: local
+    APP_DEBUG: "true"
+    APP_URL: http://localhost:8000
+    APP_LOCALE: id
+    APP_FALLBACK_LOCALE: id
+    APP_FAKER_LOCALE: id_ID
+    DB_CONNECTION: pgsql
+    DB_HOST: db
+    DB_PORT: "5432"
+    DB_DATABASE: sponsorin
+    DB_USERNAME: sponsorin
+    DB_PASSWORD: sponsorin
+    CACHE_STORE: database
+    SESSION_DRIVER: database
+    QUEUE_CONNECTION: database
+    MAIL_MAILER: smtp
+    MAIL_HOST: mailpit
+    MAIL_PORT: "1025"
+    MAIL_FROM_ADDRESS: halo@sponsorin.test
+    MAIL_FROM_NAME: SponsorIn
+    FILESYSTEM_DISK: local
+    VITE_APP_NAME: SponsorIn
+    PHP_CLI_SERVER_WORKERS: "4"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        working_dir: /var/www/html
+        user: "${UID:-1000}:${GID:-1000}"
+        volumes:
+            - .:/var/www/html
+        ports:
+            - "8000:8000"
+        environment:
+            <<: *app-environment
+            HOME: /tmp
+            COMPOSER_HOME: /tmp/composer
+        depends_on:
+            db:
+                condition: service_healthy
+        command: php artisan serve --host=0.0.0.0 --port=8000 --no-reload
+
+    vite:
+        image: node:24-bookworm-slim
+        working_dir: /app
+        user: "${UID:-1000}:${GID:-1000}"
+        volumes:
+            - .:/app
+        ports:
+            - "5273:5273"
+        environment:
+            HOME: /tmp
+            npm_config_cache: /tmp/.npm
+            VITE_APP_NAME: SponsorIn
+        command: sh -c "[ -d node_modules ] || npm install; npm run dev -- --host 0.0.0.0 --port 5273"
+
+    queue:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        working_dir: /var/www/html
+        user: "${UID:-1000}:${GID:-1000}"
+        volumes:
+            - .:/var/www/html
+        environment:
+            <<: *app-environment
+            HOME: /tmp
+            COMPOSER_HOME: /tmp/composer
+        depends_on:
+            db:
+                condition: service_healthy
+        command: php artisan queue:listen --tries=3 --timeout=90
+
+    db:
+        image: postgres:16-alpine
+        environment:
+            POSTGRES_DB: sponsorin
+            POSTGRES_USER: sponsorin
+            POSTGRES_PASSWORD: sponsorin
+        ports:
+            - "5433:5432"
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U sponsorin -d sponsorin"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    mailpit:
+        image: axllent/mailpit:latest
+        ports:
+            - "1025:1025"
+            - "8025:8025"
+
+volumes:
+    db-data:
