@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
-import { FilePlus2, FileText, Handshake, Users } from 'lucide-react';
+import { FilePlus2, FileText, Handshake, Star, Users } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
-import EmptyState from '../../components/EmptyState';
+import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { formatDate } from '../../lib/utils';
 
