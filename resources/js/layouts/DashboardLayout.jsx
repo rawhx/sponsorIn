@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { BadgeCheck, Bell, CalendarDays, FileText, Handshake, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
+import { BadgeCheck, Bell, CalendarDays, FileText, Handshake, LayoutDashboard, LogOut, Menu, Search, Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import FlashMessages from '../components/FlashMessages';
@@ -16,19 +16,19 @@ const roleLabels = {
 
 function navigationFor(role) {
   const notifications = { label: 'Notifikasi', href: '/notifications', icon: Bell };
-  if (role === 'sponsor') {
-    return [
-      { label: 'Dashboard', href: '/sponsor/dashboard', icon: LayoutDashboard },
-      { label: 'Jelajahi Proposal', href: '/events', icon: FileText },
-      { label: 'Daftar Proposal', href: '/sponsor/proposals', icon: FileText },
-      { label: 'Manajemen Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
-      notifications,
-    ];
-  }
-  if (role === 'eo') {
+	if (role === 'sponsor') {
+		return [
+			{ key: 'dashboard', label: 'Dashboard', href: '/sponsor/dashboard', icon: LayoutDashboard },
+			{ key: 'peluang', label: 'Peluang Sponsorship', href: '/sponsor/events', icon: FileText },
+			{ key: 'proposals', label: 'Daftar Proposal', href: '/sponsor/proposals', icon: FileText },
+			{ key: 'sponsorships', label: 'Manajemen Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
+			notifications,
+		];
+	}
+	if (role === 'eo') {
     return [
       { label: 'Dashboard', href: '/eo/dashboard', icon: LayoutDashboard },
-      { label: 'Upload Proposal', href: '/eo/proposals/create', icon: FileText },
+      { label: 'Sponsor tersedia', href: '/eo/sponsors/available', icon: Search },
       { label: 'Daftar Proposal', href: '/eo/proposals', icon: FileText },
       { label: 'Manajemen Kerja Sama', href: '/eo/sponsorships', icon: Handshake },
       notifications,
@@ -63,7 +63,7 @@ function Sidebar({ navigation, auth, role, unreadCount, onClose }) {
 
           return (
             <Link
-              key={item.href}
+              key={item.key ?? item.href}
               href={item.href}
               onClick={onClose}
               className={cn(

@@ -60,7 +60,7 @@ export default function ProposalForm({ events, sponsors, selectedSponsor }) {
       eyebrow="Kolaborasi"
       title="Buat proposal"
       actions={
-        <Link href="/sponsors/available" className="inline-flex items-center gap-2 text-sm text-text-secondary-strong transition-colors hover:text-text">
+        <Link href="/eo/sponsors/available" className="inline-flex items-center gap-2 text-sm text-text-secondary-strong transition-colors hover:text-text">
           <Building2 className="h-4 w-4" aria-hidden="true" />
           Sponsor tersedia
         </Link>

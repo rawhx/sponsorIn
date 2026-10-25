@@ -147,6 +147,19 @@ class ProposalController extends Controller
         $data = $request->validate([
             'event_id' => ['required', Rule::exists('events', 'id')->where('eo_organization_id', $organization->id)],
             'sponsor_org_id' => ['required', Rule::exists('organizations', 'id')->where('type', 'sponsor')],
+            'event_title' => ['required', 'string', 'max:200'],
+            'event_location' => ['required', 'string', 'max:200'],
+            'event_date_start' => ['required', 'date'],
+            'event_date_end' => ['nullable', 'date', 'after:event_date_start'],
+            'event_time_start' => ['required', 'date_format:H:i'],
+            'event_time_end' => ['nullable', 'date_format:H:i', 'after:event_time_start'],
+            'event_zone' => ['required', 'string', 'max:50'],
+            'event_potensi_penjualan' => ['nullable', 'numeric', 'min:0'],
+            'event_estimasi_peserta' => ['nullable', 'numeric', 'min:0'],
+            'event_has_file' => ['nullable', 'boolean'],
+            'event_file_name' => ['nullable', 'string', 'max:255'],
+            'event_file_size' => ['nullable', 'string', 'max:50'],
+            'event_description' => ['nullable', 'string', 'max:5000'],
             'package_id' => ['nullable', 'integer', 'exists:sponsorship_packages,id'],
             'requested_support' => ['required', 'string', 'max:3000'],
             'deliverables' => ['nullable', 'string', 'max:3000'],
@@ -231,11 +244,11 @@ class ProposalController extends Controller
             ->where('type', OrganizationType::Sponsor)
             ->whereHas('verification', fn ($verification) => $verification->where('status', 'approved'));
 
-        if (filled($status['preference'])) {
-            $query->where('proposal_preference', ProposalPreference::from($status['preference']));
+        if (filled($status['preference'] ?? null)) {
+            $query->where('proposal_preference', ProposalPreference::from($status['preference'] ?? null));
         }
 
-        if (filled($status['q'])) {
+        if (filled($status['q'] ?? null)) {
             $query->where(function ($query) use ($status) {
                 $query->where('display_name', 'like', "%{$status['q']}%")
                     ->orWhere('location', 'like', "%{$status['q']}%");

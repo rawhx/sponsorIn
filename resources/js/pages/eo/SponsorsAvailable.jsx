@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { buttonClasses } from '../../components/Button';
@@ -23,18 +23,18 @@ export default function SponsorsAvailable({
   filters,
   preferences,
 }) {
-  const { data, setData, get, processing } = useForm({
+  const { data, setData, get, processing, errors } = useForm({
     q: filters.q ?? '',
     preference: filters.preference ?? '',
   });
 
   function submit(event) {
     event.preventDefault();
-    get('/sponsors/available', { preserveState: true, preserveScroll: true, replace: true });
+    get('/eo/sponsors/available', { preserveState: true, preserveScroll: true, replace: true });
   }
 
   function reset() {
-    get('/sponsors/available', { preserveState: false, preserveScroll: true, replace: true });
+    get('/eo/sponsors/available', { preserveState: false, preserveScroll: true, replace: true });
   }
 
   const filtered = sponsors.filter((sponsor) => {
@@ -72,7 +72,10 @@ export default function SponsorsAvailable({
         </div>
       </div>
 
-      <form onSubmit={submit} className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <form
+        onSubmit={submit}
+        className="mt-8 flex flex-col gap-4 rounded-[14px] border border-border bg-surface p-4 shadow-sm sm:flex-row sm:items-end sm:justify-between"
+      >
         <div className="relative min-w-0 flex-1 max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" aria-hidden="true" />
           <Field
@@ -90,38 +93,41 @@ export default function SponsorsAvailable({
           </Field>
         </div>
 
-        {Object.entries(preferences).map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] px-4 text-sm font-medium transition-colors ${
-              data.preference === value
-                ? 'bg-primary text-white'
-                : 'border border-border bg-surface text-text-secondary-strong hover:bg-hover hover:text-text'
-            }`}
-            onClick={() => setData('preference', value)}
-          >
-            {label}
-          </button>
-        ))}
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(preferences).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] px-4 text-sm font-medium transition-colors ${
+                data.preference === value
+                  ? 'bg-primary text-white'
+                  : 'border border-border bg-surface text-text-secondary-strong hover:bg-hover hover:text-text'
+              }`}
+              onClick={() => setData('preference', value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-        <button
-          type="submit"
-          className={buttonClasses()}
-          disabled={processing}
-        >
-          {processing ? 'Menyaring…' : 'Terapkan'}
-        </button>
-
-        {data.q || data.preference ? (
+        <div className="flex shrink-0 gap-2">
           <button
-            type="button"
-            onClick={reset}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] border border-border bg-surface px-4 text-sm text-text-secondary-strong transition-colors hover:bg-hover hover:text-text"
+            type="submit"
+            className={buttonClasses()}
+            disabled={processing}
           >
-            Hapus filter
+            {processing ? 'Menyaring…' : 'Terapkan'}
           </button>
-        ) : null}
+          {data.q || data.preference ? (
+            <button
+              type="button"
+              onClick={reset}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] border border-border bg-surface px-4 text-sm text-text-secondary-strong transition-colors hover:bg-hover hover:text-text"
+            >
+              Hapus filter
+            </button>
+          ) : null}
+        </div>
       </form>
 
       <section className="mt-8">
@@ -177,7 +183,7 @@ export default function SponsorsAvailable({
             ))}
           </div>
         ) : (
-          <div className="mt-8 rounded-[14px] border border-border bg-surface p-6 text-center">
+          <div className="mt-6 rounded-[14px] border border-border bg-surface p-6 text-center">
             <p className="text-sm font-medium text-text">Belum ada sponsor yang cocok</p>
             <p className="mt-1 text-sm text-text-secondary-strong">
               Coba ubah kata kunci, atau pilih preferensi lainnya.

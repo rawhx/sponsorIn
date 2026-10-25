@@ -19,8 +19,8 @@ export default function SponsorShortlist({ events }) {
       eyebrow="Ruang kerja sponsor"
       title="Shortlist"
       actions={
-        <Link href="/events" className={buttonClasses({ variant: 'outline' })}>
-          Jelajahi peluang
+        <Link href="/sponsor/proposals" className={buttonClasses()}>
+          Peluang Sponsorship
         </Link>
       }
     >
@@ -74,7 +74,7 @@ export default function SponsorShortlist({ events }) {
           illustration="search"
           title="Shortlist masih kosong"
           description="Simpan event yang menarik saat menjelajahi peluang. Shortlist membantu Anda membandingkan sebelum menghubungi EO."
-          action={<Link href="/events" className={buttonClasses()}>Jelajahi peluang</Link>}
+          action={<Link href="/events" className={buttonClasses()}>Peluang Sponsorship</Link>}
         />
       )}
     </DashboardLayout>

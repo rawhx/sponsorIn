@@ -17,12 +17,13 @@ use App\Http\Controllers\EO\DashboardController as EoDashboardController;
 use App\Http\Controllers\EO\EventController as EoEventController;
 use App\Http\Controllers\EO\PackageController;
 use App\Http\Controllers\EO\ProposalController as EoProposalController;
-use App\Http\Controllers\EO\SponsorshipController as EoSponsorshipController;
+use App\Http\Controllers\EO\SponsorshipController as SponsorshipController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PublicSite\EventController;
 use App\Http\Controllers\PublicSite\HomeController;
 use App\Http\Controllers\PublicSite\OrganizerController;
 use App\Http\Controllers\Sponsor\DashboardController as SponsorDashboardController;
+use App\Http\Controllers\Sponsor\EventController as SponsorEventController;
 use App\Http\Controllers\Sponsor\ProposalController as SponsorProposalController;
 use App\Http\Controllers\Sponsor\ShortlistController as SponsorShortlistController;
 use App\Http\Controllers\Sponsor\SponsorshipController as SponsorSponsorshipController;
@@ -85,6 +86,8 @@ Route::middleware(['auth', 'verified', 'role:sponsor'])
         Route::get('/organizations', [OrganizationController::class, 'index'])->name('organizations.index');
         Route::put('/organizations', [OrganizationController::class, 'update'])->name('organizations.update');
 
+        Route::get('/events', [SponsorEventController::class, 'index'])->name('events.index');
+
         Route::middleware('sponsor.active')->group(function () {
             Route::get('/shortlist', [SponsorShortlistController::class, 'index'])->name('shortlist.index');
             Route::post('/events/{event}/shortlist', [SponsorShortlistController::class, 'store'])->name('shortlist.store');
@@ -137,11 +140,13 @@ Route::middleware(['auth', 'verified', 'role:eo'])
         Route::post('/proposals/{proposal}/transition', [EoProposalController::class, 'transition'])->name('proposals.transition');
         Route::post('/proposals/{proposal}/messages', [EoProposalController::class, 'message'])->name('proposals.messages.store');
 
-        Route::get('/sponsorships', [EoSponsorshipController::class, 'index'])->name('sponsorships.index');
-        Route::get('/sponsorships/{sponsorship}', [EoSponsorshipController::class, 'show'])->name('sponsorships.show');
-        Route::post('/sponsorships/{sponsorship}/request-completion', [EoSponsorshipController::class, 'requestCompletion'])->name('sponsorships.request-completion');
-        Route::post('/sponsorships/{sponsorship}/confirm-completion', [EoSponsorshipController::class, 'confirmCompletion'])->name('sponsorships.confirm-completion');
-        Route::post('/sponsorships/{sponsorship}/dispute', [EoSponsorshipController::class, 'raiseDispute'])->name('sponsorships.dispute');
+        Route::get('/sponsors/available', [EoProposalController::class, 'available'])->name('sponsors.available');
+
+        Route::get('/sponsorships', [SponsorshipController::class, 'index'])->name('sponsorships.index');
+        Route::get('/sponsorships/{sponsorship}', [SponsorshipController::class, 'show'])->name('sponsorships.show');
+        Route::post('/sponsorships/{sponsorship}/request-completion', [SponsorshipController::class, 'requestCompletion'])->name('sponsorships.request-completion');
+        Route::post('/sponsorships/{sponsorship}/confirm-completion', [SponsorshipController::class, 'confirmCompletion'])->name('sponsorships.confirm-completion');
+        Route::post('/sponsorships/{sponsorship}/dispute', [SponsorshipController::class, 'raiseDispute'])->name('sponsorships.dispute');
     });
 
 Route::middleware(['auth', 'verified', 'role:admin,verifier'])
