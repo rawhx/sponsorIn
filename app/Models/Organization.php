@@ -20,6 +20,7 @@ class Organization extends Model
         'legal_name',
         'display_name',
         'description',
+        'portfolio',
         'category',
         'location',
         'public_contact',

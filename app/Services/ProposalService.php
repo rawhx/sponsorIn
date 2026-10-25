@@ -178,6 +178,7 @@ class ProposalService
         abort_if($actorOrganization->isEo() && $event->eo_organization_id !== $actorOrganization->id, 403);
         abort_unless($counterpart->isSponsor(), 422, 'Penerima proposal harus berupa sponsor.');
         abort_unless($counterpart->proposal_preference->acceptsProposals(), 422, 'Sponsor ini tidak menerima proposal.');
+        abort_unless($counterpart->public_visibility, 422, 'Sponsor ini tidak menampilkan profil publik sehingga tidak dapat dihubungi.');
 
         return [$actorOrganization, $counterpart, ProposalType::EoToSponsor];
     }

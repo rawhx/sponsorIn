@@ -89,14 +89,17 @@ class ProposalController extends Controller
 
         $sponsors = Organization::query()
             ->where('type', OrganizationType::Sponsor)
+            ->where('public_visibility', true)
             ->whereIn('proposal_preference', [ProposalPreference::Open, ProposalPreference::Selective])
             ->whereHas('verification', fn ($query) => $query->where('status', 'approved'))
             ->orderBy('display_name')
-            ->get(['id', 'display_name', 'location', 'proposal_preference'])
+            ->get(['id', 'display_name', 'location', 'category', 'description', 'proposal_preference'])
             ->map(fn (Organization $sponsor) => [
                 'id' => $sponsor->id,
                 'name' => $sponsor->display_name,
                 'location' => $sponsor->location,
+                'category' => $sponsor->category,
+                'description' => $sponsor->description ? (string) str($sponsor->description)->limit(140) : null,
                 'proposal_preference' => $sponsor->proposal_preference->value,
             ]);
 

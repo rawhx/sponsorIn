@@ -40,6 +40,12 @@ export default function OrganizerShow({ organizer, events }) {
             {organizer.description ? (
               <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-text-secondary-strong">{organizer.description}</p>
             ) : null}
+            {organizer.portfolio ? (
+              <div className="mt-6 max-w-2xl">
+                <h2 className="text-sm font-semibold text-text">Portofolio</h2>
+                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary-strong">{organizer.portfolio}</p>
+              </div>
+            ) : null}
           </div>
 
           <aside className="rounded-[12px] border border-border bg-background-muted p-5">

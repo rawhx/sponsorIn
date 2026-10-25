@@ -81,7 +81,7 @@ export default function ProposalForm({ events, sponsors }) {
                   <option value="">Pilih sponsor…</option>
                   {sponsors.map((sponsor) => (
                     <option key={sponsor.id} value={sponsor.id}>
-                      {sponsor.name}{sponsor.location ? ` · ${sponsor.location}` : ''}
+                      {sponsor.name}{sponsor.category ? ` · ${sponsor.category}` : ''}{sponsor.location ? ` · ${sponsor.location}` : ''}
                     </option>
                   ))}
                 </Select>

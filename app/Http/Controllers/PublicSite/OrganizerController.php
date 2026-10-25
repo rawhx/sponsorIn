@@ -56,6 +56,7 @@ class OrganizerController extends Controller
     public function show(Organization $organization): Response
     {
         abort_unless($organization->type === OrganizationType::Eo, 404);
+        abort_unless($organization->public_visibility, 404);
 
         $events = $organization->events()
             ->where('status', EventStatus::Published)
@@ -84,6 +85,7 @@ class OrganizerController extends Controller
                 'description' => $organization->description,
                 'location' => $organization->location,
                 'category' => $organization->category,
+                'portfolio' => $organization->portfolio,
                 'public_contact' => $organization->public_contact,
                 'rating_average' => $organization->rating_average,
                 'review_count' => $organization->review_count,

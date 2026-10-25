@@ -19,6 +19,7 @@ use App\Http\Controllers\EO\AudienceEvidenceController;
 use App\Http\Controllers\EO\DashboardController as EoDashboardController;
 use App\Http\Controllers\EO\EventController as EoEventController;
 use App\Http\Controllers\EO\PackageController;
+use App\Http\Controllers\EO\ProfileController as EoProfileController;
 use App\Http\Controllers\EO\ProposalController as EoProposalController;
 use App\Http\Controllers\EO\SponsorshipController as EoSponsorshipController;
 use App\Http\Controllers\NotificationController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\PublicSite\EventController;
 use App\Http\Controllers\PublicSite\HomeController;
 use App\Http\Controllers\PublicSite\OrganizerController;
 use App\Http\Controllers\Sponsor\DashboardController as SponsorDashboardController;
+use App\Http\Controllers\Sponsor\OrganizationController as SponsorOrganizationController;
 use App\Http\Controllers\Sponsor\ProposalController as SponsorProposalController;
 use App\Http\Controllers\Sponsor\ShortlistController as SponsorShortlistController;
 use App\Http\Controllers\Sponsor\SponsorshipController as SponsorSponsorshipController;
@@ -88,6 +90,9 @@ Route::middleware(['auth', 'verified', 'role:sponsor'])
         Route::put('/verification', [SponsorVerificationController::class, 'update'])->name('verification.update');
 
         Route::middleware('sponsor.active')->group(function () {
+            Route::get('/organizations', [SponsorOrganizationController::class, 'edit'])->name('organization.edit');
+            Route::put('/organizations', [SponsorOrganizationController::class, 'update'])->name('organization.update');
+
             Route::get('/shortlist', [SponsorShortlistController::class, 'index'])->name('shortlist.index');
             Route::post('/events/{event}/shortlist', [SponsorShortlistController::class, 'store'])->name('shortlist.store');
             Route::delete('/events/{event}/shortlist', [SponsorShortlistController::class, 'destroy'])->name('shortlist.destroy');
@@ -115,6 +120,9 @@ Route::middleware(['auth', 'verified', 'role:eo'])
     ->name('eo.')
     ->group(function () {
         Route::get('/dashboard', EoDashboardController::class)->name('dashboard');
+
+        Route::get('/profile', [EoProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [EoProfileController::class, 'update'])->name('profile.update');
 
         Route::get('/events', [EoEventController::class, 'index'])->name('events.index');
         Route::get('/events/create', [EoEventController::class, 'create'])->name('events.create');

@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { BadgeCheck, Bell, Bookmark, CalendarDays, Compass, FileText, Flag, Handshake, History, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
+import { BadgeCheck, Bell, Building2, Bookmark, CalendarDays, Compass, FileText, Flag, Handshake, History, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import FlashMessages from '../components/FlashMessages';
@@ -20,6 +20,7 @@ function navigationFor(role) {
     return [
       { label: 'Ringkasan', href: '/sponsor/dashboard', icon: LayoutDashboard },
       { label: 'Verifikasi usaha', href: '/sponsor/verification', icon: BadgeCheck },
+      { label: 'Profil usaha', href: '/sponsor/organizations', icon: Building2 },
       { label: 'Shortlist', href: '/sponsor/shortlist', icon: Bookmark },
       { label: 'Proposal', href: '/sponsor/proposals', icon: FileText },
       { label: 'Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
@@ -31,6 +32,7 @@ function navigationFor(role) {
     return [
       { label: 'Ringkasan', href: '/eo/dashboard', icon: LayoutDashboard },
       { label: 'Event saya', href: '/eo/events', icon: CalendarDays },
+      { label: 'Profil publik', href: '/eo/profile', icon: Building2 },
       { label: 'Proposal', href: '/eo/proposals', icon: FileText },
       { label: 'Kerja Sama', href: '/eo/sponsorships', icon: Handshake },
       { label: 'Peluang publik', href: '/events', icon: Compass },
