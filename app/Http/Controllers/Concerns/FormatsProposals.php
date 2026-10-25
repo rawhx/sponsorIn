@@ -53,6 +53,11 @@ trait FormatsProposals
             'last_status_at' => $proposal->last_status_at?->toISOString(),
             'conversation_id' => $proposal->conversation?->id,
             'sponsorship_id' => $proposal->sponsorship?->id,
+            // Konfirmasi ringkasan kesepakatan (PROP-04): penerima otomatis terkonfirmasi saat menerima.
+            'agreement' => [
+                'viewer_confirmed' => (bool) ($organization->isSponsor() ? $proposal->sponsor_confirmed_at : $proposal->eo_confirmed_at),
+                'counterpart_confirmed' => (bool) ($organization->isSponsor() ? $proposal->eo_confirmed_at : $proposal->sponsor_confirmed_at),
+            ],
             'messages' => $proposal->conversation?->messages()->with('sender')->oldest()->get()->map(fn ($message) => [
                 'id' => $message->id,
                 'body' => $message->body,

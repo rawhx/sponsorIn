@@ -9,8 +9,9 @@ import { Field, Select, Textarea } from '../../components/Form';
 import { evidenceTypeLabels, formatCurrency, formatDateRange, formatNumber, supportTypeLabels } from '../../lib/utils';
 
 export default function AdminEventDetail({ event }) {
+  const allowed = event.allowed_decisions ?? [];
   const { data, setData, post, processing, errors } = useForm({
-    decision: 'approved',
+    decision: allowed[0] ?? '',
     reason_internal: '',
     reason_public: '',
   });
@@ -182,10 +183,10 @@ export default function AdminEventDetail({ event }) {
             <div className="space-y-5 px-5 py-5">
               <Field label="Keputusan" htmlFor="decision" error={errors.decision} required>
                 <Select id="decision" value={data.decision} onChange={(e) => setData('decision', e.target.value)} error={errors.decision}>
-                  <option value="approved">Setujui dan terbitkan</option>
-                  <option value="needs_changes">Minta perbaikan</option>
-                  <option value="unpublished">Tarik dari publik</option>
-                  <option value="rejected">Tolak</option>
+                  {allowed.includes('approved') ? <option value="approved">Setujui dan terbitkan</option> : null}
+                  {allowed.includes('needs_changes') ? <option value="needs_changes">Minta perbaikan</option> : null}
+                  {allowed.includes('unpublished') ? <option value="unpublished">Tarik dari publik</option> : null}
+                  {allowed.includes('rejected') ? <option value="rejected">Tolak</option> : null}
                 </Select>
               </Field>
               <Field
@@ -212,11 +213,17 @@ export default function AdminEventDetail({ event }) {
                   placeholder="Catatan untuk tim operasional."
                 />
               </Field>
+              {allowed.length === 0 ? (
+                <p className="text-xs leading-relaxed text-text-secondary-strong">
+                  Tidak ada keputusan moderasi yang tersedia pada status ini. EO perlu mengirim event untuk direview terlebih dahulu.
+                </p>
+              ) : null}
               <Button
                 type="submit"
                 className="w-full"
                 variant={isDestructive ? 'destructive' : 'primary'}
                 loading={processing}
+                disabled={allowed.length === 0}
               >
                 {data.decision === 'rejected'
                   ? 'Tolak event'

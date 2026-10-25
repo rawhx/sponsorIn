@@ -251,4 +251,49 @@ class EoEventManagementTest extends TestCase
 
         $this->assertSame(EventStatus::Closed, $event->fresh()->status);
     }
+
+    public function test_draft_event_cannot_be_published_directly_by_admin(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $eo = $this->eoWithOrganization();
+        $event = $this->eventFor($eo, ['status' => EventStatus::Draft]);
+
+        $this->actingAs($admin)
+            ->post("/admin/events/{$event->id}/decision", ['decision' => 'approved'])
+            ->assertSessionHasErrors('decision');
+
+        $event->refresh();
+        $this->assertSame(EventStatus::Draft, $event->status);
+        $this->assertNull($event->published_at);
+    }
+
+    public function test_closed_event_cannot_be_moderated_back_to_published(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $eo = $this->eoWithOrganization();
+        $event = $this->eventFor($eo, ['status' => EventStatus::Closed]);
+
+        $this->actingAs($admin)
+            ->post("/admin/events/{$event->id}/decision", ['decision' => 'approved'])
+            ->assertSessionHasErrors('decision');
+
+        $this->assertSame(EventStatus::Closed, $event->fresh()->status);
+    }
+
+    public function test_admin_can_unpublish_published_event_and_it_leaves_public_listing(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $eo = $this->eoWithOrganization();
+        $event = $this->eventFor($eo, ['status' => EventStatus::Published, 'published_at' => now()]);
+
+        $this->actingAs($admin)
+            ->post("/admin/events/{$event->id}/decision", [
+                'decision' => 'unpublished',
+                'reason_public' => 'Melanggar kebijakan konten.',
+            ])
+            ->assertRedirect();
+
+        $this->assertSame(EventStatus::Unpublished, $event->fresh()->status);
+        $this->get("/events/{$event->slug}")->assertNotFound();
+    }
 }

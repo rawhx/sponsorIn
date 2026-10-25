@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -81,6 +82,10 @@ class VerificationController extends Controller
                 'reviewer_name' => $verification->reviewer?->name,
                 'decision_reason_internal' => $verification->decision_reason_internal,
                 'decision_reason_public' => $verification->decision_reason_public,
+                'allowed_decisions' => collect($verification->status->allowedDecisions())
+                    ->map(fn (SponsorVerificationStatus $status) => $status->value)
+                    ->values()
+                    ->all(),
             ],
             'auditLogs' => AuditLog::with('actor')
                 ->where('entity_type', SponsorVerification::class)
@@ -100,21 +105,33 @@ class VerificationController extends Controller
     public function decide(Request $request, SponsorVerification $verification, AuditLogger $audit): RedirectResponse
     {
         $data = $request->validate([
-            'decision' => ['required', Rule::in(['approved', 'needs_information', 'rejected'])],
+            'decision' => ['required', Rule::in(['under_review', 'approved', 'needs_information', 'rejected', 'suspended'])],
             'reason_internal' => ['nullable', 'string', 'max:2000'],
-            'reason_public' => ['required_if:decision,needs_information,rejected', 'nullable', 'string', 'max:1000'],
+            'reason_public' => ['required_if:decision,needs_information,rejected,suspended', 'nullable', 'string', 'max:1000'],
         ]);
 
-        $before = ['status' => $verification->status->value];
-
         $status = match ($data['decision']) {
+            'under_review' => SponsorVerificationStatus::UnderReview,
             'approved' => SponsorVerificationStatus::Approved,
             'needs_information' => SponsorVerificationStatus::NeedsInformation,
             'rejected' => SponsorVerificationStatus::Rejected,
+            'suspended' => SponsorVerificationStatus::Suspended,
         };
 
-        $publicReason = $data['reason_public']
-            ?: 'Verifikasi usaha Anda telah disetujui. Akun sponsor kini aktif.';
+        // Transisi status divalidasi di server (PRD 9.1), bukan hanya disembunyikan di UI.
+        if (! $verification->status->canTransitionTo($status)) {
+            throw ValidationException::withMessages([
+                'decision' => 'Keputusan ini tidak dapat diambil dari status "'.$verification->status->value.'".',
+            ]);
+        }
+
+        $before = ['status' => $verification->status->value];
+
+        $publicReason = ($data['reason_public'] ?? null) ?: match ($status) {
+            SponsorVerificationStatus::Approved => 'Verifikasi usaha Anda telah disetujui. Akun sponsor kini aktif.',
+            SponsorVerificationStatus::UnderReview => 'Pengajuan Anda sedang ditinjau tim verifikasi.',
+            default => null,
+        };
 
         $verification->update([
             'status' => $status,
@@ -130,12 +147,15 @@ class VerificationController extends Controller
             $request->user(),
             $before,
             ['status' => $status->value],
-            $data['reason_internal'] ?? $publicReason,
+            ($data['reason_internal'] ?? null) ?: $publicReason,
         );
 
-        $verification->organization->owner->notify(
-            new VerificationDecisionNotification($status->value, $publicReason)
-        );
+        // Status "sedang ditinjau" hanya penanda internal; tidak perlu notifikasi ke sponsor.
+        if ($status !== SponsorVerificationStatus::UnderReview) {
+            $verification->organization->owner->notify(
+                new VerificationDecisionNotification($status->value, (string) $publicReason)
+            );
+        }
 
         return redirect()
             ->route('admin.verifications.show', $verification)

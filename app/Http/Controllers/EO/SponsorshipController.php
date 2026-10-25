@@ -5,6 +5,7 @@ namespace App\Http\Controllers\EO;
 use App\Enums\SponsorshipStatus;
 use App\Http\Controllers\Concerns\FormatsSponsorships;
 use App\Http\Controllers\Controller;
+use App\Models\Proposal;
 use App\Models\Sponsorship;
 use App\Notifications\SponsorshipStatusNotification;
 use App\Services\SponsorshipService;
@@ -60,6 +61,43 @@ class SponsorshipController extends Controller
         return Inertia::render('eo/SponsorshipDetail', [
             'sponsorship' => $this->sponsorshipDetail($sponsorship, $organization),
         ]);
+    }
+
+    /**
+     * Konfirmasi ringkasan kesepakatan oleh EO. Sponsorship dibuat setelah kedua pihak mengonfirmasi.
+     */
+    public function store(Proposal $proposal, Request $request, SponsorshipService $service): RedirectResponse
+    {
+        $alreadyExisted = $proposal->sponsorship()->exists();
+
+        $sponsorship = $service->confirmAgreement($proposal, $request->user());
+
+        if (! $sponsorship) {
+            return back()->with('success', 'Konfirmasi Anda tercatat. Menunggu konfirmasi dari sponsor.');
+        }
+
+        if (! $alreadyExisted) {
+            $sponsorship->sponsorOrganization->owner?->notify(new SponsorshipStatusNotification($sponsorship, SponsorshipStatus::Active));
+        }
+
+        return redirect()
+            ->route('eo.sponsorships.show', $sponsorship)
+            ->with('success', 'Kesepakatan dikonfirmasi kedua pihak dan dicatat sebagai sponsorship aktif.');
+    }
+
+    public function cancel(Sponsorship $sponsorship, Request $request, SponsorshipService $service): RedirectResponse
+    {
+        $data = $request->validate([
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $service->cancel($sponsorship, $request->user(), $data['reason']);
+
+        $sponsorship->sponsorOrganization->owner?->notify(
+            new SponsorshipStatusNotification($sponsorship, SponsorshipStatus::Cancelled)
+        );
+
+        return back()->with('success', 'Kerja sama dibatalkan.');
     }
 
     public function requestCompletion(Sponsorship $sponsorship, Request $request, SponsorshipService $service): RedirectResponse

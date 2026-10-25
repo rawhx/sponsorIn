@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EventModerationController as AdminEventController;
 use App\Http\Controllers\Admin\ReviewModerationController as AdminReviewController;
+use App\Http\Controllers\Admin\SponsorshipController as AdminSponsorshipController;
 use App\Http\Controllers\Admin\VerificationController as AdminVerificationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -93,6 +94,7 @@ Route::middleware(['auth', 'verified', 'role:sponsor'])
             Route::get('/sponsorships', [SponsorSponsorshipController::class, 'index'])->name('sponsorships.index');
             Route::post('/proposals/{proposal}/sponsorship', [SponsorSponsorshipController::class, 'store'])->name('sponsorships.store');
             Route::get('/sponsorships/{sponsorship}', [SponsorSponsorshipController::class, 'show'])->name('sponsorships.show');
+            Route::post('/sponsorships/{sponsorship}/cancel', [SponsorSponsorshipController::class, 'cancel'])->name('sponsorships.cancel');
             Route::post('/sponsorships/{sponsorship}/request-completion', [SponsorSponsorshipController::class, 'requestCompletion'])->name('sponsorships.request-completion');
             Route::post('/sponsorships/{sponsorship}/confirm-completion', [SponsorSponsorshipController::class, 'confirmCompletion'])->name('sponsorships.confirm-completion');
             Route::post('/sponsorships/{sponsorship}/dispute', [SponsorSponsorshipController::class, 'raiseDispute'])->name('sponsorships.dispute');
@@ -131,8 +133,10 @@ Route::middleware(['auth', 'verified', 'role:eo'])
         Route::post('/proposals/{proposal}/transition', [EoProposalController::class, 'transition'])->name('proposals.transition');
         Route::post('/proposals/{proposal}/messages', [EoProposalController::class, 'message'])->name('proposals.messages.store');
 
+        Route::post('/proposals/{proposal}/agreement', [EoSponsorshipController::class, 'store'])->name('sponsorships.store');
         Route::get('/sponsorships', [EoSponsorshipController::class, 'index'])->name('sponsorships.index');
         Route::get('/sponsorships/{sponsorship}', [EoSponsorshipController::class, 'show'])->name('sponsorships.show');
+        Route::post('/sponsorships/{sponsorship}/cancel', [EoSponsorshipController::class, 'cancel'])->name('sponsorships.cancel');
         Route::post('/sponsorships/{sponsorship}/request-completion', [EoSponsorshipController::class, 'requestCompletion'])->name('sponsorships.request-completion');
         Route::post('/sponsorships/{sponsorship}/confirm-completion', [EoSponsorshipController::class, 'confirmCompletion'])->name('sponsorships.confirm-completion');
         Route::post('/sponsorships/{sponsorship}/dispute', [EoSponsorshipController::class, 'raiseDispute'])->name('sponsorships.dispute');
@@ -152,6 +156,10 @@ Route::middleware(['auth', 'verified', 'role:admin,verifier'])
         Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
         Route::get('/events/{event}', [AdminEventController::class, 'show'])->name('events.show');
         Route::post('/events/{event}/decision', [AdminEventController::class, 'decide'])->name('events.decide');
+
+        Route::get('/sponsorships', [AdminSponsorshipController::class, 'index'])->name('sponsorships.index');
+        Route::get('/sponsorships/{sponsorship}', [AdminSponsorshipController::class, 'show'])->name('sponsorships.show');
+        Route::post('/sponsorships/{sponsorship}/resolve', [AdminSponsorshipController::class, 'resolve'])->name('sponsorships.resolve');
 
         Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
         Route::post('/reviews/{review}/hide', [AdminReviewController::class, 'hide'])->name('reviews.hide');

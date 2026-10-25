@@ -56,6 +56,7 @@ class VerificationDecisionNotification extends Notification implements ShouldQue
             'approved' => 'Verifikasi usaha disetujui',
             'needs_information' => 'Verifikasi memerlukan informasi tambahan',
             'rejected' => 'Pengajuan verifikasi belum dapat disetujui',
+            'suspended' => 'Akun sponsor ditangguhkan',
             default => 'Pembaruan status verifikasi',
         };
     }

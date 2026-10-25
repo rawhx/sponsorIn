@@ -65,19 +65,41 @@ class SponsorshipController extends Controller
         ]);
     }
 
+    /**
+     * Konfirmasi ringkasan kesepakatan. Sponsorship baru dibuat setelah sponsor dan EO sama-sama mengonfirmasi.
+     */
     public function store(Proposal $proposal, Request $request, SponsorshipService $service): RedirectResponse
     {
-        abort_unless($request->user()->organization?->id === $proposal->recipient_org_id
-            || $request->user()->organization?->id === $proposal->sender_org_id, 403);
+        $alreadyExisted = $proposal->sponsorship()->exists();
 
-        $sponsorship = $service->createFromProposal($proposal, $request->user());
+        $sponsorship = $service->confirmAgreement($proposal, $request->user());
 
-        $counterpart = $sponsorship->eoOrganization;
-        $counterpart->owner?->notify(new SponsorshipStatusNotification($sponsorship, SponsorshipStatus::Active));
+        if (! $sponsorship) {
+            return back()->with('success', 'Konfirmasi Anda tercatat. Menunggu konfirmasi dari EO.');
+        }
+
+        if (! $alreadyExisted) {
+            $sponsorship->eoOrganization->owner?->notify(new SponsorshipStatusNotification($sponsorship, SponsorshipStatus::Active));
+        }
 
         return redirect()
             ->route('sponsor.sponsorships.show', $sponsorship)
-            ->with('success', 'Kerja sama dicatat sebagai sponsorship aktif.');
+            ->with('success', 'Kesepakatan dikonfirmasi kedua pihak dan dicatat sebagai sponsorship aktif.');
+    }
+
+    public function cancel(Sponsorship $sponsorship, Request $request, SponsorshipService $service): RedirectResponse
+    {
+        $data = $request->validate([
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $service->cancel($sponsorship, $request->user(), $data['reason']);
+
+        $sponsorship->eoOrganization->owner?->notify(
+            new SponsorshipStatusNotification($sponsorship, SponsorshipStatus::Cancelled)
+        );
+
+        return back()->with('success', 'Kerja sama dibatalkan.');
     }
 
     public function requestCompletion(Sponsorship $sponsorship, Request $request, SponsorshipService $service): RedirectResponse
@@ -146,7 +168,7 @@ class SponsorshipController extends Controller
             'communication_rating' => ['required', 'integer', 'min:1', 'max:5'],
             'professionalism_rating' => ['required', 'integer', 'min:1', 'max:5'],
             'deliverables_rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'comment' => ['nullable', 'string', 'max:2000'],
+            'comment' => ['nullable', 'string', 'max:1000'],
         ]);
     }
 }

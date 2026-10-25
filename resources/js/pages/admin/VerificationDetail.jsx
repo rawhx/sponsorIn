@@ -21,14 +21,15 @@ function formatDateTime(value) {
 }
 
 export default function VerificationDetail({ verification, auditLogs }) {
+  const allowed = verification.allowed_decisions ?? [];
   const { data, setData, post, processing, errors } = useForm({
-    decision: 'approved',
+    decision: allowed[0] ?? '',
     reason_internal: '',
     reason_public: '',
   });
 
   const [confirmingReject, setConfirmingReject] = useState(false);
-  const needsPublicReason = data.decision === 'needs_information' || data.decision === 'rejected';
+  const needsPublicReason = ['needs_information', 'rejected', 'suspended'].includes(data.decision);
 
   function persist() {
     post(`/admin/verifications/${verification.id}/decision`, { preserveScroll: true });
@@ -155,9 +156,11 @@ export default function VerificationDetail({ verification, auditLogs }) {
             <div className="space-y-5 px-5 py-5">
               <Field label="Keputusan" htmlFor="decision" error={errors.decision} required>
                 <Select id="decision" value={data.decision} onChange={(event) => setData('decision', event.target.value)} error={errors.decision}>
-                  <option value="approved">Setujui</option>
-                  <option value="needs_information">Minta informasi tambahan</option>
-                  <option value="rejected">Tolak</option>
+                  {allowed.includes('under_review') ? <option value="under_review">Tandai sedang ditinjau</option> : null}
+                  {allowed.includes('approved') ? <option value="approved">{verification.status === 'suspended' ? 'Aktifkan kembali' : 'Setujui'}</option> : null}
+                  {allowed.includes('needs_information') ? <option value="needs_information">Minta informasi tambahan</option> : null}
+                  {allowed.includes('rejected') ? <option value="rejected">Tolak</option> : null}
+                  {allowed.includes('suspended') ? <option value="suspended">Tangguhkan akun</option> : null}
                 </Select>
               </Field>
               <Field
@@ -192,11 +195,17 @@ export default function VerificationDetail({ verification, auditLogs }) {
                   </p>
                 </div>
               ) : null}
+              {allowed.length === 0 ? (
+                <p className="text-xs leading-relaxed text-text-secondary-strong">
+                  Tidak ada keputusan yang tersedia pada status ini. Sponsor perlu mengirim pengajuan terlebih dahulu.
+                </p>
+              ) : null}
               <Button
                 type="submit"
                 className="w-full"
-                variant={data.decision === 'rejected' ? 'destructive' : 'primary'}
+                variant={['rejected', 'suspended'].includes(data.decision) ? 'destructive' : 'primary'}
                 loading={processing}
+                disabled={allowed.length === 0}
               >
                 {data.decision === 'rejected' ? 'Tolak pengajuan' : 'Simpan keputusan'}
               </Button>

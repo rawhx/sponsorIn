@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class SponsorshipService
 {
+    /** Status yang menunggu keputusan admin. */
+    public const ADMIN_RESOLVABLE = [SponsorshipStatus::Disputed, SponsorshipStatus::NeedsAdminReview];
+
     public function __construct(private AuditLogger $audit) {}
 
     /**
@@ -26,6 +29,13 @@ class SponsorshipService
         if ($proposal->sponsorship) {
             return $proposal->sponsorship;
         }
+
+        // PRD 5.5 #22 / PROP-04: record dibuat hanya setelah sponsor DAN EO mengonfirmasi ringkasan kesepakatan.
+        abort_unless(
+            $proposal->sponsor_confirmed_at !== null && $proposal->eo_confirmed_at !== null,
+            422,
+            'Kedua pihak harus mengonfirmasi ringkasan kesepakatan terlebih dahulu.'
+        );
 
         return DB::transaction(function () use ($proposal, $actor) {
             $sponsorship = $proposal->sponsorship()->create([
@@ -122,6 +132,95 @@ class SponsorshipService
         ], [
             'status' => SponsorshipStatus::NeedsAdminReview->value,
         ], 'Tidak ada respons dalam 7 hari kalender.');
+
+        return $sponsorship;
+    }
+
+    /**
+     * Konfirmasi ringkasan kesepakatan oleh salah satu pihak.
+     *
+     * Pihak penerima otomatis terkonfirmasi saat menerima proposal; pihak pengirim
+     * mengonfirmasi lewat sini. Sponsorship dibuat begitu kedua pihak terkonfirmasi.
+     * Mengembalikan null bila masih menunggu pihak lain.
+     */
+    public function confirmAgreement(Proposal $proposal, User $actor): ?Sponsorship
+    {
+        $organization = $actor->organization;
+        abort_unless($organization && $proposal->isParty($organization), 403);
+
+        return DB::transaction(function () use ($proposal, $actor, $organization) {
+            $proposal = Proposal::query()->lockForUpdate()->findOrFail($proposal->id);
+
+            abort_unless($proposal->status === ProposalStatus::Accepted, 422, 'Proposal belum diterima.');
+
+            if ($proposal->sponsorship) {
+                return $proposal->sponsorship;
+            }
+
+            $column = $organization->isSponsor() ? 'sponsor_confirmed_at' : 'eo_confirmed_at';
+
+            if ($proposal->{$column} === null) {
+                $proposal->forceFill([$column => now()])->save();
+
+                $this->audit->record('proposal.agreement_confirmed', $proposal, $actor, [], [
+                    'confirmed_by_org_id' => $organization->id,
+                ]);
+            }
+
+            if ($proposal->sponsor_confirmed_at === null || $proposal->eo_confirmed_at === null) {
+                return null;
+            }
+
+            return $this->createFromProposal($proposal, $actor);
+        });
+    }
+
+    /**
+     * Pembatalan kesepakatan oleh salah satu pihak selama pelaksanaan (status Active).
+     */
+    public function cancel(Sponsorship $sponsorship, User $actor, string $reason): Sponsorship
+    {
+        $this->party($sponsorship, $actor);
+        abort_unless($sponsorship->status === SponsorshipStatus::Active, 422, 'Pembatalan hanya bisa dilakukan pada sponsorship aktif.');
+
+        $sponsorship->update([
+            'status' => SponsorshipStatus::Cancelled,
+            'cancellation_reason' => $reason,
+        ]);
+
+        $this->audit->record('sponsorship.cancelled', $sponsorship, $actor, [
+            'status' => SponsorshipStatus::Active->value,
+        ], [
+            'status' => SponsorshipStatus::Cancelled->value,
+        ], $reason);
+
+        return $sponsorship;
+    }
+
+    /**
+     * Keputusan admin untuk sponsorship yang disengketakan atau menunggu peninjauan admin.
+     * Hasil: completed (membuka ulasan), cancelled, atau active (sengketa tidak terbukti).
+     */
+    public function adminResolve(Sponsorship $sponsorship, User $admin, SponsorshipStatus $decision, string $note): Sponsorship
+    {
+        abort_unless($admin->isStaff(), 403);
+        abort_unless(in_array($sponsorship->status, self::ADMIN_RESOLVABLE, true), 422, 'Sponsorship ini tidak sedang menunggu keputusan admin.');
+        abort_unless(in_array($decision, [SponsorshipStatus::Completed, SponsorshipStatus::Cancelled, SponsorshipStatus::Active], true), 422, 'Keputusan tidak valid.');
+
+        $before = ['status' => $sponsorship->status->value];
+
+        $sponsorship->update([
+            'status' => $decision,
+            'admin_resolution_note' => $note,
+            'admin_resolved_at' => now(),
+            'completed_at' => $decision === SponsorshipStatus::Completed ? now() : $sponsorship->completed_at,
+            'completion_requested_by' => $decision === SponsorshipStatus::Active ? null : $sponsorship->completion_requested_by,
+            'completion_requested_at' => $decision === SponsorshipStatus::Active ? null : $sponsorship->completion_requested_at,
+        ]);
+
+        $this->audit->record('sponsorship.admin_resolved', $sponsorship, $admin, $before, [
+            'status' => $decision->value,
+        ], $note);
 
         return $sponsorship;
     }

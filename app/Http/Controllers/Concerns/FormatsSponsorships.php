@@ -58,6 +58,8 @@ trait FormatsSponsorships
             'completion_requested_by' => $sponsorship->completion_requested_by,
             'completion_requested_at' => $sponsorship->completion_requested_at?->toISOString(),
             'dispute_reason' => $sponsorship->dispute_reason,
+            'cancellation_reason' => $sponsorship->cancellation_reason,
+            'admin_resolution_note' => $sponsorship->admin_resolution_note,
             'can_review' => $isSponsor && $sponsorship->status === SponsorshipStatus::Completed,
             'can_edit_review' => $isSponsor && $review && $review->status === ReviewStatus::Published
                 && $review->submitted_at?->greaterThan(now()->subHours(24)),

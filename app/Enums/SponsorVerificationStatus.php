@@ -21,4 +21,25 @@ enum SponsorVerificationStatus: string
     {
         return ! $this->isFinal();
     }
+
+    /**
+     * Transisi keputusan yang boleh dilakukan verifier/admin dari status ini.
+     *
+     * @return array<int, self>
+     */
+    public function allowedDecisions(): array
+    {
+        return match ($this) {
+            self::Submitted => [self::UnderReview, self::Approved, self::NeedsInformation, self::Rejected],
+            self::UnderReview => [self::Approved, self::NeedsInformation, self::Rejected],
+            self::Approved => [self::Suspended],
+            self::Suspended => [self::Approved],
+            default => [],
+        };
+    }
+
+    public function canTransitionTo(self $to): bool
+    {
+        return in_array($to, $this->allowedDecisions(), true);
+    }
 }

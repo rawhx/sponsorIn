@@ -1,5 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { CalendarDays, Handshake, MapPin, MessageSquare, Star } from 'lucide-react';
+import CancelSponsorshipForm from '../../components/sponsorships/CancelSponsorshipForm';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
@@ -172,6 +173,7 @@ export default function SponsorshipDetail({ sponsorship }) {
                   Minta penyelesaian
                 </button>
               ) : null}
+              {s.status === 'active' ? <CancelSponsorshipForm action={`/${isSponsor ? 'sponsor' : 'eo'}/sponsorships/${s.id}/cancel`} /> : null}
               {s.status === 'completion_requested' ? (
                 <>
                   <button
@@ -197,6 +199,12 @@ export default function SponsorshipDetail({ sponsorship }) {
               ) : null}
               {s.status === 'disputed' ? (
                 <p className="text-xs text-text-secondary-strong">Dalam sengketa. Menunggu peninjauan admin.</p>
+              ) : null}
+              {s.cancellation_reason ? (
+                <p className="text-xs leading-relaxed text-text-secondary-strong">Alasan pembatalan: {s.cancellation_reason}</p>
+              ) : null}
+              {s.admin_resolution_note ? (
+                <p className="text-xs leading-relaxed text-text-secondary-strong">Keputusan admin: {s.admin_resolution_note}</p>
               ) : null}
             </div>
           </div>

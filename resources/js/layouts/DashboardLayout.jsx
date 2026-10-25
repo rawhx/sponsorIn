@@ -41,6 +41,7 @@ function navigationFor(role) {
     { label: 'Ringkasan', href: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'Verifikasi sponsor', href: '/admin/verifications', icon: BadgeCheck },
     { label: 'Moderasi event', href: '/admin/events', icon: CalendarDays },
+    { label: 'Sponsorship', href: '/admin/sponsorships', icon: Handshake },
     { label: 'Moderasi ulasan', href: '/admin/reviews', icon: Star },
     notifications,
   ];

@@ -10,6 +10,7 @@ use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -74,6 +75,13 @@ class EventModerationController extends Controller
                 'status' => $event->status->value,
                 'moderation_reason_internal' => $event->moderation_reason_internal,
                 'moderation_reason_public' => $event->moderation_reason_public,
+                'allowed_decisions' => collect($event->status->allowedModerationDecisions())
+                    ->map(fn (EventStatus $status) => match ($status) {
+                        EventStatus::Published => 'approved',
+                        default => $status->value,
+                    })
+                    ->values()
+                    ->all(),
                 'organizer' => [
                     'name' => $event->eoOrganization->display_name,
                     'verified' => $event->eoOrganization->verification?->status->value === 'approved',
@@ -116,6 +124,13 @@ class EventModerationController extends Controller
             'rejected' => EventStatus::Rejected,
             'unpublished' => EventStatus::Unpublished,
         };
+
+        // Transisi moderasi divalidasi di server (PRD 9.1): mis. event Draft tidak bisa langsung terbit.
+        if (! $event->status->canBeModeratedTo($status)) {
+            throw ValidationException::withMessages([
+                'decision' => 'Keputusan ini tidak dapat diambil untuk event berstatus "'.$event->status->value.'".',
+            ]);
+        }
 
         $before = ['status' => $event->status->value];
 

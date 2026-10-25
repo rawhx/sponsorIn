@@ -1,3 +1,4 @@
+import AgreementPanel from '../../components/proposals/AgreementPanel';
 import ProposalDetailView from '../../components/proposals/ProposalDetailView';
 
 export default function ProposalDetail({ proposal, transitions, statuses }) {
@@ -11,6 +12,7 @@ export default function ProposalDetail({ proposal, transitions, statuses }) {
       backHref="/eo/proposals"
       backLabel="Kembali ke proposal"
       counterpartRoleLabel="Sponsor"
+      asideExtra={<AgreementPanel proposal={proposal} role="eo" />}
     />
   );
 }

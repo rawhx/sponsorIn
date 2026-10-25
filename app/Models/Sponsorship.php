@@ -25,6 +25,9 @@ class Sponsorship extends Model
         'completion_requested_at',
         'completed_at',
         'dispute_reason',
+        'cancellation_reason',
+        'admin_resolution_note',
+        'admin_resolved_at',
     ];
 
     protected function casts(): array
@@ -34,6 +37,7 @@ class Sponsorship extends Model
             'accepted_at' => 'datetime',
             'completion_requested_at' => 'datetime',
             'completed_at' => 'datetime',
+            'admin_resolved_at' => 'datetime',
         ];
     }
 
