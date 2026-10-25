@@ -4,6 +4,7 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { formatDate, proposalPreferenceLabels } from '../../lib/utils';
+import { Compass } from 'lucide-react';
 
 export default function SponsorDashboard({ organization, verification, canUseFeatures, stats = {} }) {
   const status = verification.status;
