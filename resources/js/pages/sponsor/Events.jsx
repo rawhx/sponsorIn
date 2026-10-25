@@ -37,8 +37,8 @@ export default function Events({ events, filters, categories = [], supportTypes 
       className="bg-background"
     >
       <Head title="Daftar Peluang" />
-      <section className="mx-auto w-full max-w-6xl px-5 pb-16 pt-8 sm:px-8 sm:pt-12">
-        <div className="max-w-2xl">
+      <section className="mx-auto w-full max-w-6xl px-5 pb-16">
+        {/* <div className="max-w-2xl">
           <p className="text-xs font-medium tracking-[0.08em] text-text-muted">PELUANG SPONSORSHIP</p>
           <h1 className="mt-3 text-[clamp(1.8rem,3.5vw,2.6rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-text">
             Jelajahi event yang membuka kesempatan kerja sama
@@ -47,7 +47,7 @@ export default function Events({ events, filters, categories = [], supportTypes 
             Filter berdasarkan kategori, lokasi, tanggal, atau jenis dukungan. Setiap event
             menampilkan jumlah bukti audiens, paket yang tersedia, dan detail organizer.
           </p>
-        </div>
+        </div> */}
 
         <form onSubmit={submit} className="mt-10 rounded-[12px] border border-border bg-surface p-4 sm:p-5">
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
