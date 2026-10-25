@@ -41,6 +41,7 @@ services:
             <<: *app-environment
             HOME: /tmp
             COMPOSER_HOME: /tmp/composer
+            COMPOSER_ALLOW_SUPERUSER: "1"
         depends_on:
             db:
                 condition: service_healthy
@@ -85,6 +86,7 @@ services:
             <<: *app-environment
             HOME: /tmp
             COMPOSER_HOME: /tmp/composer
+            COMPOSER_ALLOW_SUPERUSER: "1"
         depends_on:
             db:
                 condition: service_healthy

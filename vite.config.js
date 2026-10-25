@@ -24,15 +24,12 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    origin: 'http://localhost:5273',
     port: 5273,
     strictPort: true,
-    cors: {
-      origin: ['http://localhost:8000', 'http://127.0.0.1:8000'],
-      credentials: true,
-    },
+    cors: true,
     hmr: {
       host: 'localhost',
+      port: 5273,
     },
     watch: {
       ignored: [
