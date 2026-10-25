@@ -6,8 +6,6 @@ import Logo from '../components/Logo';
 import { buttonClasses } from '../components/Button';
 
 const navItems = [
-  { label: 'Peluang', href: '/events' },
-  { label: 'Penyelenggara', href: '/organizers' },
   { label: 'Cara Kerja', href: '/#cara-kerja' },
 ];
 
@@ -141,12 +139,6 @@ export default function PublicLayout({ children }) {
               <div className="space-y-3">
                 <p className="text-xs font-medium tracking-[0.08em] text-text-muted uppercase">Navigasi</p>
                 <div className="space-y-2">
-                  <Link href="/events" className="block text-text-secondary transition-colors hover:text-text">
-                    Peluang
-                  </Link>
-                  <Link href="/organizers" className="block text-text-secondary transition-colors hover:text-text">
-                    Penyelenggara
-                  </Link>
                   <Link href="/#cara-kerja" className="block text-text-secondary transition-colors hover:text-text">
                     Cara Kerja
                   </Link>

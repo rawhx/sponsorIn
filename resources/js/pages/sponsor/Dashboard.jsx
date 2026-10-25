@@ -1,28 +1,51 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowRight, BadgeCheck, Compass, FileCheck2 } from 'lucide-react';
+import { ArrowRight, BadgeCheck, FileCheck2, FileText, Handshake, Search } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { formatDate, proposalPreferenceLabels } from '../../lib/utils';
 
-export default function SponsorDashboard({ organization, verification, canUseFeatures }) {
+export default function SponsorDashboard({ organization, verification, canUseFeatures, stats = {} }) {
   const status = verification.status;
   const needsVerification = !canUseFeatures;
 
   return (
     <DashboardLayout
       eyebrow={organization?.name ?? 'Akun sponsor'}
-      title="Ringkasan sponsor"
+      title="Dashboard Sponsor"
       actions={
         <Link href="/events" className={buttonClasses({ variant: 'outline' })}>
-          <Compass className="h-4 w-4" aria-hidden="true" />
-          Jelajahi peluang
+          <Search className="h-4 w-4" aria-hidden="true" />
+          Jelajahi Proposal
         </Link>
       }
     >
-      <Head title="Ringkasan sponsor" />
+      <Head title="Dashboard Sponsor" />
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="rounded-[12px] border border-border bg-surface p-5">
+          <p className="text-xs font-medium tracking-[0.06em] text-text-muted">PROPOSAL MASUK</p>
+          <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.proposal_incoming ?? 0}</p>
+          <p className="mt-1 text-xs text-text-muted">Total proposal dari EO</p>
+        </section>
+        <section className="rounded-[12px] border border-border bg-surface p-5">
+          <p className="text-xs font-medium tracking-[0.06em] text-text-muted">PROPOSAL AKTIF</p>
+          <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.proposal_active ?? 0}</p>
+          <p className="mt-1 text-xs text-text-muted">Dalam proses / negosiasi</p>
+        </section>
+        <section className="rounded-[12px] border border-border bg-surface p-5">
+          <p className="text-xs font-medium tracking-[0.06em] text-text-muted">KERJA SAMA AKTIF</p>
+          <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.sponsorship_active ?? 0}</p>
+          <p className="mt-1 text-xs text-text-muted">Sedang berjalan</p>
+        </section>
+        <section className="rounded-[12px] border border-border bg-surface p-5">
+          <p className="text-xs font-medium tracking-[0.06em] text-text-muted">TOTAL KERJA SAMA</p>
+          <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.sponsorship_total ?? 0}</p>
+          <p className="mt-1 text-xs text-text-muted">Riwayat keseluruhan</p>
+        </section>
+      </div>
+
+      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
         <section className="rounded-[12px] border border-border bg-surface">
           <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
             <div>
@@ -35,9 +58,9 @@ export default function SponsorDashboard({ organization, verification, canUseFea
             {needsVerification ? (
               <>
                 <p className="text-sm leading-relaxed text-text-secondary-strong">
-                  {status === 'draft' && 'Lengkapi data usaha dan unggah dokumen pendukung. Fitur shortlist, minat, dan proposal aktif setelah verifikasi disetujui.'}
-                  {status === 'submitted' && 'Pengajuan Anda sudah dikirim dan menunggu peninjauan. Anda masih dapat menjelajahi peluang publik.'}
-                  {status === 'under_review' && 'Pengajuan sedang ditinjau. Kami akan mengirim pemberitahuan setelah keputusan tersedia.'}
+                  {status === 'draft' && 'Lengkapi data usaha dan unggah dokumen pendukung untuk mengakses fitur sponsor.'}
+                  {status === 'submitted' && 'Pengajuan Anda sudah dikirim dan menunggu peninjauan.'}
+                  {status === 'under_review' && 'Pengajuan sedang ditinjau.'}
                   {status === 'needs_information' && 'Admin membutuhkan informasi tambahan. Periksa alasan di bawah, perbarui data, lalu kirim ulang.'}
                   {status === 'rejected' && 'Pengajuan belum disetujui. Anda dapat memperbaiki data dan mengirim ulang pengajuan.'}
                 </p>
@@ -57,13 +80,12 @@ export default function SponsorDashboard({ organization, verification, canUseFea
             ) : (
               <>
                 <p className="text-sm leading-relaxed text-text-secondary-strong">
-                  Verifikasi usaha telah disetujui. Anda dapat menyimpan shortlist, mengirim minat, mengelola proposal, dan mencatat kerja sama.
+                  Verifikasi usaha telah disetujui. Anda bisa melihat proposal dari EO, merespons, negosiasi, dan mengelola kerja sama.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Link href="/events" className={buttonClasses({ size: 'sm' })}>Cari event</Link>
-                  <Link href="/sponsor/verification" className={buttonClasses({ size: 'sm', variant: 'outline' })}>
-                    Lihat data verifikasi
-                  </Link>
+                  <Link href="/events" className={buttonClasses({ size: 'sm' })}><Search className="h-4 w-4" />Jelajahi Proposal</Link>
+                  <Link href="/sponsor/proposals" className={buttonClasses({ size: 'sm', variant: 'outline' })}><FileText className="h-4 w-4" />Daftar Proposal</Link>
+                  <Link href="/sponsor/sponsorships" className={buttonClasses({ size: 'sm', variant: 'outline' })}><Handshake className="h-4 w-4" />Manajemen Kerja Sama</Link>
                 </div>
               </>
             )}

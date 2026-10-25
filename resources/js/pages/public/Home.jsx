@@ -3,13 +3,13 @@ import { motion } from 'motion/react';
 import {
   ArrowRight,
   BadgeCheck,
-  Bookmark,
   CalendarDays,
+  FileText,
   Handshake,
-  Layers,
   MapPin,
   Search,
   ShieldCheck,
+  Users,
 } from 'lucide-react';
 import PublicLayout from '../../layouts/PublicLayout';
 import { buttonClasses } from '../../components/Button';
@@ -42,18 +42,18 @@ const steps = [
 const benefitItems = [
   {
     icon: Search,
-    title: 'Cek sebelum menghubungi EO',
-    body: 'Saringan kategori, lokasi, tanggal, dan kondisi dukungan diambil dari kartu event. Setiap kartu menunjukkan bukti audiens, paket, dan status verifikasi.',
+    title: 'Temukan proposal dengan jelas',
+    body: 'Semua proposal terpublikasi dari EO bisa dilihat lengkap dalam satu tempat.',
   },
   {
-    icon: Bookmark,
-    title: 'Simpan keputusan tanpa kehilangan konteks',
-    body: 'Shortlist memungkinkan Anda membandingkan beberapa peluang. Kirim minat atau proposal tanpa menumpuk informasi di chat.',
+    icon: FileText,
+    title: 'Respons langsung',
+    body: 'Sponsor bisa merespons, diskusikan, dan negosiasi tanpa perlu mencari kontak terpisah.',
   },
   {
     icon: Handshake,
-    title: 'Rasio kejelasan dan jejak kerja',
-    body: 'Proposal, notifikasi, dan status pengajuan tetap terbaca. Anda selalu tahu langkah yang sedang berjalan, apa yang telah disetujui, dan yang masih menunggu.',
+    title: 'Kerja sama terdokumentasi',
+    body: 'Setiap tahapan, pesan, dan kesepakatan tercatat rapi di Manajemen Kerja Sama.',
   },
 ];
 
@@ -96,12 +96,12 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-2.5">
-                <Link href="/events" className={buttonClasses({ size: 'lg' })}>
-                  Lihat peluang
+                <Link href="/register" className={buttonClasses({ size: 'lg' })}>
+                  Daftar sekarang
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
-                <Link href="/register?role=sponsor" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
-                  Daftar sebagai sponsor
+                <Link href="/login" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+                  Masuk
                 </Link>
               </div>
 
@@ -122,68 +122,124 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
         </div>
       </section>
 
-      {/* Sponsor benefits */}
-      <section className="bg-background">
+      {/* Cara Kerja */}
+      <section id="cara-kerja" className="border-y border-border bg-background-muted">
         <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-medium text-primary">Untuk sponsor</p>
-              <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-                Dua hal yang membuat perbandingan sponsor lebih cepat.
-              </h2>
-            </div>
-            <p className="max-w-sm text-sm leading-relaxed text-text-secondary-strong sm:text-base">
-              Nilai utama ini ada di alur backend: filternya stabil, statusnya konsisten, dan
-              masing-masing pihak hanya melihat yang berhak mengakses.
+          <div className="max-w-2xl">
+            <p className="text-sm font-medium text-primary">Cara Kerja</p>
+            <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
+              Satu alur, dua sisi, terpusat
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-text-secondary-strong sm:text-base">
+              EO upload proposal, sponsor temukan & respons. Semua negosiasi dan kerja sama terdokumentasi di satu tempat.
             </p>
           </div>
-
-          <div className="mt-10 grid gap-5 sm:grid-cols-3">
-            {benefitItems.map((item, index) => (
-              <Reveal key={item.title} delay={index * 0.06}>
-                <div className="h-full rounded-[14px] border border-border bg-surface p-6">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-primary/10 text-primary">
-                    <item.icon className="h-5 w-5" aria-hidden="true" />
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { step: '01', icon: FileText, title: 'EO Upload Proposal', body: 'Upload event & proposal dalam satu form, bisa draft atau langsung publikasikan.' },
+              { step: '02', icon: Users, title: 'Sponsor Menemukan', body: 'Sponsor melihat proposal terpublikasi, membandingkan, dan merespons langsung.' },
+              { step: '03', icon: Handshake, title: 'Negosiasi Terpusat', body: 'Diskusi, klarifikasi, dan negosiasi lewat fitur Manajemen Kerja Sama.' },
+              { step: '04', icon: BadgeCheck, title: 'Kerja Sama Terkelola', body: 'Status, kesepakatan, dan riwayat tercatat sampai proses selesai.' },
+            ].map((item) => (
+              <div key={item.step} className="rounded-[14px] border border-border bg-surface p-5">
+                <div className="flex items-center justify-between">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-primary/10 text-primary">
+                    <item.icon className="h-4.5 w-4.5" />
                   </span>
-                  <h3 className="mt-4 text-[17px] font-semibold leading-snug text-text">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-text-secondary-strong">{item.body}</p>
+                  <span className="text-sm font-semibold tabular-nums text-text-muted">{item.step}</span>
                 </div>
-              </Reveal>
+                <h3 className="mt-4 text-[16px] font-semibold text-text">{item.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-text-secondary-strong">{item.body}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="cara-kerja" className="border-y border-border bg-background-muted">
-        <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-20 lg:py-24">
-          <Reveal className="lg:sticky lg:top-24 lg:self-start">
-            <p className="text-sm font-medium text-primary">Cara kerja sponsor</p>
-            <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-              Setiap langkah meninggalkan jejak yang bisa dibaca ulang.
-            </h2>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-text-secondary-strong sm:text-[15px]">
-              Alur ini dirancang agar sponsor tidak perlu menghafal status dan tidak perlu
-              membanjiri email atau chat dengan informasi yang sama.
-            </p>
-          </Reveal>
-
-          <div>
-            {steps.map((step, index) => (
-              <Reveal key={step.number} delay={index * 0.06}>
-                <div className="grid gap-5 border-t border-border py-7 first:border-t-0 first:pt-0 sm:grid-cols-[88px_1fr] sm:gap-8">
-                  <span className="text-[2rem] font-semibold leading-none tracking-[-0.04em] text-primary tabular-nums sm:text-[2.4rem]">
-                    {step.number}
-                  </span>
-                  <div>
-                    <h3 className="text-[17px] font-semibold leading-snug text-text">{step.title}</h3>
-                    <p className="mt-2 max-w-md text-sm leading-relaxed text-text-secondary-strong sm:text-[15px]">
-                      {step.body}
-                    </p>
+      {/* For EO */}
+      <section className="bg-background">
+        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+            <div>
+              <p className="text-sm font-medium text-primary">Untuk Event Organizer</p>
+              <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
+                Upload event & proposal dalam satu form
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-text-secondary-strong sm:text-base">
+                EO cukup mengupload proposal beserta detail eventnya. Tanpa perlu menargetkan sponsor satu per satu. Semua sponsor yang aktif bisa melihat dan merespons langsung.
+              </p>
+              <ul className="mt-6 space-y-3 text-sm text-text-secondary-strong">
+                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Satu form untuk event & proposal</li>
+                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Bisa simpan draft atau langsung publikasikan</li>
+                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Kelola peminat & negosiasi di Manajemen Kerja Sama</li>
+              </ul>
+              <div className="mt-7">
+                <Link href="/register?role=eo" className={buttonClasses({ size: 'lg' })}>
+                  Daftar sebagai EO
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+            <div className="rounded-[14px] border border-border bg-surface p-6">
+              <p className="text-xs font-medium tracking-[0.08em] text-text-muted">ALUR EO</p>
+              <div className="mt-4 divide-y divide-border">
+                {[
+                  { title: 'Upload Proposal', body: 'Isi event & proposal, lampirkan file, simpan draft atau publikasikan.' },
+                  { title: 'Daftar Proposal', body: 'Kelola semua proposal yang sudah dibuat dan dipublikasikan.' },
+                  { title: 'Manajemen Kerja Sama', body: 'Terima respons sponsor, negosiasi via chat, kelola status & revisi.' },
+                ].map((item) => (
+                  <div key={item.title} className="py-4 first:pt-0 last:pb-0">
+                    <h3 className="text-sm font-semibold text-text">{item.title}</h3>
+                    <p className="mt-1 text-sm text-text-secondary-strong">{item.body}</p>
                   </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* For Sponsor */}
+      <section className="border-y border-border bg-background-muted">
+        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+            <div className="order-2 lg:order-1">
+              <div className="rounded-[14px] border border-border bg-surface p-6">
+                <p className="text-xs font-medium tracking-[0.08em] text-text-muted">ALUR SPONSOR</p>
+                <div className="mt-4 divide-y divide-border">
+                  {[
+                    { title: 'Jelajahi Proposal', body: 'Lihat semua proposal yang dipublikasikan EO dengan detail lengkap.' },
+                    { title: 'Daftar Proposal', body: 'Kelola proposal yang sudah direspon & pantau statusnya.' },
+                    { title: 'Manajemen Kerja Sama', body: 'Negosiasi, diskusikan, dan kelola kerja sama sampai selesai.' },
+                  ].map((item) => (
+                    <div key={item.title} className="py-4 first:pt-0 last:pb-0">
+                      <h3 className="text-sm font-semibold text-text">{item.title}</h3>
+                      <p className="mt-1 text-sm text-text-secondary-strong">{item.body}</p>
+                    </div>
+                  ))}
                 </div>
-              </Reveal>
-            ))}
+              </div>
+            </div>
+            <div className="order-1 lg:order-2">
+              <p className="text-sm font-medium text-primary">Untuk Sponsor</p>
+              <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
+                Temukan proposal yang relevan, respons langsung
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-text-secondary-strong sm:text-base">
+                Semua proposal dari EO yang dipublikasikan bisa dilihat di satu tempat. Bandingkan, diskusikan, dan lanjutkan negosiasi tanpa harus dicari manual.
+              </p>
+              <ul className="mt-6 space-y-3 text-sm text-text-secondary-strong">
+                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Akses proposal terpublikasi dari semua EO</li>
+                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Respons & negosiasi terpusat</li>
+                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Riwayat kerja sama terdokumentasi</li>
+              </ul>
+              <div className="mt-7">
+                <Link href="/register?role=sponsor" className={buttonClasses({ size: 'lg' })}>
+                  Daftar sebagai Sponsor
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -289,16 +345,15 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
         <div className="mx-auto grid max-w-6xl gap-8 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end lg:gap-16 lg:py-20">
           <Reveal>
             <h2 className="text-[clamp(1.85rem,3.6vw,2.6rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-white">
-              Mulai dari satu berkas yang bisa dibaca.
+              Mulai kolaborasi sponsorship dengan lebih terarah.
             </h2>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-background sm:text-base">
-              Daftar sebagai sponsor atau EO. Verifikasi dan profil dibangun bertahap, tanpa
-              mengunci akses publik.
+              EO upload proposal, sponsor temukan dan respons langsung. Semua tercatat dalam satu alur yang jelas.
             </p>
           </Reveal>
           <Reveal delay={0.08} className="flex flex-wrap gap-3 lg:justify-end">
             <Link href="/register?role=sponsor" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
-              Daftar sebagai sponsor
+              Daftar sebagai Sponsor
             </Link>
             <Link
               href="/register?role=eo"

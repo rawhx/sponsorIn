@@ -1,37 +1,46 @@
 import { Head, Link } from '@inertiajs/react';
-import { Compass, Star } from 'lucide-react';
+import { FilePlus2, FileText, Handshake, Users } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EmptyState from '../../components/EmptyState';
-import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { formatDate } from '../../lib/utils';
 
-export default function EoDashboard({ organization, counts, upcomingEvents }) {
+export default function EoDashboard({ organization, counts = {}, upcomingEvents = [] }) {
   const statusRows = [
-    { label: 'Draft', value: counts.draft, description: 'Belum diajukan untuk moderasi.' },
-    { label: 'Sedang ditinjau', value: counts.under_review, description: 'Menunggu keputusan admin.' },
-    { label: 'Perlu perbaikan', value: counts.needs_changes, description: 'Ada catatan yang perlu ditindaklanjuti.' },
-    { label: 'Terbit', value: counts.published, description: 'Tampil pada daftar peluang publik.' },
+    { label: 'Total Proposal', value: counts.proposals_total ?? 0, description: 'Semua proposal yang dibuat.' },
+    { label: 'Proposal Terbit', value: counts.proposals_published ?? 0, description: 'Bisa dilihat oleh semua sponsor.' },
+    { label: 'Draft Proposal', value: counts.proposals_draft ?? 0, description: 'Belum dipublikasikan.' },
+    { label: 'Peminat (Sponsor)', value: counts.proposals_interest ?? 0, description: 'Sponsor yang merespons proposal terbit.' },
   ];
 
   return (
     <DashboardLayout
-      eyebrow={organization.name}
-      title="Ringkasan event organizer"
+      eyebrow={organization?.name ?? 'Akun EO'}
+      title="Dashboard EO"
       actions={
-        <Link href="/events" className={buttonClasses({ variant: 'outline' })}>
-          <Compass className="h-4 w-4" aria-hidden="true" />
-          Lihat peluang publik
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/eo/proposals/create" className={buttonClasses({ size: 'sm' })}>
+            <FilePlus2 className="h-4 w-4" aria-hidden="true" />
+            Upload Proposal
+          </Link>
+          <Link href="/eo/proposals" className={buttonClasses({ variant: 'outline', size: 'sm' })}>
+            <FileText className="h-4 w-4" aria-hidden="true" />
+            Daftar Proposal
+          </Link>
+          <Link href="/eo/sponsorships" className={buttonClasses({ variant: 'outline', size: 'sm' })}>
+            <Handshake className="h-4 w-4" aria-hidden="true" />
+            Manajemen Kerja Sama
+          </Link>
+        </div>
       }
     >
-      <Head title="Ringkasan EO" />
+      <Head title="Dashboard EO" />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
         <section className="rounded-[12px] border border-border bg-surface">
           <div className="border-b border-border px-5 py-4">
-            <p className="text-xs font-medium tracking-[0.06em] text-text-muted">STATUS EVENT</p>
-            <h2 className="mt-1.5 text-lg font-semibold text-text">Berkas event Anda</h2>
+            <p className="text-xs font-medium tracking-[0.06em] text-text-muted">RINGKASAN PROPOSAL</p>
+            <h2 className="mt-1.5 text-lg font-semibold text-text">Proposal & Peminat</h2>
           </div>
           <div className="divide-y divide-border">
             {statusRows.map((row) => (
@@ -46,7 +55,7 @@ export default function EoDashboard({ organization, counts, upcomingEvents }) {
           </div>
           <div className="border-t border-border bg-background-muted px-5 py-3">
             <p className="text-xs leading-relaxed text-text-secondary-strong">
-              Event hanya tampil publik setelah moderator menyetujui dan statusnya terbit.
+              Kerja Sama Aktif: {counts.sponsorships_active ?? 0}
             </p>
           </div>
         </section>

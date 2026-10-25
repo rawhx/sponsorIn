@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { BadgeCheck, Bell, Bookmark, CalendarDays, Compass, FileText, Handshake, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
+import { BadgeCheck, Bell, CalendarDays, FileText, Handshake, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import FlashMessages from '../components/FlashMessages';
@@ -18,22 +18,19 @@ function navigationFor(role) {
   const notifications = { label: 'Notifikasi', href: '/notifications', icon: Bell };
   if (role === 'sponsor') {
     return [
-      { label: 'Ringkasan', href: '/sponsor/dashboard', icon: LayoutDashboard },
-      { label: 'Verifikasi usaha', href: '/sponsor/verification', icon: BadgeCheck },
-      { label: 'Shortlist', href: '/sponsor/shortlist', icon: Bookmark },
-      { label: 'Proposal', href: '/sponsor/proposals', icon: FileText },
-      { label: 'Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
-      { label: 'Jelajahi peluang', href: '/events', icon: Compass },
+      { label: 'Dashboard', href: '/sponsor/dashboard', icon: LayoutDashboard },
+      { label: 'Jelajahi Proposal', href: '/events', icon: FileText },
+      { label: 'Daftar Proposal', href: '/sponsor/proposals', icon: FileText },
+      { label: 'Manajemen Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
       notifications,
     ];
   }
   if (role === 'eo') {
     return [
-      { label: 'Ringkasan', href: '/eo/dashboard', icon: LayoutDashboard },
-      { label: 'Event saya', href: '/eo/events', icon: CalendarDays },
-      { label: 'Proposal', href: '/eo/proposals', icon: FileText },
-      { label: 'Kerja Sama', href: '/eo/sponsorships', icon: Handshake },
-      { label: 'Peluang publik', href: '/events', icon: Compass },
+      { label: 'Dashboard', href: '/eo/dashboard', icon: LayoutDashboard },
+      { label: 'Upload Proposal', href: '/eo/proposals/create', icon: FileText },
+      { label: 'Daftar Proposal', href: '/eo/proposals', icon: FileText },
+      { label: 'Manajemen Kerja Sama', href: '/eo/sponsorships', icon: Handshake },
       notifications,
     ];
   }

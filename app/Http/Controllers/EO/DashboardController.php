@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\EO;
 
 use App\Enums\EventStatus;
+use App\Enums\ProposalStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,6 +34,11 @@ class DashboardController extends Controller
                 'under_review' => $organization->events()->where('status', EventStatus::UnderReview)->count(),
                 'published' => $organization->events()->where('status', EventStatus::Published)->count(),
                 'needs_changes' => $organization->events()->where('status', EventStatus::NeedsChanges)->count(),
+                'proposals_total' => $organization->sentProposals()->count(),
+                'proposals_published' => $organization->sentProposals()->whereIn('status', [ProposalStatus::Sent, ProposalStatus::UnderReview, ProposalStatus::Negotiation, ProposalStatus::MoreInformationRequested])->count(),
+                'proposals_draft' => $organization->sentProposals()->where('status', ProposalStatus::Draft)->count(),
+                'proposals_interest' => $organization->receivedProposals()->whereIn('status', [ProposalStatus::Sent, ProposalStatus::UnderReview, ProposalStatus::Negotiation])->count(),
+                'sponsorships_active' => $organization->sponsorships()->whereIn('status', ['active', 'in_progress'])->count(),
             ],
             'upcomingEvents' => $events->take(5)->map(fn ($event) => [
                 'id' => $event->id,

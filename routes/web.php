@@ -130,8 +130,6 @@ Route::middleware(['auth', 'verified', 'role:eo'])
         Route::put('/events/{event}/packages/{package}', [PackageController::class, 'update'])->name('events.packages.update');
         Route::delete('/events/{event}/packages/{package}', [PackageController::class, 'destroy'])->name('events.packages.destroy');
 
-        Route::get('/sponsors/available', [EoProposalController::class, 'available'])->name('sponsors.available');
-
         Route::get('/proposals', [EoProposalController::class, 'index'])->name('proposals.index');
         Route::get('/proposals/create', [EoProposalController::class, 'create'])->name('proposals.create');
         Route::post('/proposals', [EoProposalController::class, 'store'])->name('proposals.store');
