@@ -1,19 +1,34 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Info } from 'lucide-react';
-import { useMemo } from 'react';
+import { Building2, Info } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Button from '../../components/Button';
 import { Field, Input, Select, Textarea } from '../../components/Form';
+import { EvidenceTag } from '../../components/StatusBadge';
 
 const preferenceLabels = {
-  open: 'Terbuka untuk proposal',
+  open: 'Menerima proposal',
   selective: 'Selektif',
+  closed: 'Tertutup',
 };
 
-export default function ProposalForm({ events, sponsors }) {
+const preferenceTones = {
+  open: 'success',
+  selective: 'info',
+  closed: 'neutral',
+};
+
+function preferenceBadge(preference) {
+  return (
+    <EvidenceTag tone={preferenceTones[preference] ?? 'neutral'}>
+      {preferenceLabels[preference] ?? preference}
+    </EvidenceTag>
+  );
+}
+
+export default function ProposalForm({ events, sponsors, selectedSponsor }) {
   const { data, setData, post, processing, errors } = useForm({
     event_id: events[0]?.id ?? '',
-    sponsor_org_id: '',
+    sponsor_org_id: selectedSponsor?.id ?? '',
     package_id: '',
     requested_support: '',
     deliverables: '',
@@ -21,10 +36,15 @@ export default function ProposalForm({ events, sponsors }) {
     valid_until: '',
   });
 
-  const selectedEvent = useMemo(
-    () => events.find((event) => String(event.id) === String(data.event_id)),
-    [events, data.event_id]
-  );
+  function sponsorChanged(value) {
+    setData('event_id', events[0]?.id ?? '');
+    setData('sponsor_org_id', value);
+    setData('package_id', '');
+    setData('requested_support', '');
+    setData('deliverables', '');
+    setData('terms_summary', '');
+    setData('valid_until', '');
+  }
 
   function submit(event) {
     event.preventDefault();
@@ -33,15 +53,16 @@ export default function ProposalForm({ events, sponsors }) {
 
   const noEvents = events.length === 0;
   const noSponsors = sponsors.length === 0;
+  const selected = sponsors.find((sponsor) => String(sponsor.id) === String(data.sponsor_org_id));
 
   return (
     <DashboardLayout
       eyebrow="Kolaborasi"
       title="Buat proposal"
       actions={
-        <Link href="/eo/proposals" className="inline-flex items-center gap-2 text-sm text-text-secondary-strong hover:text-text">
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Kembali
+        <Link href="/sponsors/available" className="inline-flex items-center gap-2 text-sm text-text-secondary-strong transition-colors hover:text-text">
+          <Building2 className="h-4 w-4" aria-hidden="true" />
+          Sponsor tersedia
         </Link>
       }
     >
@@ -87,10 +108,10 @@ export default function ProposalForm({ events, sponsors }) {
                 </Select>
               </Field>
 
-              <Field label="Paket (opsional)" htmlFor="package_id" error={errors.package_id} hint={selectedEvent?.packages?.length ? undefined : 'Event ini belum punya paket'}>
-                <Select id="package_id" value={data.package_id} onChange={(event) => setData('package_id', event.target.value)} disabled={!selectedEvent?.packages?.length}>
+              <Field label="Paket (opsional)" htmlFor="package_id" error={errors.package_id} hint={selected?.packages?.length ? undefined : 'Event ini belum punya paket'}>
+                <Select id="package_id" value={data.package_id} onChange={(event) => setData('package_id', event.target.value)} disabled={!selected?.packages?.length}>
                   <option value="">Tanpa paket tertentu</option>
-                  {selectedEvent?.packages?.map((pkg) => (
+                  {selected?.packages?.map((pkg) => (
                     <option key={pkg.id} value={pkg.id}>{pkg.name}</option>
                   ))}
                 </Select>

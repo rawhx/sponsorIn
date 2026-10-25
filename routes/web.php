@@ -27,6 +27,9 @@ use App\Http\Controllers\Sponsor\ProposalController as SponsorProposalController
 use App\Http\Controllers\Sponsor\ShortlistController as SponsorShortlistController;
 use App\Http\Controllers\Sponsor\SponsorshipController as SponsorSponsorshipController;
 use App\Http\Controllers\Sponsor\SponsorVerificationController;
+use App\Http\Controllers\Admin\ReportsController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Sponsor\OrganizationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -79,6 +82,9 @@ Route::middleware(['auth', 'verified', 'role:sponsor'])
         Route::get('/verification', [SponsorVerificationController::class, 'show'])->name('verification.show');
         Route::put('/verification', [SponsorVerificationController::class, 'update'])->name('verification.update');
 
+        Route::get('/organizations', [OrganizationController::class, 'index'])->name('organizations.index');
+        Route::put('/organizations', [OrganizationController::class, 'update'])->name('organizations.update');
+
         Route::middleware('sponsor.active')->group(function () {
             Route::get('/shortlist', [SponsorShortlistController::class, 'index'])->name('shortlist.index');
             Route::post('/events/{event}/shortlist', [SponsorShortlistController::class, 'store'])->name('shortlist.store');
@@ -124,6 +130,8 @@ Route::middleware(['auth', 'verified', 'role:eo'])
         Route::put('/events/{event}/packages/{package}', [PackageController::class, 'update'])->name('events.packages.update');
         Route::delete('/events/{event}/packages/{package}', [PackageController::class, 'destroy'])->name('events.packages.destroy');
 
+        Route::get('/sponsors/available', [EoProposalController::class, 'available'])->name('sponsors.available');
+
         Route::get('/proposals', [EoProposalController::class, 'index'])->name('proposals.index');
         Route::get('/proposals/create', [EoProposalController::class, 'create'])->name('proposals.create');
         Route::post('/proposals', [EoProposalController::class, 'store'])->name('proposals.store');
@@ -156,4 +164,12 @@ Route::middleware(['auth', 'verified', 'role:admin,verifier'])
         Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
         Route::post('/reviews/{review}/hide', [AdminReviewController::class, 'hide'])->name('reviews.hide');
         Route::post('/reviews/{review}/restore', [AdminReviewController::class, 'restore'])->name('reviews.restore');
+
+        Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+        Route::get('/reports/{report}', [ReportsController::class, 'show'])->name('reports.show');
+        Route::post('/reports', [ReportsController::class, 'store'])->name('reports.store');
+        Route::post('/reports/{report}/resolve', [ReportsController::class, 'resolve'])->name('reports.resolve');
+
+        Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+        Route::get('/audit-log/{auditLog}', [AuditLogController::class, 'show'])->name('audit-log.show');
     });

@@ -74,7 +74,8 @@ class ProposalLifecycleTest extends TestCase
             ->post("/sponsor/events/{$event->id}/proposals", [
                 'requested_support' => 'Dukungan.',
             ])
-            ->assertForbidden();
+            ->assertRedirect(route('sponsor.verification.show'))
+            ->assertSessionHas('error', 'Fitur sponsor aktif tersedia setelah verifikasi usaha disetujui.');
     }
 
     public function test_eo_can_create_proposal_to_receptive_sponsor(): void

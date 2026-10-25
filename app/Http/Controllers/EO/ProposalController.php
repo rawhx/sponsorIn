@@ -87,6 +87,18 @@ class ProposalController extends Controller
                 ]),
             ]);
 
+        $sponsorId = $request->input('sponsor');
+        $selectedSponsor = null;
+
+        if (filled($sponsorId)) {
+            $selectedSponsor = Organization::query()
+                ->where('id', $sponsorId)
+                ->where('type', OrganizationType::Sponsor)
+                ->whereHas('verification', fn ($query) => $query->where('status', 'approved'))
+                ->whereIn('proposal_preference', [ProposalPreference::Open, ProposalPreference::Selective])
+                ->first();
+        }
+
         $sponsors = Organization::query()
             ->where('type', OrganizationType::Sponsor)
             ->whereIn('proposal_preference', [ProposalPreference::Open, ProposalPreference::Selective])
@@ -103,6 +115,12 @@ class ProposalController extends Controller
         return Inertia::render('eo/ProposalForm', [
             'events' => $events,
             'sponsors' => $sponsors,
+            'selectedSponsor' => $selectedSponsor ? [
+                'id' => $selectedSponsor->id,
+                'name' => $selectedSponsor->display_name,
+                'location' => $selectedSponsor->location,
+                'proposal_preference' => $selectedSponsor->proposal_preference->value,
+            ] : null,
         ]);
     }
 
@@ -197,5 +215,55 @@ class ProposalController extends Controller
         $counterpart->owner?->notify(new NewMessageNotification($proposal));
 
         return back()->with('success', 'Pesan terkirim.');
+    }
+
+    public function available(Request $request): Response
+    {
+        $organization = $request->user()->organization;
+        abort_unless($organization && $organization->isEo(), 403);
+
+        $status = $request->validate([
+            'preference' => ['nullable', Rule::in(['open', 'selective', 'closed'])],
+            'q' => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $query = Organization::query()
+            ->where('type', OrganizationType::Sponsor)
+            ->whereHas('verification', fn ($verification) => $verification->where('status', 'approved'));
+
+        if (filled($status['preference'])) {
+            $query->where('proposal_preference', ProposalPreference::from($status['preference']));
+        }
+
+        if (filled($status['q'])) {
+            $query->where(function ($query) use ($status) {
+                $query->where('display_name', 'like', "%{$status['q']}%")
+                    ->orWhere('location', 'like', "%{$status['q']}%");
+            });
+        }
+
+        $sponsors = $query->orderBy('display_name')
+            ->orderBy('location')
+            ->get(['id', 'display_name', 'location', 'proposal_preference', 'public_contact'])
+            ->map(fn (Organization $sponsor) => [
+                'id' => $sponsor->id,
+                'name' => $sponsor->display_name,
+                'location' => $sponsor->location,
+                'contact' => $sponsor->public_contact,
+                'preference' => $sponsor->proposal_preference->value,
+            ]);
+
+        return Inertia::render('eo/SponsorsAvailable', [
+            'sponsors' => $sponsors,
+            'filters' => [
+                'preference' => $request->string('preference')->toString(),
+                'q' => $request->string('q')->toString(),
+            ],
+            'preferences' => [
+                'open' => 'Menerima proposal',
+                'selective' => 'Selektif',
+                'closed' => 'Tertutup',
+            ],
+        ]);
     }
 }

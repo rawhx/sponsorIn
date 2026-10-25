@@ -67,7 +67,8 @@ class SponsorShortlistTest extends TestCase
 
         $this->actingAs($sponsor)
             ->post("/sponsor/events/{$event->id}/shortlist")
-            ->assertForbidden();
+            ->assertRedirect(route('sponsor.verification.show'))
+            ->assertSessionHas('error', 'Fitur sponsor aktif tersedia setelah verifikasi usaha disetujui.');
     }
 
     public function test_cannot_shortlist_a_draft_event(): void
