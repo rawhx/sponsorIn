@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditLogController as AdminAuditLogController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EventModerationController as AdminEventController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\ReviewModerationController as AdminReviewController;
 use App\Http\Controllers\Admin\SponsorshipController as AdminSponsorshipController;
 use App\Http\Controllers\Admin\VerificationController as AdminVerificationController;
@@ -20,6 +22,7 @@ use App\Http\Controllers\EO\PackageController;
 use App\Http\Controllers\EO\ProposalController as EoProposalController;
 use App\Http\Controllers\EO\SponsorshipController as EoSponsorshipController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PublicSite\EventController;
 use App\Http\Controllers\PublicSite\HomeController;
 use App\Http\Controllers\PublicSite\OrganizerController;
@@ -66,6 +69,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+
+    Route::post('/reports', [ReportController::class, 'store'])
+        ->middleware(['verified', 'throttle:10,1'])
+        ->name('reports.store');
 
     Route::get('/dashboard', [DashboardController::class, 'redirect'])
         ->middleware('verified')
@@ -160,6 +167,12 @@ Route::middleware(['auth', 'verified', 'role:admin,verifier'])
         Route::get('/sponsorships', [AdminSponsorshipController::class, 'index'])->name('sponsorships.index');
         Route::get('/sponsorships/{sponsorship}', [AdminSponsorshipController::class, 'show'])->name('sponsorships.show');
         Route::post('/sponsorships/{sponsorship}/resolve', [AdminSponsorshipController::class, 'resolve'])->name('sponsorships.resolve');
+
+        Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/{report}', [AdminReportController::class, 'show'])->name('reports.show');
+        Route::put('/reports/{report}', [AdminReportController::class, 'update'])->name('reports.update');
+
+        Route::get('/audit-log', [AdminAuditLogController::class, 'index'])->name('audit-log.index');
 
         Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
         Route::post('/reviews/{review}/hide', [AdminReviewController::class, 'hide'])->name('reviews.hide');

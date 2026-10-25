@@ -16,6 +16,9 @@ class EnsureRole
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
+        // Akun yang ditangguhkan kehilangan akses walau sesi login masih aktif.
+        abort_unless($user->hasActiveAccount(), 403, 'Akun Anda ditangguhkan. Hubungi tim SponsorIn untuk informasi lebih lanjut.');
+
         return $next($request);
     }
 }

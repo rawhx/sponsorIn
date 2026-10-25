@@ -5,6 +5,7 @@ import PublicLayout from '../../layouts/PublicLayout';
 import StatusBadge, { EvidenceTag } from '../../components/StatusBadge';
 import Button, { buttonClasses } from '../../components/Button';
 import { Field, Select, Textarea } from '../../components/Form';
+import ReportDialog from '../../components/ReportDialog';
 import {
   evidenceTypeLabels,
   formatCurrency,
@@ -17,6 +18,8 @@ export default function EventShow({ event }) {
   const { auth } = usePage().props;
   const organizer = event.organizer;
   const canShortlist = auth?.user?.role === 'sponsor' && auth?.is_sponsor_active;
+  const canReport =
+    ['sponsor', 'eo'].includes(auth?.user?.role) && auth?.user?.email_verified && auth?.organization?.id !== organizer.id;
   const [showProposal, setShowProposal] = useState(false);
 
   function toggleShortlist() {
@@ -204,6 +207,12 @@ export default function EventShow({ event }) {
                   <span className="text-text-secondary-strong">Profil EO belum terverifikasi</span>
                 )}
               </div>
+              {canReport ? (
+                <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-3">
+                  <ReportDialog targetType="event" targetId={event.id} label="Laporkan event" title="Laporkan event ini" />
+                  <ReportDialog targetType="account" targetId={organizer.id} label="Laporkan penyelenggara" title="Laporkan penyelenggara" />
+                </div>
+              ) : null}
               {organizer.description ? (
                 <p className="mt-3 text-sm leading-relaxed text-text-secondary-strong">{organizer.description}</p>
               ) : null}

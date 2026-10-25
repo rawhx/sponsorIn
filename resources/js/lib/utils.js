@@ -59,6 +59,10 @@ const statusLabels = {
   needs_admin_review: 'Ditinjau admin',
   cancelled: 'Dibatalkan',
   hidden: 'Disembunyikan',
+  open: 'Terbuka',
+  in_review: 'Ditinjau',
+  resolved: 'Selesai ditangani',
+  dismissed: 'Ditolak',
 };
 
 const statusTones = {
@@ -86,6 +90,10 @@ const statusTones = {
   needs_admin_review: 'warning',
   cancelled: 'neutral',
   hidden: 'danger',
+  open: 'warning',
+  in_review: 'info',
+  resolved: 'success',
+  dismissed: 'neutral',
 };
 
 export function statusLabel(status) {
@@ -127,4 +135,10 @@ export const proposalPreferenceLabels = {
   open: 'Menerima proposal',
   selective: 'Selektif',
   closed: 'Tertutup',
+};
+
+export const reportTargetLabels = {
+  event: 'Event',
+  review: 'Ulasan',
+  account: 'Akun',
 };

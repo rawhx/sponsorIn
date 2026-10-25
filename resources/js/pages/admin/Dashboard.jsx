@@ -87,8 +87,11 @@ export default function AdminDashboard({ counts, pendingVerifications, recentAud
             <div className="px-5 py-4">
               <p className="text-2xl font-semibold tabular-nums text-text">{counts.open_reports}</p>
               <p className="mt-1 text-xs leading-relaxed text-text-secondary-strong">
-                Modul penanganan laporan belum aktif pada tahap ini. Angka diambil dari antrean laporan yang tersimpan.
+                Laporan event, akun, dan ulasan yang menunggu peninjauan atau sedang ditinjau.
               </p>
+              <Link href="/admin/reports" className="mt-3 inline-block text-sm font-medium text-primary-strong hover:text-text">
+                Buka antrean laporan
+              </Link>
             </div>
           </section>
 

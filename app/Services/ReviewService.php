@@ -70,6 +70,9 @@ class ReviewService
 
     public function hide(Review $review, User $actor, string $reason): Review
     {
+        abort_unless($actor->isStaff(), 403);
+        abort_unless($review->status === ReviewStatus::Published, 422, 'Ulasan ini sudah disembunyikan.');
+
         $review->update([
             'status' => ReviewStatus::Hidden,
             'hidden_reason' => $reason,
@@ -81,6 +84,27 @@ class ReviewService
         ], [
             'status' => ReviewStatus::Hidden->value,
         ], $reason);
+
+        return $review;
+    }
+
+    public function restore(Review $review, User $actor): Review
+    {
+        abort_unless($actor->isStaff(), 403);
+        abort_unless($review->status === ReviewStatus::Hidden, 422, 'Ulasan ini tidak sedang disembunyikan.');
+
+        $review->forceFill([
+            'status' => ReviewStatus::Published,
+            'hidden_reason' => null,
+            'published_at' => $review->published_at ?? now(),
+        ])->save();
+
+        $this->recalculate($review->sponsorship->eoOrganization);
+        $this->audit->record('review.restored', $review, $actor, [
+            'status' => ReviewStatus::Hidden->value,
+        ], [
+            'status' => ReviewStatus::Published->value,
+        ]);
 
         return $review;
     }

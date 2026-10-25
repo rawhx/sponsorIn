@@ -1,10 +1,15 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, BadgeCheck, Building2, CalendarDays, MapPin, Star } from 'lucide-react';
 import PublicLayout from '../../layouts/PublicLayout';
 import { EvidenceTag } from '../../components/StatusBadge';
+import ReportDialog from '../../components/ReportDialog';
 import { formatDateRange } from '../../lib/utils';
 
 export default function OrganizerShow({ organizer, events }) {
+  const { auth } = usePage().props;
+  const canReport =
+    ['sponsor', 'eo'].includes(auth?.user?.role) && auth?.user?.email_verified && auth?.organization?.id !== organizer.id;
+
   return (
     <PublicLayout>
       <Head title={`${organizer.name} · Pelaku event`} />
@@ -80,6 +85,11 @@ export default function OrganizerShow({ organizer, events }) {
               <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-text-muted">
                 Ulasan hanya dapat ditulis setelah sponsorship tercatat selesai.
               </p>
+            ) : null}
+            {canReport ? (
+              <div className="mt-4 border-t border-border pt-3">
+                <ReportDialog targetType="account" targetId={organizer.id} label="Laporkan penyelenggara" title="Laporkan penyelenggara" />
+              </div>
             ) : null}
           </aside>
         </div>

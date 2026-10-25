@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { BadgeCheck, Bell, Bookmark, CalendarDays, Compass, FileText, Handshake, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
+import { BadgeCheck, Bell, Bookmark, CalendarDays, Compass, FileText, Flag, Handshake, History, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import FlashMessages from '../components/FlashMessages';
@@ -43,6 +43,8 @@ function navigationFor(role) {
     { label: 'Moderasi event', href: '/admin/events', icon: CalendarDays },
     { label: 'Sponsorship', href: '/admin/sponsorships', icon: Handshake },
     { label: 'Moderasi ulasan', href: '/admin/reviews', icon: Star },
+    { label: 'Laporan', href: '/admin/reports', icon: Flag },
+    { label: 'Audit log', href: '/admin/audit-log', icon: History },
     notifications,
   ];
 }

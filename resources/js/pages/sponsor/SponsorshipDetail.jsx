@@ -1,5 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { CalendarDays, Handshake, MapPin, MessageSquare, Star } from 'lucide-react';
+import ReportDialog from '../../components/ReportDialog';
 import CancelSponsorshipForm from '../../components/sponsorships/CancelSponsorshipForm';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
@@ -123,6 +124,18 @@ export default function SponsorshipDetail({ sponsorship }) {
                   <span>{s.review.overall_rating}/5</span>
                 </div>
                 {s.review.comment ? <p className="text-sm text-text-secondary-strong whitespace-pre-wrap">{s.review.comment}</p> : null}
+                {!s.can_edit_review && isSponsor && s.review.status === 'published' ? (
+                  <div className="border-t border-border pt-3">
+                    <p className="mb-2 text-xs text-text-secondary-strong">Ulasan terkunci setelah 24 jam. Jika ada kesalahan data, ajukan koreksi kepada admin.</p>
+                    <ReportDialog
+                      targetType="review"
+                      targetId={s.review.id}
+                      label="Ajukan koreksi ulasan"
+                      title="Ajukan koreksi ulasan"
+                      description="Jelaskan kesalahan data pada ulasan Anda. Admin dapat menyunting metadata yang salah, tetapi tidak mengubah skor Anda."
+                    />
+                  </div>
+                ) : null}
               </div>
               {s.can_edit_review && isSponsor ? (
                 <form onSubmit={submitReview} className="border-t border-border space-y-4 px-5 py-5">

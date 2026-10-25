@@ -1,5 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { CalendarDays, Handshake, MapPin, MessageSquare } from 'lucide-react';
+import ReportDialog from '../../components/ReportDialog';
 import CancelSponsorshipForm from '../../components/sponsorships/CancelSponsorshipForm';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
@@ -78,6 +79,17 @@ export default function SponsorshipDetail({ sponsorship }) {
                   <span>Deliverables {s.review.deliverables_rating}/5</span>
                 </div>
                 {s.review.comment ? <p className="text-sm text-text-secondary-strong whitespace-pre-wrap">{s.review.comment}</p> : null}
+                {s.review.status === 'published' ? (
+                  <div className="border-t border-border pt-3">
+                    <ReportDialog
+                      targetType="review"
+                      targetId={s.review.id}
+                      label="Laporkan ulasan"
+                      title="Laporkan ulasan ini"
+                      description="EO tidak dapat mengubah atau menghapus ulasan. Admin akan menilai apakah ulasan melanggar kebijakan; skor sponsor tidak diubah."
+                    />
+                  </div>
+                ) : null}
               </div>
             </section>
           ) : null}

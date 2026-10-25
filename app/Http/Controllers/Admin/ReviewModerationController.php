@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\ReviewStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use App\Notifications\ReviewModerationNotification;
 use App\Services\ReviewService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,22 +69,25 @@ class ReviewModerationController extends Controller
         ]);
 
         $service->hide($review, $request->user(), $data['reason']);
+        $this->notifyParties($review, true);
 
         return back()->with('success', 'Ulasan disembunyikan.');
     }
 
     public function restore(Request $request, Review $review, ReviewService $service): RedirectResponse
     {
-        $service->recalculate($review->sponsorship->eoOrganization);
-
-        $review->forceFill([
-            'status' => ReviewStatus::Published,
-            'hidden_reason' => null,
-            'published_at' => $review->published_at ?? now(),
-        ])->save();
-
-        $service->recalculate($review->sponsorship->eoOrganization);
+        $service->restore($review, $request->user());
+        $this->notifyParties($review, false);
 
         return back()->with('success', 'Ulasan ditayangkan kembali.');
+    }
+
+    private function notifyParties(Review $review, bool $hidden): void
+    {
+        $review->loadMissing(['sponsorship.event', 'sponsorship.sponsorOrganization.owner', 'sponsorship.eoOrganization.owner']);
+
+        foreach ([$review->sponsorship->sponsorOrganization->owner, $review->sponsorship->eoOrganization->owner] as $owner) {
+            $owner?->notify(new ReviewModerationNotification($review, $hidden));
+        }
     }
 }

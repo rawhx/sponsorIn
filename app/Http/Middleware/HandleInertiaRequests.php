@@ -46,6 +46,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'reportReasons' => fn () => $user ? \App\Services\ReportService::reasonOptions() : null,
             'unreadNotifications' => fn () => $user?->unreadNotifications()->count() ?? 0,
         ];
     }
