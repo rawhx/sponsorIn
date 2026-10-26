@@ -7,6 +7,9 @@ import { buttonClasses } from '../components/Button';
 
 const navItems = [
   { label: 'Cara Kerja', href: '/#cara-kerja' },
+  { label: 'Untuk EO', href: '/#untuk-eo' },
+  { label: 'Untuk Sponsor', href: '/#untuk-sponsor' },
+  { label: 'Event', href: '/events' },
 ];
 
 export default function PublicLayout({ children }) {
@@ -21,7 +24,7 @@ export default function PublicLayout({ children }) {
           <Logo />
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-7 md:flex" aria-label="Navigasi utama">
+          <nav className="hidden items-center gap-6 lg:flex" aria-label="Navigasi utama">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -34,7 +37,7 @@ export default function PublicLayout({ children }) {
           </nav>
 
           {/* Desktop auth */}
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             {auth?.user ? (
               <Link href="/dashboard" className={buttonClasses({ size: 'sm' })}>
                 Ruang Kerja
@@ -57,7 +60,7 @@ export default function PublicLayout({ children }) {
           {/* Mobile toggle */}
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-border text-text-secondary transition-colors hover:bg-hover hover:text-text md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-border text-text-secondary transition-colors hover:bg-hover hover:text-text lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? 'Tutup menu' : 'Buka menu'}
@@ -74,7 +77,7 @@ export default function PublicLayout({ children }) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-border bg-surface px-5 md:hidden"
+            className="overflow-hidden border-t border-border bg-surface px-5 lg:hidden"
           >
             <div className="py-4">
             <nav className="flex flex-col gap-0.5" aria-label="Navigasi seluler">
@@ -141,6 +144,15 @@ export default function PublicLayout({ children }) {
                 <div className="space-y-2">
                   <Link href="/#cara-kerja" className="block text-text-secondary transition-colors hover:text-text">
                     Cara Kerja
+                  </Link>
+                  <Link href="/#untuk-eo" className="block text-text-secondary transition-colors hover:text-text">
+                    Untuk EO
+                  </Link>
+                  <Link href="/#untuk-sponsor" className="block text-text-secondary transition-colors hover:text-text">
+                    Untuk Sponsor
+                  </Link>
+                  <Link href="/events" className="block text-text-secondary transition-colors hover:text-text">
+                    Event
                   </Link>
                 </div>
               </div>

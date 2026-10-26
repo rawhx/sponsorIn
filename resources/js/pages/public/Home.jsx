@@ -80,28 +80,28 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
   return (
     <PublicLayout>
       {/* Hero */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-5 pb-14 pt-10 sm:px-8 sm:pb-16 sm:pt-14 lg:pb-20 lg:pt-16">
+      <section className="border-b border-border bg-background">
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:items-end lg:gap-16 lg:pb-24 lg:pt-20">
           <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <h1 className="text-[clamp(2.6rem,6.5vw,5rem)] font-semibold leading-[0.98] tracking-[-0.06em] text-text">
-                Cari peluang sponsorship tanpa basa-basi
+              <h1 className="max-w-xl text-[clamp(2.8rem,6.5vw,5.25rem)] font-semibold leading-[0.94] tracking-[-0.065em] text-text">
+                Temukan kerja sama yang siap dibicarakan
               </h1>
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-text-secondary-strong sm:text-lg">
-                Event, paket, bukti audiens, dan status verifikasi dalam satu berkas yang rapi. Bandingkan langsung, kirim minat saat sudah siap.
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-text-secondary-strong sm:text-lg">
+                SponsorIn mempertemukan EO yang punya event dengan sponsor yang mencari peluang relevan—lengkap dengan proposal, bukti audiens, dan ruang diskusi.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-2.5">
                 <Link href="/register" className={buttonClasses({ size: 'lg' })}>
-                  Daftar sekarang
+                  Mulai sekarang
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
-                <Link href="/login" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
-                  Masuk
+                <Link href="/events" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+                  Lihat event
                 </Link>
               </div>
 
@@ -119,6 +119,29 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
               </div>
             </motion.div>
           </div>
+          <Reveal className="relative">
+            <div className="bg-primary p-6 text-background sm:p-8">
+              <div className="flex items-start justify-between gap-6">
+                <div>
+                  <p className="text-sm font-medium text-background/80">Ruang kerja sponsorship</p>
+                  <p className="mt-2 max-w-xs text-2xl font-semibold leading-tight text-white">
+                    Dari proposal pertama sampai kerja sama berjalan.
+                  </p>
+                </div>
+                <Handshake className="h-8 w-8 shrink-0 text-white/80" aria-hidden="true" />
+              </div>
+              <div className="mt-10 grid grid-cols-3 gap-3 border-t border-background/25 pt-5">
+                <Stat value={stats.events ?? 0} label="event aktif" />
+                <Stat value={stats.organizers ?? 0} label="EO" />
+                <Stat value={stats.regions ?? 0} label="wilayah" />
+              </div>
+              {categories.length > 0 ? (
+                <p className="mt-6 text-sm leading-relaxed text-background/85">
+                  Jelajahi kategori: {categories.slice(0, 3).join(' · ')}
+                </p>
+              ) : null}
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -157,7 +180,7 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
       </section>
 
       {/* For EO */}
-      <section className="bg-background">
+      <section id="untuk-eo" className="bg-background scroll-mt-20">
         <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
             <div>
@@ -200,7 +223,7 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
       </section>
 
       {/* For Sponsor */}
-      <section className="border-y border-border bg-background-muted">
+      <section id="untuk-sponsor" className="scroll-mt-20 border-y border-border bg-background-muted">
         <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
             <div className="order-2 lg:order-1">
@@ -380,5 +403,14 @@ function Reveal({ children, delay = 0, className }) {
     >
       {children}
     </motion.div>
+  );
+}
+
+function Stat({ value, label }) {
+  return (
+    <div>
+      <p className="text-2xl font-semibold tabular-nums text-white">{value}</p>
+      <p className="mt-1 text-xs text-background/75">{label}</p>
+    </div>
   );
 }
