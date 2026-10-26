@@ -21,7 +21,13 @@ function navigationFor(role) {
 			{ key: 'dashboard', label: 'Dashboard', href: '/sponsor/dashboard', icon: LayoutDashboard },
 			{ key: 'proposals-explore', label: 'Jelajahi Proposal', href: '/sponsor/proposals/explore', icon: Search },
 			{ key: 'shortlist', label: 'Shortlist', href: '/sponsor/shortlist', icon: Bookmark },
-			{ key: 'proposals', label: 'Daftar Proposal', href: '/sponsor/proposals', icon: FileText },
+			{
+				key: 'proposals',
+				label: 'Daftar Proposal',
+				href: '/sponsor/proposals',
+				icon: FileText,
+				excludePaths: ['/sponsor/proposals/explore'],
+			},
 			{ key: 'sponsorships', label: 'Manajemen Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
 			notifications,
 		];
@@ -61,8 +67,10 @@ function Sidebar({ navigation, auth, role, unreadCount, onClose }) {
       <nav className="mt-2 min-h-0 flex-1 space-y-0.5 overflow-y-auto px-3 pb-2" aria-label="Navigasi ruang kerja">
         {navigation.map((item) => {
           const Icon = item.icon;
+          const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
           const active =
-            typeof window !== 'undefined' && window.location.pathname.startsWith(item.href);
+            (pathname === item.href || pathname.startsWith(`${item.href}/`)) &&
+            !item.excludePaths?.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 
           return (
             <Link

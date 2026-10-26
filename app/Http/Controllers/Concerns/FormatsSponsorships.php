@@ -63,6 +63,15 @@ trait FormatsSponsorships
                 && $review->submitted_at?->greaterThan(now()->subHours(24)),
             'review' => $review ? $this->reviewPayload($review) : null,
             'proposal_id' => $sponsorship->proposal_id,
+            'viewer_user_id' => $organization->owner_user_id,
+            'messages' => $sponsorship->proposal?->conversation?->messages
+                ?->map(fn ($message) => [
+                    'id' => $message->id,
+                    'body' => $message->body,
+                    'sender_name' => $message->sender->name,
+                    'sender_user_id' => $message->sender_user_id,
+                    'created_at' => $message->created_at->toISOString(),
+                ])->values()->all() ?? [],
         ];
     }
 

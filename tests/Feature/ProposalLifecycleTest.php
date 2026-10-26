@@ -48,11 +48,14 @@ class ProposalLifecycleTest extends TestCase
         $event = $this->publishedEvent($eo);
         $owner = $sponsor->owner;
 
-        $this->actingAs($owner)
+        $response = $this->actingAs($owner)
             ->post("/sponsor/events/{$event->id}/proposals", [
                 'requested_support' => 'Dukungan dana untuk panggung utama.',
             ])
             ->assertRedirect();
+
+        $proposal = Proposal::where('event_id', $event->id)->firstOrFail();
+        $response->assertRedirect(route('sponsor.sponsorships.proposal', $proposal));
 
         $this->assertDatabaseHas('proposals', [
             'event_id' => $event->id,
@@ -62,6 +65,10 @@ class ProposalLifecycleTest extends TestCase
         ]);
 
         $this->assertDatabaseCount('conversations', 1);
+        $this->assertDatabaseHas('messages', [
+            'conversation_id' => Conversation::first()->id,
+            'body' => 'Saya tertarik dengan event ini.',
+        ]);
     }
 
     public function test_proposal_creation_is_blocked_without_active_sponsor_access(): void

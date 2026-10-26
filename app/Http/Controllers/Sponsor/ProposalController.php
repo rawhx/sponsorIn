@@ -95,8 +95,8 @@ class ProposalController extends Controller
         $proposal->recipientOrganization->owner?->notify(new ProposalStatusNotification($proposal, ProposalStatus::Sent));
 
         return redirect()
-            ->route('sponsor.proposals.show', $proposal)
-            ->with('success', 'Minat/penawaran dikirim ke EO.');
+            ->route('sponsor.sponsorships.proposal', $proposal)
+            ->with('success', 'Minat tersimpan. Ruang diskusi kerja sama sudah dibuka.');
     }
 
     public function transition(Request $request, Proposal $proposal, ProposalService $service): RedirectResponse

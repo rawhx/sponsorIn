@@ -3,7 +3,7 @@ import { Handshake } from 'lucide-react';
 import { buttonClasses } from '../../components/Button';
 import ProposalDetailView from '../../components/proposals/ProposalDetailView';
 
-export default function ProposalDetail({ proposal, transitions, statuses }) {
+export default function ProposalDetail({ proposal, transitions, statuses, managementContext = false }) {
   const form = useForm({});
 
   const asideExtra =
@@ -49,8 +49,8 @@ export default function ProposalDetail({ proposal, transitions, statuses }) {
       proposal={proposal}
       transitions={transitions}
       statuses={statuses}
-      backHref="/sponsor/proposals"
-      backLabel="Kembali ke proposal"
+      backHref={managementContext ? '/sponsor/sponsorships' : '/sponsor/proposals'}
+      backLabel={managementContext ? 'Kembali ke kerja sama' : 'Kembali ke proposal'}
       counterpartRoleLabel="Penyelenggara"
       asideExtra={asideExtra}
     />

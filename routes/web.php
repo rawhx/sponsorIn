@@ -102,8 +102,10 @@ Route::middleware(['auth', 'verified', 'role:sponsor'])
             Route::post('/proposals/{proposal}/messages', [SponsorProposalController::class, 'message'])->name('proposals.messages.store');
 
             Route::get('/sponsorships', [SponsorSponsorshipController::class, 'index'])->name('sponsorships.index');
+            Route::get('/sponsorships/proposal/{proposal}', [SponsorSponsorshipController::class, 'proposal'])->name('sponsorships.proposal');
             Route::post('/proposals/{proposal}/sponsorship', [SponsorSponsorshipController::class, 'store'])->name('sponsorships.store');
             Route::get('/sponsorships/{sponsorship}', [SponsorSponsorshipController::class, 'show'])->name('sponsorships.show');
+            Route::post('/sponsorships/{sponsorship}/messages', [SponsorSponsorshipController::class, 'message'])->name('sponsorships.messages.store');
             Route::post('/sponsorships/{sponsorship}/request-completion', [SponsorSponsorshipController::class, 'requestCompletion'])->name('sponsorships.request-completion');
             Route::post('/sponsorships/{sponsorship}/confirm-completion', [SponsorSponsorshipController::class, 'confirmCompletion'])->name('sponsorships.confirm-completion');
             Route::post('/sponsorships/{sponsorship}/dispute', [SponsorSponsorshipController::class, 'raiseDispute'])->name('sponsorships.dispute');
@@ -147,7 +149,9 @@ Route::middleware(['auth', 'verified', 'role:eo'])
         Route::get('/sponsors/available', [EoProposalController::class, 'available'])->name('sponsors.available');
 
         Route::get('/sponsorships', [SponsorshipController::class, 'index'])->name('sponsorships.index');
+        Route::get('/sponsorships/proposal/{proposal}', [SponsorshipController::class, 'proposal'])->name('sponsorships.proposal');
         Route::get('/sponsorships/{sponsorship}', [SponsorshipController::class, 'show'])->name('sponsorships.show');
+        Route::post('/sponsorships/{sponsorship}/messages', [SponsorshipController::class, 'message'])->name('sponsorships.messages.store');
         Route::post('/sponsorships/{sponsorship}/request-completion', [SponsorshipController::class, 'requestCompletion'])->name('sponsorships.request-completion');
         Route::post('/sponsorships/{sponsorship}/confirm-completion', [SponsorshipController::class, 'confirmCompletion'])->name('sponsorships.confirm-completion');
         Route::post('/sponsorships/{sponsorship}/dispute', [SponsorshipController::class, 'raiseDispute'])->name('sponsorships.dispute');

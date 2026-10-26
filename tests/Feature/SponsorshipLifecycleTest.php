@@ -6,6 +6,7 @@ use App\Enums\EventStatus;
 use App\Enums\ProposalStatus;
 use App\Enums\SponsorshipStatus;
 use App\Models\Event;
+use App\Models\Message;
 use App\Models\Proposal;
 use App\Models\Sponsorship;
 use App\Models\User;
@@ -70,6 +71,34 @@ class SponsorshipLifecycleTest extends TestCase
         $this->actingAs($eoUser)->post(route('eo.sponsorships.confirm-completion', $sponsorship));
         $sponsorship->refresh();
         $this->assertEquals(SponsorshipStatus::Completed, $sponsorship->status);
+    }
+
+    public function test_both_parties_can_chat_from_management_detail(): void
+    {
+        $eoOrg = $this->eoOrganization();
+        $eoUser = User::where('id', $eoOrg->owner_user_id)->first();
+        $sponsorOrg = $this->activeSponsorOrganization();
+        $sponsorUser = User::where('id', $sponsorOrg->owner_user_id)->first();
+        $event = Event::factory()->create(['eo_organization_id' => $eoOrg->id, 'status' => EventStatus::Published]);
+        $proposal = Proposal::factory()->for($event)
+            ->for($sponsorOrg, 'senderOrganization')
+            ->for($eoOrg, 'recipientOrganization')
+            ->create(['status' => ProposalStatus::Accepted]);
+        $proposal->conversation()->create(['participant_org_ids' => [$sponsorOrg->id, $eoOrg->id]]);
+        $sponsorship = Sponsorship::factory()->for($event)
+            ->for($sponsorOrg, 'sponsorOrganization')
+            ->for($eoOrg, 'eoOrganization')
+            ->create(['proposal_id' => $proposal->id, 'status' => SponsorshipStatus::Active]);
+
+        $this->actingAs($sponsorUser)->post(route('sponsor.sponsorships.messages.store', $sponsorship), [
+            'body' => 'Kami siap membahas detail aktivasi.',
+        ])->assertSessionHasNoErrors();
+
+        $this->actingAs($eoUser)->post(route('eo.sponsorships.messages.store', $sponsorship), [
+            'body' => 'Baik, kami kirimkan detailnya.',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertCount(2, Message::where('conversation_id', $proposal->conversation->id)->get());
     }
 
     public function test_same_party_cannot_confirm_completion_they_requested(): void
