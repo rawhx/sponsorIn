@@ -92,7 +92,7 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
                 Temukan kerja sama yang siap dibicarakan
               </h1>
               <p className="mt-6 max-w-xl text-base leading-relaxed text-text-secondary-strong sm:text-lg">
-                SponsorIn mempertemukan EO yang punya event dengan sponsor yang mencari peluang relevan—lengkap dengan proposal, bukti audiens, dan ruang diskusi.
+                SponsorIn mempertemukan EO yang punya event dengan sponsor yang mencari peluang relevan lengkap dengan proposal, bukti audiens, dan ruang diskusi.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-2.5">
