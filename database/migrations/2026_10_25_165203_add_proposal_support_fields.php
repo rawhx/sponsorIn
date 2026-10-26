@@ -9,19 +9,45 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('proposals', function (Blueprint $table) {
-            $table->string('event_title')->nullable()->after('event_id');
-            $table->string('event_location')->nullable()->after('event_title');
-            $table->date('event_date_start')->nullable()->after('event_location');
-            $table->date('event_date_end')->nullable()->after('event_date_start');
-            $table->string('event_zone')->default('WIB')->after('event_date_end');
-            $table->string('event_time_start')->nullable()->after('event_date_end');
-            $table->string('event_time_end')->nullable()->after('event_time_start');
-            $table->string('event_potensi_penjualan')->nullable()->after('event_time_end');
-            $table->string('event_estimasi_peserta')->nullable()->after('event_potensi_penjualan');
-            $table->boolean('event_has_file')->default(false)->after('event_time_end');
-            $table->string('event_file_name')->nullable()->after('event_has_file');
-            $table->string('event_file_size')->nullable()->after('event_file_name');
-            $table->text('event_description')->nullable()->after('event_file_size');
+            if (! Schema::hasColumn('proposals', 'event_title')) {
+                $table->string('event_title')->nullable()->after('event_id');
+            }
+            if (! Schema::hasColumn('proposals', 'event_location')) {
+                $table->string('event_location')->nullable()->after('event_title');
+            }
+            if (! Schema::hasColumn('proposals', 'event_date_start')) {
+                $table->date('event_date_start')->nullable()->after('event_location');
+            }
+            if (! Schema::hasColumn('proposals', 'event_date_end')) {
+                $table->date('event_date_end')->nullable()->after('event_date_start');
+            }
+            if (! Schema::hasColumn('proposals', 'event_zone')) {
+                $table->string('event_zone')->default('WIB')->after('event_date_end');
+            }
+            if (! Schema::hasColumn('proposals', 'event_time_start')) {
+                $table->string('event_time_start')->nullable()->after('event_date_end');
+            }
+            if (! Schema::hasColumn('proposals', 'event_time_end')) {
+                $table->string('event_time_end')->nullable()->after('event_time_start');
+            }
+            if (! Schema::hasColumn('proposals', 'event_potensi_penjualan')) {
+                $table->string('event_potensi_penjualan')->nullable()->after('event_time_end');
+            }
+            if (! Schema::hasColumn('proposals', 'event_estimasi_peserta')) {
+                $table->string('event_estimasi_peserta')->nullable()->after('event_potensi_penjualan');
+            }
+            if (! Schema::hasColumn('proposals', 'event_has_file')) {
+                $table->boolean('event_has_file')->default(false)->after('event_time_end');
+            }
+            if (! Schema::hasColumn('proposals', 'event_file_name')) {
+                $table->string('event_file_name')->nullable()->after('event_has_file');
+            }
+            if (! Schema::hasColumn('proposals', 'event_file_size')) {
+                $table->string('event_file_size')->nullable()->after('event_file_name');
+            }
+            if (! Schema::hasColumn('proposals', 'event_description')) {
+                $table->text('event_description')->nullable()->after('event_file_size');
+            }
         });
     }
 

@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Search, X } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EmptyState from '../../components/EmptyState';
@@ -26,7 +26,8 @@ export default function Events({ events, filters, categories = [], supportTypes 
   }
 
   function reset() {
-    get('/sponsor/events', { preserveState: false, preserveScroll: true, replace: true });
+    Object.keys(data).forEach((key) => setData(key, ''));
+    router.get('/sponsor/events', {}, { preserveState: false, preserveScroll: true, replace: true });
   }
 
   return (

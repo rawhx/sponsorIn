@@ -87,6 +87,8 @@ Route::middleware(['auth', 'verified', 'role:sponsor'])
         Route::put('/organizations', [OrganizationController::class, 'update'])->name('organizations.update');
 
         Route::get('/events', [SponsorEventController::class, 'index'])->name('events.index');
+        Route::get('/events/{event:slug}', [SponsorEventController::class, 'show'])->name('events.show');
+        Route::get('/proposals/explore', [SponsorEventController::class, 'index'])->name('proposals.explore');
 
         Route::middleware('sponsor.active')->group(function () {
             Route::get('/shortlist', [SponsorShortlistController::class, 'index'])->name('shortlist.index');
@@ -115,8 +117,10 @@ Route::middleware(['auth', 'verified', 'role:eo'])
     ->name('eo.')
     ->group(function () {
         Route::get('/dashboard', EoDashboardController::class)->name('dashboard');
+        Route::get('/profile', [EoDashboardController::class, 'profile'])->name('profile');
 
         Route::get('/events', [EoEventController::class, 'index'])->name('events.index');
+        Route::get('/events/calendar', [EoEventController::class, 'calendar'])->name('events.calendar');
         Route::get('/events/create', [EoEventController::class, 'create'])->name('events.create');
         Route::post('/events', [EoEventController::class, 'store'])->name('events.store');
         Route::get('/events/{event}', [EoEventController::class, 'show'])->name('events.show');

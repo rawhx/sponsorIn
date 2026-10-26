@@ -29,17 +29,11 @@ class ProposalController extends Controller
 
         $filters = $request->validate([
             'status' => ['nullable', Rule::enum(ProposalStatus::class)],
-            'direction' => ['nullable', Rule::in(['incoming', 'outgoing'])],
         ]);
 
         $query = Proposal::query()
-            ->where(fn ($q) => $q->where('sender_org_id', $organization->id)
-                ->orWhere('recipient_org_id', $organization->id))
+            ->where('sender_org_id', $organization->id)
             ->with(['event', 'senderOrganization', 'recipientOrganization']);
-
-        if ($request->filled('direction')) {
-            $query->where($filters['direction'] === 'incoming' ? 'recipient_org_id' : 'sender_org_id', $organization->id);
-        }
 
         if ($request->filled('status')) {
             $query->where('status', $filters['status']);
@@ -52,13 +46,11 @@ class ProposalController extends Controller
             'proposals' => $proposals,
             'filters' => [
                 'status' => $request->string('status')->toString(),
-                'direction' => $request->string('direction')->toString(),
             ],
             'counts' => [
-                'incoming' => Proposal::where('recipient_org_id', $organization->id)->count(),
+                'incoming' => 0,
                 'outgoing' => Proposal::where('sender_org_id', $organization->id)->count(),
-                'open' => Proposal::where(fn ($q) => $q->where('sender_org_id', $organization->id)
-                    ->orWhere('recipient_org_id', $organization->id))
+                'open' => Proposal::where('sender_org_id', $organization->id)
                     ->whereIn('status', $this->openProposalStatuses())->count(),
             ],
             'statuses' => $this->proposalStatusOptions(),

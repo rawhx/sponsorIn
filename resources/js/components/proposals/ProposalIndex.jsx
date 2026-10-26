@@ -1,5 +1,5 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowDownLeft, ArrowUpRight, ChevronRight } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ChevronRight } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EmptyState from '../../components/EmptyState';
 import Pagination from '../../components/Pagination';
@@ -25,7 +25,6 @@ export default function ProposalIndex({
 }) {
   const { data, setData, get, processing } = useForm({
     status: filters.status ?? '',
-    direction: filters.direction ?? '',
   });
 
   function submit(event) {
@@ -33,11 +32,14 @@ export default function ProposalIndex({
     get(basePath, { preserveState: true, preserveScroll: true, replace: true });
   }
 
+  function reset() {
+    setData('status', '');
+    router.get(basePath, {}, { preserveState: false, preserveScroll: true, replace: true });
+  }
+
   const countRows = [
-    { key: '', label: 'Semua', value: counts.incoming + counts.outgoing },
-    { key: 'open', label: 'Masih berjalan', value: counts.open },
-    { key: 'incoming', label: 'Masuk', value: counts.incoming },
-    { key: 'outgoing', label: 'Keluar', value: counts.outgoing },
+    { key: '', label: 'Semua', value: counts.outgoing ?? 0 },
+    { key: 'open', label: 'Masih berjalan', value: counts.open ?? 0 },
   ];
 
   return (
@@ -57,13 +59,6 @@ export default function ProposalIndex({
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-8">
         <div className="min-w-0">
           <form onSubmit={submit} className="flex flex-col gap-3 rounded-[12px] border border-border bg-surface p-4 sm:flex-row sm:items-end">
-            <Field label="Arah" htmlFor="direction" className="sm:w-48">
-              <Select id="direction" value={data.direction} onChange={(event) => setData('direction', event.target.value)}>
-                <option value="">Semua arah</option>
-                <option value="incoming">Masuk</option>
-                <option value="outgoing">Keluar</option>
-              </Select>
-            </Field>
             <Field label="Status" htmlFor="status" className="flex-1">
               <Select id="status" value={data.status} onChange={(event) => setData('status', event.target.value)}>
                 <option value="">Semua status</option>
@@ -76,8 +71,8 @@ export default function ProposalIndex({
               <button type="submit" className={buttonClasses()} disabled={processing}>
                 {processing ? 'Menyaring…' : 'Terapkan'}
               </button>
-              {(data.status || data.direction) ? (
-                <Link href={basePath} className={buttonClasses({ variant: 'outline' })}>Semua</Link>
+              {data.status ? (
+                <button type="button" onClick={reset} className={buttonClasses({ variant: 'outline' })}>Reset filter</button>
               ) : null}
             </div>
           </form>
@@ -98,16 +93,13 @@ export default function ProposalIndex({
                     href={`${basePath}/${proposal.id}`}
                     className="group flex items-center gap-4 py-4 hover:bg-hover"
                   >
-                    <span className="mt-0.5 shrink-0 text-text-muted" aria-hidden="true">
-                      {proposal.direction === 'incoming' ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
-                    </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate text-sm font-medium text-text group-hover:text-primary-strong">{proposal.event_title}</p>
                         <StatusBadge status={proposal.status} />
                       </div>
                       <p className="mt-1 truncate text-xs text-text-secondary-strong">
-                        {proposal.direction === 'incoming' ? 'Dari' : 'Kepada'} {proposal.counterpart} · {proposal.requested_support}
+                        {proposal.counterpart} · {proposal.requested_support}
                       </p>
                       <p className="mt-0.5 text-[11px] tabular-nums text-text-muted">{formatDateTime(proposal.last_status_at)}</p>
                     </div>
@@ -136,7 +128,7 @@ export default function ProposalIndex({
               {countRows.map((row) => (
                 <Link
                   key={row.label}
-                  href={row.key === '' ? basePath : row.key === 'open' ? `${basePath}?status=sent` : `${basePath}?direction=${row.key}`}
+                  href={row.key === '' ? basePath : `${basePath}?status=sent`}
                   className="flex items-center justify-between gap-3 py-2.5 text-sm hover:text-text"
                 >
                   <span className="text-text-secondary-strong">{row.label}</span>

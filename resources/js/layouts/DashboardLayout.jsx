@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { BadgeCheck, Bell, CalendarDays, FileText, Handshake, LayoutDashboard, LogOut, Menu, Search, Star, X } from 'lucide-react';
+import { BadgeCheck, Bell, Bookmark, CalendarDays, FileText, Handshake, LayoutDashboard, LogOut, Menu, Search, Star, UserRound, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import FlashMessages from '../components/FlashMessages';
@@ -19,7 +19,8 @@ function navigationFor(role) {
 	if (role === 'sponsor') {
 		return [
 			{ key: 'dashboard', label: 'Dashboard', href: '/sponsor/dashboard', icon: LayoutDashboard },
-			{ key: 'peluang', label: 'Peluang Sponsorship', href: '/sponsor/events', icon: FileText },
+			{ key: 'proposals-explore', label: 'Jelajahi Proposal', href: '/sponsor/proposals/explore', icon: Search },
+			{ key: 'shortlist', label: 'Shortlist', href: '/sponsor/shortlist', icon: Bookmark },
 			{ key: 'proposals', label: 'Daftar Proposal', href: '/sponsor/proposals', icon: FileText },
 			{ key: 'sponsorships', label: 'Manajemen Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
 			notifications,
@@ -28,6 +29,8 @@ function navigationFor(role) {
 	if (role === 'eo') {
     return [
       { label: 'Dashboard', href: '/eo/dashboard', icon: LayoutDashboard },
+      { key: 'events-calendar', label: 'Kalender Event', href: '/eo/events/calendar', icon: CalendarDays },
+      { key: 'profile', label: 'Profil', href: '/eo/profile', icon: UserRound },
       { label: 'Sponsor tersedia', href: '/eo/sponsors/available', icon: Search },
       { label: 'Daftar Proposal', href: '/eo/proposals', icon: FileText },
       { label: 'Manajemen Kerja Sama', href: '/eo/sponsorships', icon: Handshake },

@@ -1,5 +1,5 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import { Search } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { MapPin, Search, SlidersHorizontal } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { buttonClasses } from '../../components/Button';
 import { EvidenceTag } from '../../components/StatusBadge';
@@ -34,7 +34,9 @@ export default function SponsorsAvailable({
   }
 
   function reset() {
-    get('/eo/sponsors/available', { preserveState: false, preserveScroll: true, replace: true });
+    setData('q', '');
+    setData('preference', '');
+    router.get('/eo/sponsors/available', {}, { preserveState: false, preserveScroll: true, replace: true });
   }
 
   const filtered = sponsors.filter((sponsor) => {
@@ -59,29 +61,17 @@ export default function SponsorsAvailable({
     >
       <Head title="Sponsor tersedia" />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-medium tracking-[0.08em] text-text-muted">SPONSOR</p>
-          <h1 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-            Daftar sponsor yang bisa dioleh.
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-text-secondary-strong">
-            Tampilkan semua organisasi dengan tipe sponsor yang sudah terverifikasi dan punya
-            preferensi proposal terbuka, selektif, atau tertutup.
-          </p>
-        </div>
-      </div>
-
       <form
         onSubmit={submit}
-        className="mt-8 flex flex-col gap-4 rounded-[14px] border border-border bg-surface p-4 shadow-sm sm:flex-row sm:items-end sm:justify-between"
+        className="mt-8 rounded-[14px] border border-border bg-surface p-4 shadow-sm sm:p-5"
       >
-        <div className="relative min-w-0 flex-1 max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" aria-hidden="true" />
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
+          <div className="relative min-w-0">
+          <Search className="pointer-events-none absolute left-3 top-[2.4rem] h-4 w-4 text-text-muted" aria-hidden="true" />
           <Field
             label="Cari"
             htmlFor="q"
-            className="w-full!"
+            className="w-full"
             error={errors.q}
           >
             <Input
@@ -89,11 +79,25 @@ export default function SponsorsAvailable({
               value={data.q}
               onChange={(event) => setData('q', event.target.value)}
               placeholder="Nama atau lokasi"
+              className="pl-9"
             />
           </Field>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="space-y-1.5">
+          <p className="text-sm font-medium text-text">Preferensi</p>
+          <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] border px-4 text-sm font-medium transition-colors ${
+              !data.preference
+                ? 'border-primary-strong bg-primary/10 text-primary-strong'
+                : 'border-border bg-surface text-text-secondary-strong hover:bg-hover hover:text-text'
+            }`}
+            onClick={() => setData('preference', '')}
+          >
+            Semua
+          </button>
           {Object.entries(preferences).map(([value, label]) => (
             <button
               key={value}
@@ -108,6 +112,7 @@ export default function SponsorsAvailable({
               {label}
             </button>
           ))}
+          </div>
         </div>
 
         <div className="flex shrink-0 gap-2">
@@ -116,7 +121,8 @@ export default function SponsorsAvailable({
             className={buttonClasses()}
             disabled={processing}
           >
-            {processing ? 'Menyaring…' : 'Terapkan'}
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+            {processing ? 'Menyaring…' : 'Terapkan filter'}
           </button>
           {data.q || data.preference ? (
             <button
@@ -124,9 +130,10 @@ export default function SponsorsAvailable({
               onClick={reset}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] border border-border bg-surface px-4 text-sm text-text-secondary-strong transition-colors hover:bg-hover hover:text-text"
             >
-              Hapus filter
+              Reset
             </button>
           ) : null}
+        </div>
         </div>
       </form>
 
@@ -137,7 +144,7 @@ export default function SponsorsAvailable({
             <span className="hidden text-text-muted sm:inline"> yang cocok dengan filter</span>
           </p>
           <p className="text-xs text-text-muted">
-            Urut berdasarkan nama, lalu lokasi. Hanya tampilkan data yang bisa dilihat EO.
+            Terverifikasi dan siap menerima proposal.
           </p>
         </div>
 
@@ -161,7 +168,8 @@ export default function SponsorsAvailable({
 
                 <h2 className="mt-4 text-[16px] font-semibold text-text">{sponsor.name}</h2>
 
-                <p className="mt-1 text-sm text-text-secondary-strong">
+                <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-text-secondary-strong">
+                  <MapPin className="h-3.5 w-3.5 text-text-muted" aria-hidden="true" />
                   {sponsor.location || '—'}
                 </p>
 

@@ -1,10 +1,8 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ArrowLeft, BadgeCheck, Bookmark, BookmarkCheck, Building2, CalendarDays, MapPin, Send, Users } from 'lucide-react';
-import { useState } from 'react';
 import PublicLayout from '../../layouts/PublicLayout';
 import StatusBadge, { EvidenceTag } from '../../components/StatusBadge';
 import Button, { buttonClasses } from '../../components/Button';
-import { Field, Select, Textarea } from '../../components/Form';
 import {
   evidenceTypeLabels,
   formatCurrency,
@@ -17,7 +15,9 @@ export default function EventShow({ event }) {
   const { auth } = usePage().props;
   const organizer = event.organizer;
   const canShortlist = auth?.user?.role === 'sponsor' && auth?.is_sponsor_active;
-  const [showProposal, setShowProposal] = useState(false);
+  const { post: sendInterest, processing: sendingInterest } = useForm({
+    requested_support: 'Saya tertarik dengan event ini.',
+  });
 
   function toggleShortlist() {
     if (event.shortlisted) {
@@ -255,19 +255,19 @@ export default function EventShow({ event }) {
                   </Link>
 
                   <div className="mt-4 border-t border-border pt-4">
-                    {showProposal ? (
-                      <SendProposalForm event={event} onCancel={() => setShowProposal(false)} />
-                    ) : (
-                      <>
-                        <p className="text-sm leading-relaxed text-text-secondary-strong">
-                          Kirim minat/penawaran ke EO dengan menjelaskan dukungan yang Anda tawarkan.
-                        </p>
-                        <Button variant="outline" className="mt-3 w-full" onClick={() => setShowProposal(true)}>
-                          <Send className="h-4 w-4" aria-hidden="true" />
-                          Kirim minat
-                        </Button>
-                      </>
-                    )}
+                    <p className="text-sm leading-relaxed text-text-secondary-strong">
+                      Sampaikan minat Anda untuk langsung membuka chat dengan EO.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="mt-3 w-full"
+                      disabled={sendingInterest}
+                      onClick={() => sendInterest(`/sponsor/events/${event.id}/proposals`, { preserveScroll: true })}
+                    >
+                      <Send className="h-4 w-4" aria-hidden="true" />
+                      {sendingInterest ? 'Mengirim…' : 'Kirim minat'}
+                    </Button>
                   </div>
                 </>
               ) : auth?.user ? (
@@ -308,41 +308,5 @@ export default function EventShow({ event }) {
         </div>
       </section>
     </PublicLayout>
-  );
-}
-
-function SendProposalForm({ event, onCancel }) {
-  const { data, setData, post, processing, errors } = useForm({
-    package_id: '',
-    requested_support: '',
-    deliverables: '',
-  });
-
-  function submit(event_) {
-    event_.preventDefault();
-    post(`/sponsor/events/${event.id}/proposals`, { preserveScroll: true });
-  }
-
-  return (
-    <form onSubmit={submit} className="space-y-4">
-      <Field label="Paket (opsional)" htmlFor="proposal-package" error={errors.package_id}>
-        <Select id="proposal-package" value={data.package_id} onChange={(event_) => setData('package_id', event_.target.value)}>
-          <option value="">Tanpa paket tertentu</option>
-          {event.packages.map((pkg) => (
-            <option key={pkg.id} value={pkg.id}>{pkg.name}</option>
-          ))}
-        </Select>
-      </Field>
-      <Field label="Dukungan yang ditawarkan" htmlFor="proposal-support" required error={errors.requested_support}>
-        <Textarea id="proposal-support" rows={3} value={data.requested_support} onChange={(event_) => setData('requested_support', event_.target.value)} placeholder="Bentuk dukungan yang Anda tawarkan." />
-      </Field>
-      <Field label="Deliverable yang diharapkan" htmlFor="proposal-deliverables" error={errors.deliverables}>
-        <Textarea id="proposal-deliverables" rows={3} value={data.deliverables} onChange={(event_) => setData('deliverables', event_.target.value)} placeholder="Apa yang Anda harapkan dari EO." />
-      </Field>
-      <div className="flex gap-2">
-        <Button type="submit" className="flex-1" disabled={processing}>{processing ? 'Mengirim…' : 'Kirim minat'}</Button>
-        <Button type="button" variant="outline" onClick={onCancel}>Batal</Button>
-      </div>
-    </form>
   );
 }

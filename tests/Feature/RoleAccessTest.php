@@ -53,4 +53,16 @@ class RoleAccessTest extends TestCase
             ->get('/dashboard')
             ->assertRedirect(route('eo.dashboard'));
     }
+
+    public function test_eo_can_open_profile(): void
+    {
+        $this->actingAs($this->eoWithOrganization())
+            ->get('/eo/profile')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('eo/Profile')
+                ->has('organization')
+                ->where('eventsCount', 0)
+            );
+    }
 }

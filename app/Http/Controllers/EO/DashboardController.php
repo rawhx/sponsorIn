@@ -49,4 +49,36 @@ class DashboardController extends Controller
             ]),
         ]);
     }
+
+    public function profile(Request $request): Response
+    {
+        $organization = $request->user()->organization;
+        abort_unless($organization, 404);
+
+        $publishedEvents = $organization->events()
+            ->where('status', EventStatus::Published)
+            ->orderBy('date_start')
+            ->get(['id', 'title', 'location', 'date_start', 'date_end']);
+
+        return Inertia::render('eo/Profile', [
+            'organization' => [
+                'name' => $organization->display_name,
+                'description' => $organization->description,
+                'location' => $organization->location,
+                'category' => $organization->category,
+                'legal_form' => null,
+                'proposal_preference' => null,
+                'rating_average' => $organization->rating_average,
+                'review_count' => $organization->review_count,
+            ],
+            'verifications' => [],
+            'currentVerification' => null,
+            'events' => $publishedEvents,
+            'eventsCount' => $publishedEvents->count(),
+            'publishedEventsCount' => $publishedEvents->count(),
+            'reviews' => [],
+            'totalRatings' => $organization->review_count ?? 0,
+            'averageRating' => $organization->rating_average,
+        ]);
+    }
 }

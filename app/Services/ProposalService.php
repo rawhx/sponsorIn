@@ -20,10 +20,29 @@ class ProposalService
         $counterpart = $data['counterpart_organization'];
 
         [$sender, $recipient, $type] = $this->resolveParties($actorOrganization, $counterpart, $event);
+        $isPublished = (bool) ($data['is_published'] ?? true);
+        $proposalStatus = isset($data['status'])
+            ? ProposalStatus::tryFrom($data['status']) ?? ProposalStatus::Sent
+            : ($isPublished ? ProposalStatus::Sent : ProposalStatus::Draft);
 
-        return DB::transaction(function () use ($event, $sender, $recipient, $type, $data, $actor) {
+        return DB::transaction(function () use ($event, $sender, $recipient, $type, $data, $actor, $actorOrganization, $isPublished, $proposalStatus) {
             $proposal = Proposal::create([
                 'event_id' => $event->id,
+                'title' => $data['title'] ?? $event->title,
+                'event_type' => $data['event_type'] ?? null,
+                'location' => $data['location'] ?? $event->location,
+                'event_date_start' => $data['event_date_start'] ?? $event->date_start?->toDateString(),
+                'event_date_end' => $data['event_date_end'] ?? $event->date_end?->toDateString(),
+                'event_time_start' => $data['event_time_start'] ?? null,
+                'event_time_end' => $data['event_time_end'] ?? null,
+                'timezone' => $data['timezone'] ?? 'WIB',
+                'estimated_attendees' => $data['estimated_attendees'] ?? null,
+                'sales_potential' => $data['sales_potential'] ?? null,
+                'description' => $data['description'] ?? null,
+                'proposal_file_path' => $data['proposal_file_path'] ?? null,
+                'proposal_file_name' => $data['proposal_file_name'] ?? null,
+                'proposal_file_mime' => $data['proposal_file_mime'] ?? null,
+                'proposal_file_size' => $data['proposal_file_size'] ?? null,
                 'sender_org_id' => $sender->id,
                 'recipient_org_id' => $recipient->id,
                 'proposal_type' => $type,
@@ -32,16 +51,25 @@ class ProposalService
                 'deliverables' => $data['deliverables'] ?? null,
                 'terms_summary' => $data['terms_summary'] ?? null,
                 'valid_until' => $data['valid_until'] ?? null,
-                'status' => ProposalStatus::Sent,
+                'status' => $proposalStatus,
+                'is_published' => $isPublished,
+                'published_at' => $isPublished ? ($data['published_at'] ?? now()) : null,
                 'last_status_at' => now(),
             ]);
 
-            $proposal->conversation()->create([
+            $conversation = $proposal->conversation()->create([
                 'participant_org_ids' => [$sender->id, $recipient->id],
             ]);
 
+            if ($actorOrganization->isSponsor()) {
+                $conversation->messages()->create([
+                    'sender_user_id' => $actor->id,
+                    'body' => 'Saya tertarik dengan event ini.',
+                ]);
+            }
+
             $this->audit->record('proposal.sent', $proposal, $actor, [], [
-                'status' => ProposalStatus::Sent->value,
+                'status' => $proposalStatus->value,
                 'sender_org_id' => $sender->id,
                 'recipient_org_id' => $recipient->id,
             ]);

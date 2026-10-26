@@ -4,7 +4,7 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { formatDate, proposalPreferenceLabels } from '../../lib/utils';
-import { Compass } from 'lucide-react';
+
 
 export default function SponsorDashboard({ organization, verification, canUseFeatures, stats = {} }) {
   const status = verification.status;
@@ -159,7 +159,7 @@ export default function SponsorDashboard({ organization, verification, canUseFea
           </div>
           <div className="grid gap-2 py-4 sm:grid-cols-[200px_1fr] sm:gap-6">
             <div className="flex items-center gap-2">
-              <Compass className="h-4 w-4 text-primary-strong" aria-hidden="true" />
+              <Search className="h-4 w-4 text-primary-strong" aria-hidden="true" />
               <p className="text-sm font-medium text-text">Ruang kerja terbatas</p>
             </div>
             <p className="text-sm leading-relaxed text-text-secondary-strong">
