@@ -4,6 +4,7 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { formatDate } from '../../lib/utils';
+import EmptyState from '../../components/EmptyState';
 
 export default function EoDashboard({ organization, counts = {}, upcomingEvents = [] }) {
   const statusRows = [

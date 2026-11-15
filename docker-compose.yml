@@ -114,11 +114,11 @@ services:
 
     # Mailpit (untuk debugging email terinbox). Deprecated (tidak dipakai lagi karena .env sudah sinkron
     # dengan SMTP Gmail). Opsional: hapus jika tidak ingin menganggap docker-compose ini kurang lengkap.
-    # mailpit:
-    #     image: axllent/mailpit:latest
-    #     ports:
-    #         - "1025:1025"
-    #         - "8025:8025"
+    mailpit:
+        image: axllent/mailpit:latest
+        ports:
+            - "1025:1025"
+            - "8025:8025"
 
 volumes:
     db-data:
