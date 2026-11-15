@@ -18,7 +18,7 @@ function emptyEvidence() {
   return { evidence_type: 'projection', value: '', unit: 'orang', period: '', source_description: '', evidence_note: '' };
 }
 
-function EvidenceForm({ event, evidenceTypes, onDone }) {
+function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
   const initial = evidence
     ? {
         evidence_type: evidence.type,

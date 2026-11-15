@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ChevronRight, Handshake } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EmptyState from '../../components/EmptyState';
@@ -21,6 +21,11 @@ export default function Sponsorships({ sponsorships, filters, counts, statuses }
   function submit(event) {
     event.preventDefault();
     get('/eo/sponsorships', { preserveState: true, preserveScroll: true, replace: true });
+  }
+
+  function reset() {
+    setData('status', '');
+    router.get('/eo/sponsorships', {}, { preserveState: false, preserveScroll: true, replace: true });
   }
 
   const countRows = [
@@ -54,7 +59,7 @@ export default function Sponsorships({ sponsorships, filters, counts, statuses }
                 {processing ? 'Menyaring…' : 'Terapkan'}
               </button>
               {data.status ? (
-                <Link href="/eo/sponsorships" className={buttonClasses({ variant: 'outline' })}>Semua</Link>
+                <button type="button" onClick={reset} className={buttonClasses({ variant: 'outline' })}>Reset filter</button>
               ) : null}
             </div>
           </form>

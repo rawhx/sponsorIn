@@ -6,10 +6,10 @@ import Logo from '../components/Logo';
 import { buttonClasses } from '../components/Button';
 
 const navItems = [
-  { label: 'Jelajahi Peluang', href: '/events' },
-  { label: 'Penyelenggara Event', href: '/organizers' },
-  { label: 'Alur Kerja', href: '/#cara-kerja' },
-  { label: 'Untuk Brand & EO', href: '/#untuk-eo' },
+  { label: 'Cara Kerja', href: '/#cara-kerja' },
+  { label: 'Untuk EO', href: '/#untuk-eo' },
+  { label: 'Untuk Sponsor', href: '/#untuk-sponsor' },
+  { label: 'Event', href: '/events' },
 ];
 
 export default function PublicLayout({ children }) {
@@ -20,16 +20,16 @@ export default function PublicLayout({ children }) {
     <div className="flex min-h-screen flex-col bg-background">
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-[60px] w-full max-w-6xl items-center justify-between px-5 sm:px-8">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
           <Logo />
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Navigasi utama">
+          <nav className="hidden items-center gap-6 lg:flex" aria-label="Navigasi utama">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-text-secondary transition-colors hover:text-text"
+                className="text-sm text-text-secondary no-underline hover:text-text"
               >
                 {item.label}
               </Link>
@@ -37,7 +37,7 @@ export default function PublicLayout({ children }) {
           </nav>
 
           {/* Desktop auth */}
-          <div className="hidden items-center gap-2.5 md:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             {auth?.user ? (
               <Link href="/dashboard" className={buttonClasses({ size: 'sm' })}>
                 Ruang Kerja
@@ -46,12 +46,12 @@ export default function PublicLayout({ children }) {
               <>
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-text-secondary transition-colors hover:text-text"
+                  className="text-sm text-text-secondary no-underline hover:text-text"
                 >
                   Masuk
                 </Link>
                 <Link href="/register" className={buttonClasses({ size: 'sm' })}>
-                  Buat akun
+                  Daftar
                 </Link>
               </>
             )}
@@ -60,7 +60,7 @@ export default function PublicLayout({ children }) {
           {/* Mobile toggle */}
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-border text-text-secondary transition-colors hover:bg-hover hover:text-text md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-border text-text-secondary transition-colors hover:bg-hover hover:text-text lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? 'Tutup menu' : 'Buka menu'}
@@ -77,7 +77,7 @@ export default function PublicLayout({ children }) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-border bg-surface px-5 md:hidden"
+            className="overflow-hidden border-t border-border bg-surface px-5 lg:hidden"
           >
             <div className="py-4">
             <nav className="flex flex-col gap-0.5" aria-label="Navigasi seluler">
@@ -112,7 +112,7 @@ export default function PublicLayout({ children }) {
                   href="/register"
                   className={buttonClasses({ size: 'sm', className: 'flex-1' })}
                 >
-                  Buat akun
+                  Daftar
                 </Link>
               </>
             )}
@@ -138,24 +138,24 @@ export default function PublicLayout({ children }) {
           </div>
 
           {/* Links */}
-          <div className="flex gap-12 text-sm">
-            <div className="space-y-3">
-              <p className="text-xs font-medium tracking-[0.07em] text-text-muted uppercase">Jelajahi</p>
-              <div className="space-y-2">
-                <Link href="/events" className="block text-text-secondary transition-colors hover:text-text">
-                  Jelajahi Peluang
-                </Link>
-                <Link href="/organizers" className="block text-text-secondary transition-colors hover:text-text">
-                  Pelaku Event
-                </Link>
-                <Link href="/#cara-kerja" className="block text-text-secondary transition-colors hover:text-text">
-                  Alur Kerja
-                </Link>
-                <Link href="/#untuk-eo" className="block text-text-secondary transition-colors hover:text-text">
-                  Untuk Brand &amp; EO
-                </Link>
+            <div className="flex gap-12 text-sm">
+              <div className="space-y-3">
+                <p className="text-xs font-medium tracking-[0.08em] text-text-muted uppercase">Navigasi</p>
+                <div className="space-y-2">
+                  <Link href="/#cara-kerja" className="block text-text-secondary transition-colors hover:text-text">
+                    Cara Kerja
+                  </Link>
+                  <Link href="/#untuk-eo" className="block text-text-secondary transition-colors hover:text-text">
+                    Untuk EO
+                  </Link>
+                  <Link href="/#untuk-sponsor" className="block text-text-secondary transition-colors hover:text-text">
+                    Untuk Sponsor
+                  </Link>
+                  <Link href="/events" className="block text-text-secondary transition-colors hover:text-text">
+                    Event
+                  </Link>
+                </div>
               </div>
-            </div>
             <div className="space-y-3">
               <p className="text-xs font-medium tracking-[0.07em] text-text-muted uppercase">Akun</p>
               <div className="space-y-2">

@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { BadgeCheck, Bell, Bookmark, CalendarDays, Compass, FileText, Handshake, LayoutDashboard, LogOut, Menu, Star, X } from 'lucide-react';
+import { BadgeCheck, Bell, Bookmark, CalendarDays, FileText, Handshake, LayoutDashboard, LogOut, Menu, Search, Star, UserRound, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import FlashMessages from '../components/FlashMessages';
@@ -16,24 +16,30 @@ const roleLabels = {
 
 function navigationFor(role) {
   const notifications = { label: 'Notifikasi', href: '/notifications', icon: Bell };
-  if (role === 'sponsor') {
+	if (role === 'sponsor') {
+		return [
+			{ key: 'dashboard', label: 'Dashboard', href: '/sponsor/dashboard', icon: LayoutDashboard },
+			{ key: 'proposals-explore', label: 'Jelajahi Proposal', href: '/sponsor/proposals/explore', icon: Search },
+			{ key: 'shortlist', label: 'Shortlist', href: '/sponsor/shortlist', icon: Bookmark },
+			{
+				key: 'proposals',
+				label: 'Daftar Proposal',
+				href: '/sponsor/proposals',
+				icon: FileText,
+				excludePaths: ['/sponsor/proposals/explore'],
+			},
+			{ key: 'sponsorships', label: 'Manajemen Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
+			notifications,
+		];
+	}
+	if (role === 'eo') {
     return [
-      { label: 'Ringkasan', href: '/sponsor/dashboard', icon: LayoutDashboard },
-      { label: 'Verifikasi usaha', href: '/sponsor/verification', icon: BadgeCheck },
-      { label: 'Shortlist', href: '/sponsor/shortlist', icon: Bookmark },
-      { label: 'Proposal', href: '/sponsor/proposals', icon: FileText },
-      { label: 'Kerja Sama', href: '/sponsor/sponsorships', icon: Handshake },
-      { label: 'Jelajahi peluang', href: '/events', icon: Compass },
-      notifications,
-    ];
-  }
-  if (role === 'eo') {
-    return [
-      { label: 'Ringkasan', href: '/eo/dashboard', icon: LayoutDashboard },
-      { label: 'Event saya', href: '/eo/events', icon: CalendarDays },
-      { label: 'Proposal', href: '/eo/proposals', icon: FileText },
-      { label: 'Kerja Sama', href: '/eo/sponsorships', icon: Handshake },
-      { label: 'Peluang publik', href: '/events', icon: Compass },
+      { label: 'Dashboard', href: '/eo/dashboard', icon: LayoutDashboard },
+      { key: 'events-calendar', label: 'Kalender Event', href: '/eo/events/calendar', icon: CalendarDays },
+      { key: 'profile', label: 'Profil', href: '/eo/profile', icon: UserRound },
+      { label: 'Sponsor tersedia', href: '/eo/sponsors/available', icon: Search },
+      { label: 'Daftar Proposal', href: '/eo/proposals', icon: FileText },
+      { label: 'Manajemen Kerja Sama', href: '/eo/sponsorships', icon: Handshake },
       notifications,
     ];
   }
@@ -61,12 +67,14 @@ function Sidebar({ navigation, auth, role, unreadCount, onClose }) {
       <nav className="mt-2 min-h-0 flex-1 space-y-0.5 overflow-y-auto px-3 pb-2" aria-label="Navigasi ruang kerja">
         {navigation.map((item) => {
           const Icon = item.icon;
+          const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
           const active =
-            typeof window !== 'undefined' && window.location.pathname.startsWith(item.href);
+            (pathname === item.href || pathname.startsWith(`${item.href}/`)) &&
+            !item.excludePaths?.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 
           return (
             <Link
-              key={item.href}
+              key={item.key ?? item.href}
               href={item.href}
               onClick={onClose}
               className={cn(

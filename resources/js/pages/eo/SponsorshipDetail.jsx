@@ -5,6 +5,7 @@ import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { Field, Textarea } from '../../components/Form';
 import { formatDate } from '../../lib/utils';
+import SponsorshipChat from '../../components/sponsorships/SponsorshipChat';
 
 export default function SponsorshipDetail({ sponsorship }) {
   const { flash } = usePage().props;
@@ -63,6 +64,8 @@ export default function SponsorshipDetail({ sponsorship }) {
               ) : null}
             </div>
           </section>
+
+          <SponsorshipChat sponsorship={s} basePath="/eo/sponsorships" />
 
           {s.review ? (
             <section className="rounded-[12px] border border-border bg-surface">

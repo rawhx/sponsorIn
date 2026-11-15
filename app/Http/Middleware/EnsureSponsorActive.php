@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,7 +15,12 @@ class EnsureSponsorActive
         $user = $request->user();
 
         if (! $user?->hasActiveSponsorAccess()) {
-            abort(403, 'Fitur sponsor aktif tersedia setelah verifikasi usaha disetujui.');
+            $request->session()->flash(
+                'error',
+                'Fitur sponsor aktif tersedia setelah verifikasi usaha disetujui.'
+            );
+
+            return redirect()->route('sponsor.verification.show')->withInput();
         }
 
         return $next($request);

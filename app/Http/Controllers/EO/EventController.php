@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
 use App\Notifications\NewEventReviewNotification;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -51,6 +52,50 @@ class EventController extends Controller
                 'closed' => $organization->events()->where('status', EventStatus::Closed)->count(),
                 'rejected' => $organization->events()->where('status', EventStatus::Rejected)->count(),
             ],
+        ]);
+    }
+
+    public function calendar(Request $request): Response
+    {
+        $organization = $request->user()->organization;
+        abort_unless($organization, 404);
+
+        $month = $request->string('month')->toString();
+        $cursor = $month
+            ? Carbon::createFromFormat('!Y-m', $month)
+            : Carbon::today();
+        abort_unless($cursor && $cursor->format('Y-m') === ($month ?: $cursor->format('Y-m')), 422, 'Format bulan tidak valid.');
+
+        $start = $cursor->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY);
+        $end = $cursor->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY);
+
+        $events = $organization->events()
+            ->whereDate('date_start', '<=', $end)
+            ->where(function ($query) use ($start) {
+                $query->whereDate('date_end', '>=', $start)
+                    ->orWhere(function ($query) use ($start) {
+                        $query->whereNull('date_end')->whereDate('date_start', '>=', $start);
+                    });
+            })
+            ->orderBy('date_start')
+            ->get(['id', 'title', 'date_start', 'date_end', 'location', 'status'])
+            ->map(fn (Event $event) => [
+                'id' => $event->id,
+                'title' => $event->title,
+                'date_start' => $event->date_start->toDateString(),
+                'date_end' => $event->date_end?->toDateString() ?? $event->date_start->toDateString(),
+                'location' => $event->location,
+                'status' => $event->status->value,
+            ])
+            ->values();
+
+        return Inertia::render('eo/EventCalendar', [
+            'month' => $cursor->format('Y-m'),
+            'monthLabel' => $cursor->locale('id')->translatedFormat('F Y'),
+            'previousMonth' => $cursor->copy()->subMonth()->format('Y-m'),
+            'nextMonth' => $cursor->copy()->addMonth()->format('Y-m'),
+            'today' => Carbon::today()->toDateString(),
+            'events' => $events,
         ]);
     }
 

@@ -48,11 +48,14 @@ class ProposalLifecycleTest extends TestCase
         $event = $this->publishedEvent($eo);
         $owner = $sponsor->owner;
 
-        $this->actingAs($owner)
+        $response = $this->actingAs($owner)
             ->post("/sponsor/events/{$event->id}/proposals", [
                 'requested_support' => 'Dukungan dana untuk panggung utama.',
             ])
             ->assertRedirect();
+
+        $proposal = Proposal::where('event_id', $event->id)->firstOrFail();
+        $response->assertRedirect(route('sponsor.sponsorships.proposal', $proposal));
 
         $this->assertDatabaseHas('proposals', [
             'event_id' => $event->id,
@@ -62,6 +65,10 @@ class ProposalLifecycleTest extends TestCase
         ]);
 
         $this->assertDatabaseCount('conversations', 1);
+        $this->assertDatabaseHas('messages', [
+            'conversation_id' => Conversation::first()->id,
+            'body' => 'Saya tertarik dengan event ini.',
+        ]);
     }
 
     public function test_proposal_creation_is_blocked_without_active_sponsor_access(): void
@@ -74,7 +81,8 @@ class ProposalLifecycleTest extends TestCase
             ->post("/sponsor/events/{$event->id}/proposals", [
                 'requested_support' => 'Dukungan.',
             ])
-            ->assertForbidden();
+            ->assertRedirect(route('sponsor.verification.show'))
+            ->assertSessionHas('error', 'Fitur sponsor aktif tersedia setelah verifikasi usaha disetujui.');
     }
 
     public function test_eo_can_create_proposal_to_receptive_sponsor(): void
@@ -87,9 +95,19 @@ class ProposalLifecycleTest extends TestCase
             ->post('/eo/proposals', [
                 'event_id' => $event->id,
                 'sponsor_org_id' => $sponsor->id,
+                'event_title' => 'Konser Musik Senja 2024',
+                'event_location' => 'Jakarta',
+                'event_date_start' => now()->format('Y-m-d'),
+                'event_time_start' => now()->format('H:i'),
+                'event_zone' => 'WIB',
+                'event_potensi_penjualan' => '0',
+                'event_estimasi_peserta' => '0',
+                'event_has_file' => false,
+                'event_file_name' => null,
+                'event_file_size' => null,
+                'event_description' => 'Jelaskan detail acara, target audiens, dan nilai jual event Anda.',
                 'requested_support' => 'Kami mengundang Anda sebagai sponsor utama.',
-            ])
-            ->assertRedirect();
+            ])->assertRedirect();
 
         $this->assertDatabaseHas('proposals', [
             'sender_org_id' => $eo->id,
@@ -108,6 +126,17 @@ class ProposalLifecycleTest extends TestCase
             ->post('/eo/proposals', [
                 'event_id' => $event->id,
                 'sponsor_org_id' => $sponsor->id,
+                'event_title' => 'Konser Musik Senja 2024',
+                'event_location' => 'Jakarta',
+                'event_date_start' => now()->format('Y-m-d'),
+                'event_time_start' => now()->format('H:i'),
+                'event_zone' => 'WIB',
+                'event_potensi_penjualan' => '0',
+                'event_estimasi_peserta' => '0',
+                'event_has_file' => false,
+                'event_file_name' => null,
+                'event_file_size' => null,
+                'event_description' => 'Jelaskan detail acara, target audiens, dan nilai jual event Anda.',
                 'requested_support' => 'Undangan.',
             ])
             ->assertStatus(422);
