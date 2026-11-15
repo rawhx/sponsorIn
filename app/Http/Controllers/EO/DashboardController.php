@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\EO;
 
 use App\Enums\EventStatus;
+use App\Enums\ProposalPreference;
 use App\Enums\ProposalStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -67,7 +71,7 @@ class DashboardController extends Controller
                 'location' => $organization->location,
                 'category' => $organization->category,
                 'legal_form' => null,
-                'proposal_preference' => null,
+                'proposal_preference' => $organization->proposal_preference?->value,
                 'rating_average' => $organization->rating_average,
                 'review_count' => $organization->review_count,
             ],
@@ -79,6 +83,42 @@ class DashboardController extends Controller
             'reviews' => [],
             'totalRatings' => $organization->review_count ?? 0,
             'averageRating' => $organization->rating_average,
+            'categories' => Event::query()
+                ->whereNotNull('category')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category')
+                ->push($organization->category)
+                ->filter()
+                ->unique()
+                ->values(),
+            'locations' => Event::query()
+                ->whereNotNull('location')
+                ->distinct()
+                ->orderBy('location')
+                ->pluck('location')
+                ->push($organization->location)
+                ->filter()
+                ->unique()
+                ->values(),
         ]);
+    }
+
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $organization = $request->user()->organization;
+        abort_unless($organization?->isEo(), 404);
+
+        $data = $request->validate([
+            'display_name' => ['required', 'string', 'max:160'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'category' => ['nullable', 'string', 'max:120'],
+            'location' => ['nullable', 'string', 'max:120'],
+            'proposal_preference' => ['nullable', Rule::enum(ProposalPreference::class)],
+        ]);
+
+        $organization->update($data);
+
+        return back()->with('success', 'Profil EO berhasil diperbarui.');
     }
 }

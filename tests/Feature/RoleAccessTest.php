@@ -65,4 +65,28 @@ class RoleAccessTest extends TestCase
                 ->where('eventsCount', 0)
             );
     }
+
+    public function test_eo_can_update_profile(): void
+    {
+        $user = $this->eoWithOrganization();
+
+        $this->actingAs($user)
+            ->put('/eo/profile', [
+                'display_name' => 'EO Baru',
+                'description' => 'Deskripsi EO terbaru.',
+                'category' => 'Musik',
+                'location' => 'Jakarta',
+                'proposal_preference' => 'open',
+            ])
+            ->assertSessionHas('success', 'Profil EO berhasil diperbarui.');
+
+        $this->assertDatabaseHas('organizations', [
+            'id' => $user->organization->id,
+            'display_name' => 'EO Baru',
+            'description' => 'Deskripsi EO terbaru.',
+            'category' => 'Musik',
+            'location' => 'Jakarta',
+            'proposal_preference' => 'open',
+        ]);
+    }
 }

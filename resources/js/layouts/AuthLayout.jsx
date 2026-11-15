@@ -31,7 +31,7 @@ export default function AuthLayout({
   const { auth } = usePage().props;
 
   return (
-    <div className="min-h-screen bg-background text-text antialiased selection:bg-primary-soft selection:text-text">
+    <div className="auth-shell min-h-screen bg-background text-text antialiased selection:bg-primary-soft selection:text-text">
       <div className="grid min-h-screen w-full lg:grid-cols-12">
         {/* ── Aside ── */}
         <aside className="relative hidden border-r border-border bg-background-muted lg:col-span-5 lg:flex lg:flex-col lg:justify-between lg:px-10 lg:py-12 xl:col-span-5 xl:px-14">

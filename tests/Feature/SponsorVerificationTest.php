@@ -27,6 +27,23 @@ class SponsorVerificationTest extends TestCase
         $this->assertSame(SponsorVerificationStatus::Draft, $verification->status);
     }
 
+    public function test_business_email_always_follows_registered_account_email(): void
+    {
+        $user = $this->sponsorWithVerification(SponsorVerificationStatus::Draft);
+
+        $this->actingAs($user)
+            ->put('/sponsor/verification', [
+                'business_name' => 'PT Kopi Nusantara',
+                'business_email' => 'email-lain@example.test',
+            ])
+            ->assertRedirect();
+
+        $this->assertSame(
+            $user->email,
+            $user->organization->verification->fresh()->business_email
+        );
+    }
+
     public function test_submitting_requires_complete_data_and_document(): void
     {
         Storage::fake('local');
@@ -37,7 +54,7 @@ class SponsorVerificationTest extends TestCase
                 'business_name' => 'PT Kopi Nusantara',
                 'submit' => true,
             ])
-            ->assertSessionHasErrors(['business_email', 'legal_form', 'nib', 'tax_id', 'supporting_document']);
+            ->assertSessionHasErrors(['legal_form', 'nib', 'tax_id', 'supporting_document']);
     }
 
     public function test_sponsor_can_submit_complete_verification(): void

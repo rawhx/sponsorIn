@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'indonesia_regions' => [
+        'url' => env('INDONESIA_REGIONS_API_URL', 'https://wilayah.id/api'),
+    ],
+
 ];

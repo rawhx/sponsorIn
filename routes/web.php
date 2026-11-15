@@ -19,6 +19,7 @@ use App\Http\Controllers\EO\PackageController;
 use App\Http\Controllers\EO\ProposalController as EoProposalController;
 use App\Http\Controllers\EO\SponsorshipController as SponsorshipController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PublicSite\EventController;
 use App\Http\Controllers\PublicSite\HomeController;
 use App\Http\Controllers\PublicSite\OrganizerController;
@@ -38,6 +39,7 @@ Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');
 Route::get('/organizers', [OrganizerController::class, 'index'])->name('organizers.index');
 Route::get('/organizers/{organization}', [OrganizerController::class, 'show'])->name('organizers.show');
+Route::get('/api/locations/cities', [LocationController::class, 'cities'])->name('locations.cities');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -120,6 +122,7 @@ Route::middleware(['auth', 'verified', 'role:eo'])
     ->group(function () {
         Route::get('/dashboard', EoDashboardController::class)->name('dashboard');
         Route::get('/profile', [EoDashboardController::class, 'profile'])->name('profile');
+        Route::put('/profile', [EoDashboardController::class, 'updateProfile'])->name('profile.update');
 
         Route::get('/events', [EoEventController::class, 'index'])->name('events.index');
         Route::get('/events/calendar', [EoEventController::class, 'calendar'])->name('events.calendar');

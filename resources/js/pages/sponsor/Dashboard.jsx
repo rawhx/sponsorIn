@@ -23,23 +23,23 @@ export default function SponsorDashboard({ organization, verification, canUseFea
     >
       <Head title="Dashboard Sponsor" />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <section className="rounded-[12px] border border-border bg-surface p-5">
+      <div className="dashboard-kpis grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="dashboard-kpi rounded-[12px] border border-border bg-surface p-5">
           <p className="text-xs font-medium tracking-[0.06em] text-text-muted">PROPOSAL MASUK</p>
           <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.proposal_incoming ?? 0}</p>
           <p className="mt-1 text-xs text-text-muted">Total proposal dari EO</p>
         </section>
-        <section className="rounded-[12px] border border-border bg-surface p-5">
+        <section className="dashboard-kpi rounded-[12px] border border-border bg-surface p-5">
           <p className="text-xs font-medium tracking-[0.06em] text-text-muted">PROPOSAL AKTIF</p>
           <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.proposal_active ?? 0}</p>
           <p className="mt-1 text-xs text-text-muted">Dalam proses / negosiasi</p>
         </section>
-        <section className="rounded-[12px] border border-border bg-surface p-5">
+        <section className="dashboard-kpi dashboard-kpi-emphasis rounded-[12px] border border-border bg-surface p-5">
           <p className="text-xs font-medium tracking-[0.06em] text-text-muted">KERJA SAMA AKTIF</p>
           <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.sponsorship_active ?? 0}</p>
           <p className="mt-1 text-xs text-text-muted">Sedang berjalan</p>
         </section>
-        <section className="rounded-[12px] border border-border bg-surface p-5">
+        <section className="dashboard-kpi rounded-[12px] border border-border bg-surface p-5">
           <p className="text-xs font-medium tracking-[0.06em] text-text-muted">TOTAL KERJA SAMA</p>
           <p className="mt-2 text-2xl font-semibold text-text tabular-nums">{stats.sponsorship_total ?? 0}</p>
           <p className="mt-1 text-xs text-text-muted">Riwayat keseluruhan</p>
@@ -47,7 +47,7 @@ export default function SponsorDashboard({ organization, verification, canUseFea
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-        <section className="rounded-[12px] border border-border bg-surface">
+        <section className="dashboard-primary-panel rounded-[12px] border border-border bg-surface">
           <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
             <div>
               <p className="text-xs font-medium tracking-[0.06em] text-text-muted">STATUS VERIFIKASI USAHA</p>
@@ -103,7 +103,7 @@ export default function SponsorDashboard({ organization, verification, canUseFea
           </div>
         </section>
 
-        <section className="rounded-[12px] border border-border bg-surface">
+        <section className="dashboard-profile-panel rounded-[12px] border border-border bg-surface">
           <div className="border-b border-border px-5 py-4">
             <p className="text-xs font-medium tracking-[0.06em] text-text-muted">PROFIL USAHA</p>
             <h2 className="mt-1.5 text-lg font-semibold text-text">{organization?.name ?? 'Belum diisi'}</h2>

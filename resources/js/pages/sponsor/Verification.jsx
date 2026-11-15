@@ -7,11 +7,11 @@ import Button from '../../components/Button';
 import { Field, Input, Select } from '../../components/Form';
 import { formatDate } from '../../lib/utils';
 
-export default function SponsorVerification({ verification, legalForms, editable }) {
+export default function SponsorVerification({ verification, legalForms, editable, registered_email }) {
   const intent = useRef(false);
   const { data, setData, put, processing, errors, transform } = useForm({
     business_name: verification.business_name ?? '',
-    business_email: verification.business_email ?? '',
+    business_email: registered_email ?? verification.business_email ?? '',
     legal_form: verification.legal_form ?? '',
     nib: '',
     tax_id: '',
@@ -86,12 +86,18 @@ export default function SponsorVerification({ verification, legalForms, editable
                     />
                   </Field>
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <Field label="Email usaha" htmlFor="business_email" error={errors.business_email} required>
+                    <Field
+                      label="Email usaha"
+                      htmlFor="business_email"
+                      error={errors.business_email}
+                      required
+                      hint="Mengikuti email saat registrasi akun"
+                    >
                       <Input
                         id="business_email"
                         type="email"
                         value={data.business_email}
-                        onChange={(event) => setData('business_email', event.target.value)}
+                        readOnly
                         error={errors.business_email}
                       />
                     </Field>

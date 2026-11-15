@@ -57,14 +57,14 @@ function Sidebar({ navigation, auth, role, unreadCount, onClose }) {
   const [confirmLogout, setConfirmLogout] = useState(false);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="workspace-sidebar flex h-full flex-col">
       {/* Logo */}
-      <div className="px-5 py-5">
+      <div className="workspace-brand px-5 py-5">
         <Logo />
       </div>
 
       {/* Nav */}
-      <nav className="mt-2 min-h-0 flex-1 space-y-0.5 overflow-y-auto px-3 pb-2" aria-label="Navigasi ruang kerja">
+      <nav className="workspace-nav mt-2 min-h-0 flex-1 space-y-0.5 overflow-y-auto px-3 pb-2" aria-label="Navigasi ruang kerja">
         {navigation.map((item) => {
           const Icon = item.icon;
           const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
@@ -98,7 +98,7 @@ function Sidebar({ navigation, auth, role, unreadCount, onClose }) {
               />
               <span className="flex-1">{item.label}</span>
               {item.href === '/notifications' && unreadCount > 0 ? (
-                <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary-strong px-1.5 text-[11px] font-medium tabular-nums text-white">
+                <span className="workspace-nav-badge inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary-strong px-1.5 text-[11px] font-medium tabular-nums text-white">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               ) : null}
@@ -108,7 +108,7 @@ function Sidebar({ navigation, auth, role, unreadCount, onClose }) {
       </nav>
 
       {/* User footer */}
-      <div className="space-y-0.5 border-t border-border p-3">
+      <div className="workspace-account space-y-0.5 border-t border-border p-3">
         <div className="rounded-[8px] px-3 py-2.5">
           <p className="truncate text-[13px] font-medium text-text">{auth.user.name}</p>
           <p className="mt-0.5 text-[11px] text-text-muted">{roleLabels[role]}</p>
@@ -140,7 +140,7 @@ function Sidebar({ navigation, auth, role, unreadCount, onClose }) {
 }
 
 /* ── Main layout ── */
-export default function DashboardLayout({ title, eyebrow, children, actions }) {
+export default function DashboardLayout({ title, eyebrow, description, children, actions }) {
   const { auth, unreadNotifications } = usePage().props;
   const [open, setOpen] = useState(false);
   const role = auth.user.role;
@@ -157,11 +157,11 @@ export default function DashboardLayout({ title, eyebrow, children, actions }) {
   }, [open]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-[1440px]">
+    <div className="app-shell min-h-screen bg-background">
+      <div className="mx-auto flex min-h-screen w-full max-w-none">
 
         {/* Desktop sidebar */}
-        <aside className="sticky top-0 hidden h-screen w-[228px] shrink-0 border-r border-border bg-background lg:block">
+        <aside className="workspace-rail sticky top-0 hidden h-screen w-[224px] shrink-0 border-r border-border bg-background lg:block">
           <Sidebar navigation={navigation} auth={auth} role={role} unreadCount={unreadCount} onClose={() => {}} />
         </aside>
 
@@ -169,7 +169,7 @@ export default function DashboardLayout({ title, eyebrow, children, actions }) {
         <div className="min-w-0 flex-1">
 
           {/* Mobile topbar */}
-          <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-sm sm:px-5 lg:hidden">
+          <header className="workspace-mobile-header sticky top-0 z-30 flex h-[60px] items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-sm sm:px-5 lg:hidden">
             <Logo />
             <button
               type="button"
@@ -199,7 +199,7 @@ export default function DashboardLayout({ title, eyebrow, children, actions }) {
                   aria-label="Tutup navigasi"
                 />
                 <motion.div
-                  className="absolute inset-y-0 left-0 w-[272px] border-r border-border bg-background shadow-[0_20px_60px_-30px_rgba(52,59,50,0.5)]"
+                  className="workspace-drawer absolute inset-y-0 left-0 w-[284px] border-r border-border bg-background shadow-[0_20px_60px_-30px_rgba(32,44,34,0.5)]"
                   initial={{ x: -24, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: -24, opacity: 0 }}
@@ -226,9 +226,9 @@ export default function DashboardLayout({ title, eyebrow, children, actions }) {
           </AnimatePresence>
 
           {/* Main content */}
-          <main className="px-4 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
+          <main className="workspace-main px-4 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
             <motion.div
-              className="mx-auto w-full max-w-5xl"
+              className="workspace-canvas mx-auto w-full max-w-none"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
@@ -239,8 +239,8 @@ export default function DashboardLayout({ title, eyebrow, children, actions }) {
               </div>
 
               {/* Page header */}
-              <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
+              <div className="workspace-page-header mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="workspace-page-copy">
                   {eyebrow && (
                     <p className="mb-2 text-[11px] font-semibold tracking-[0.1em] text-text-muted uppercase">
                       {eyebrow}
@@ -249,6 +249,11 @@ export default function DashboardLayout({ title, eyebrow, children, actions }) {
                   <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold leading-tight tracking-[-0.025em] text-text">
                     {title}
                   </h1>
+                  {description ? (
+                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-text-secondary-strong">
+                      {description}
+                    </p>
+                  ) : null}
                 </div>
                 {actions && (
                   <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>

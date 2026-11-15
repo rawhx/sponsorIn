@@ -3,6 +3,7 @@ import { Building2, FileText, Rocket } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Button from '../../components/Button';
 import { Field, Input, Select, Textarea } from '../../components/Form';
+import CitySelect from '../../components/CitySelect';
 
 export default function ProposalForm({ events, sponsors, selectedSponsor }) {
   const { data, setData, post, processing, errors } = useForm({
@@ -112,7 +113,7 @@ export default function ProposalForm({ events, sponsors, selectedSponsor }) {
             </Field>
 
             <Field label="Lokasi" htmlFor="location" required error={errors.location}>
-              <Input id="location" value={data.location} onChange={(event) => setData('location', event.target.value)} placeholder="Nama Tempat / Kota" />
+              <CitySelect id="location" value={data.location} onChange={(event) => setData('location', event.target.value)} error={errors.location} placeholder="Cari kota atau ketik nama tempat" />
             </Field>
 
             <Field label="Tanggal Kegiatan" htmlFor="event_date_start" required error={errors.event_date_start}>

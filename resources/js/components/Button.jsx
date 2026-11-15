@@ -19,7 +19,7 @@ const sizes = {
 
 export function buttonClasses({ variant = 'primary', size = 'md', className } = {}) {
   return cn(
-    'inline-flex items-center justify-center gap-2 rounded-[10px] border font-medium',
+    'app-button inline-flex items-center justify-center gap-2 rounded-[10px] border font-medium',
     'transition-[background-color,border-color,color,transform,box-shadow] duration-150 ease-out',
     'active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'disabled:cursor-not-allowed disabled:opacity-55 disabled:active:translate-y-0',

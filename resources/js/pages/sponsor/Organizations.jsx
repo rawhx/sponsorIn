@@ -1,9 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
 import { FileText, LayoutDashboard, ShieldCheck, Star } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
 import { Field, Input, Select, Textarea } from '../../components/Form';
+import CitySelect from '../../components/CitySelect';
 import { legalFormLabels, proposalPreferenceLabels, evidenceTypeLabels, supportTypeLabels } from '../../lib/utils';
 
 export default function SponsorOrganizations({
@@ -13,6 +15,8 @@ export default function SponsorOrganizations({
   preferences,
   saved,
 }) {
+  const [location, setLocation] = useState(organization.location ?? '');
+
   return (
     <DashboardLayout
       eyebrow="Profil sponsor"
@@ -139,7 +143,7 @@ export default function SponsorOrganizations({
                 </div>
                 <div className="space-y-1.5">
                   <Field label="Lokasi" htmlFor="location">
-                    <Input id="location" name="location" defaultValue={organization.location} />
+                    <CitySelect id="location" name="location" value={location} onChange={(event) => setLocation(event.target.value)} />
                   </Field>
                 </div>
               </div>

@@ -1,10 +1,13 @@
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Bookmark, CalendarDays, FileText, MapPin, Star } from 'lucide-react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { useState } from 'react';
+import { ArrowLeft, Edit3, FileText, MapPin, Save, Star, X } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
+import { Field, Input, Select, Textarea } from '../../components/Form';
+import CitySelect from '../../components/CitySelect';
 import { EvidenceTag } from '../../components/StatusBadge';
-import { formatDate, formatDateRange, formatNumber, legalFormLabels, proposalPreferenceLabels } from '../../lib/utils';
+import { formatDateRange, legalFormLabels, proposalPreferenceLabels } from '../../lib/utils';
 
 export default function EoProfile({
   organization,
@@ -16,26 +19,111 @@ export default function EoProfile({
   reviews,
   totalRatings,
   averageRating,
+  categories = [],
+  locations = [],
 }) {
+  const [editing, setEditing] = useState(false);
+  const form = useForm({
+    display_name: organization?.name ?? '',
+    description: organization?.description ?? '',
+    category: organization?.category ?? '',
+    location: organization?.location ?? '',
+    proposal_preference: organization?.proposal_preference ?? '',
+  });
   const active = verifications?.filter((v) => v.status === 'approved').length ?? 0;
   const pending = verifications?.filter((v) => v.status !== 'approved').length ?? 0;
+
+  function startEditing() {
+    form.setData({
+      display_name: organization?.name ?? '',
+      description: organization?.description ?? '',
+      category: organization?.category ?? '',
+      location: organization?.location ?? '',
+      proposal_preference: organization?.proposal_preference ?? '',
+    });
+    setEditing(true);
+  }
+
+  function cancelEditing() {
+    form.clearErrors();
+    setEditing(false);
+  }
+
+  function submit(event) {
+    event.preventDefault();
+    form.put('/eo/profile', {
+      preserveScroll: true,
+      onSuccess: () => setEditing(false),
+    });
+  }
 
   return (
     <DashboardLayout
       eyebrow="Profil Event Organizer"
       title="Profil publik"
       actions={
-        <Link href="/eo/dashboard" className={buttonClasses({ variant: 'outline' })}>
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Kembali ke ringkasan
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          {!editing ? (
+            <button type="button" onClick={startEditing} className={buttonClasses({ variant: 'outline' })}>
+              <Edit3 className="h-4 w-4" aria-hidden="true" />
+              Edit profil
+            </button>
+          ) : (
+            <button type="button" onClick={cancelEditing} className={buttonClasses({ variant: 'outline' })}>
+              <X className="h-4 w-4" aria-hidden="true" />
+              Batal
+            </button>
+          )}
+          <Link href="/eo/dashboard" className={buttonClasses({ variant: 'ghost' })}>
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Kembali
+          </Link>
+        </div>
       }
     >
       <Head title="Profil publik" />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
         <div>
-          <section className="rounded-[12px] border border-border bg-surface p-6">
+          {editing ? (
+            <form onSubmit={submit} className="rounded-[12px] border border-border bg-surface p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-medium tracking-[0.06em] text-text-muted">EDIT PROFIL EO</p>
+                  <h2 className="mt-1.5 text-xl font-semibold text-text">Informasi organisasi</h2>
+                </div>
+                <button type="submit" className={buttonClasses({ size: 'sm' })} disabled={form.processing}>
+                  <Save className="h-4 w-4" aria-hidden="true" />
+                  {form.processing ? 'Menyimpan…' : 'Simpan perubahan'}
+                </button>
+              </div>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <Field label="Nama tampilan" htmlFor="display_name" required className="sm:col-span-2">
+                  <Input id="display_name" value={form.data.display_name} onChange={(event) => form.setData('display_name', event.target.value)} error={form.errors.display_name} />
+                </Field>
+                <Field label="Deskripsi" htmlFor="description" className="sm:col-span-2">
+                  <Textarea id="description" rows={5} value={form.data.description} onChange={(event) => form.setData('description', event.target.value)} error={form.errors.description} />
+                </Field>
+                <Field label="Kategori" htmlFor="category">
+                  <Select id="category" value={form.data.category} onChange={(event) => form.setData('category', event.target.value)} error={form.errors.category}>
+                    <option value="">Pilih kategori</option>
+                    {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+                  </Select>
+                </Field>
+                <Field label="Lokasi" htmlFor="location">
+                  <CitySelect id="location" value={form.data.location} onChange={(event) => form.setData('location', event.target.value)} error={form.errors.location} />
+                </Field>
+                <Field label="Preferensi proposal" htmlFor="proposal_preference">
+                  <Select id="proposal_preference" value={form.data.proposal_preference} onChange={(event) => form.setData('proposal_preference', event.target.value)} error={form.errors.proposal_preference}>
+                    <option value="">Pilih preferensi</option>
+                    <option value="open">Menerima semua proposal</option>
+                    <option value="selective">Selektif</option>
+                    <option value="closed">Tidak menerima proposal</option>
+                  </Select>
+                </Field>
+              </div>
+            </form>
+          ) : <section className="rounded-[12px] border border-border bg-surface p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-medium tracking-[0.06em] text-text-muted">EVENT ORGANIZER</p>
@@ -83,7 +171,7 @@ export default function EoProfile({
                 <StatusBadge status="neutral">Belum ada verifikasi</StatusBadge>
               )}
             </div>
-          </section>
+          </section>}
 
           {eventsCount > 0 ? (
             <section className="mt-6 rounded-[12px] border border-border bg-surface p-5">

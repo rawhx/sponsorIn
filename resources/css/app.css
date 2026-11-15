@@ -83,3 +83,584 @@
     outline-offset: 2px;
   }
 }
+
+/*
+ * Application surfaces use a slightly denser contrast system than the public
+ * marketing page. Keep this scoped so the landing page retains its own tone.
+ */
+.app-shell,
+.auth-shell {
+  --color-background: #e9eee9;
+  --color-background-muted: #d7e0d8;
+  --color-surface: #ffffff;
+  --color-primary: #5f7758;
+  --color-primary-soft: #aebeaa;
+  --color-primary-strong: #405b3b;
+  --color-text: #202c22;
+  --color-text-secondary: #536157;
+  --color-text-secondary-strong: #3f4e43;
+  --color-text-muted: #657369;
+  --color-text-muted-strong: #4c5c50;
+  --color-border: #b8c7bb;
+  --color-hover: #dbe5dc;
+  --color-success: #5d7e63;
+  --color-success-strong: #416347;
+  --color-warning: #9a733d;
+  --color-warning-strong: #735326;
+  --color-danger: #ad6262;
+  --color-danger-strong: #853f3f;
+  --color-info: #607d91;
+  --color-info-strong: #405f75;
+}
+
+.app-shell [class*='rounded-[12px]'][class*='border-border'][class*='bg-surface'],
+.app-shell [class*='rounded-[14px]'][class*='border-border'][class*='bg-surface'],
+.auth-shell [class*='rounded-[14px]'][class*='border-border'][class*='bg-surface'] {
+  box-shadow: 0 1px 2px rgb(32 44 34 / 0.08), 0 12px 26px -20px rgb(32 44 34 / 0.42);
+}
+
+.app-shell [class*='border-border'],
+.auth-shell [class*='border-border'] {
+  border-color: var(--color-border);
+}
+
+.app-shell .bg-background-muted,
+.auth-shell .bg-background-muted {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35);
+}
+
+.app-shell .bg-surface,
+.auth-shell .bg-surface {
+  box-shadow: 0 1px 2px rgb(32 44 34 / 0.04);
+}
+
+.app-shell button.bg-primary-strong,
+.auth-shell button.bg-primary-strong,
+.app-shell a.bg-primary-strong,
+.auth-shell a.bg-primary-strong {
+  box-shadow: 0 2px 5px rgb(64 91 59 / 0.22);
+}
+
+/* Workspace treatment: a dark anchor gives the data surfaces a clear visual
+ * hierarchy without turning every card into a floating object. */
+.app-shell {
+  --workspace-ink: #193229;
+  --workspace-ink-soft: #dce9df;
+  --workspace-rail: #203d32;
+  --workspace-rail-muted: #a7beb0;
+  --workspace-rail-hover: #2c5142;
+  --workspace-accent: #b9d56a;
+}
+
+.workspace-rail,
+.workspace-drawer {
+  background: var(--workspace-rail) !important;
+  border-color: rgb(255 255 255 / 0.11) !important;
+}
+
+.workspace-sidebar {
+  color: var(--workspace-ink-soft);
+}
+
+.workspace-sidebar > div:first-child {
+  padding: 24px 20px 20px;
+}
+
+.workspace-sidebar > div:first-child a {
+  color: #fff;
+}
+
+.workspace-sidebar > div:first-child a > span:first-child {
+  border-color: rgb(185 213 106 / 0.5);
+  background: rgb(185 213 106 / 0.12);
+}
+
+.workspace-sidebar > div:first-child a > span:first-child span:first-child {
+  border-color: var(--workspace-accent);
+}
+
+.workspace-sidebar > div:first-child a > span:first-child span:last-child {
+  background: var(--workspace-accent);
+}
+
+.workspace-sidebar nav a {
+  color: var(--workspace-rail-muted) !important;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
+.workspace-sidebar nav a:hover {
+  color: #fff !important;
+  background: var(--workspace-rail-hover) !important;
+}
+
+.workspace-sidebar nav a[aria-current='page'] {
+  color: #fff !important;
+  background: var(--workspace-rail-hover) !important;
+  box-shadow: inset 3px 0 0 var(--workspace-accent), 0 8px 18px -16px rgb(0 0 0 / 0.65);
+}
+
+.workspace-sidebar nav a[aria-current='page'] svg {
+  color: var(--workspace-accent) !important;
+}
+
+.workspace-sidebar nav a > span:first-child {
+  background: var(--workspace-accent) !important;
+}
+
+.workspace-sidebar > div:last-child {
+  border-color: rgb(255 255 255 / 0.11) !important;
+}
+
+.workspace-sidebar > div:last-child > div:first-child {
+  background: rgb(255 255 255 / 0.07);
+}
+
+.workspace-sidebar > div:last-child p:first-child {
+  color: #fff !important;
+}
+
+.workspace-sidebar > div:last-child p:last-child {
+  color: var(--workspace-rail-muted) !important;
+}
+
+.workspace-sidebar > div:last-child button {
+  color: #c7d6cb;
+}
+
+.workspace-sidebar > div:last-child button:hover {
+  background: rgb(184 103 103 / 0.18) !important;
+  color: #ffd0d0;
+}
+
+.workspace-main {
+  background: #edf2ee;
+}
+
+.workspace-page-header h1 {
+  letter-spacing: -0.04em;
+  color: #183229;
+}
+
+.workspace-page-header p {
+  color: #597064;
+}
+
+/* Give application surfaces a quiet lift and reserve stronger shadows for
+ * interactive/floating elements. */
+.app-shell main section[class*='bg-surface'] {
+  box-shadow: 0 1px 2px rgb(25 50 41 / 0.06), 0 12px 28px -24px rgb(25 50 41 / 0.5);
+}
+
+.app-shell main section[class*='bg-surface']:hover {
+  border-color: #a9bbb0;
+}
+
+@media (max-width: 1023px) {
+  .workspace-main {
+    background: #edf2ee;
+  }
+}
+
+/* App-screen principles: a defined canvas and sheet give the workspace a
+ * real shape; hierarchy comes from tone and alignment before elevation. */
+.workspace-main {
+  background: #dfe9e1;
+}
+
+.workspace-canvas {
+  min-height: calc(100vh - 80px);
+  max-width: none !important;
+  padding: 32px;
+  background: #fff;
+  border: 1px solid #c5d2c8;
+  border-radius: 18px;
+  box-shadow: 0 1px 1px rgb(25 50 41 / 0.04);
+}
+
+@media (min-width: 1024px) {
+  .workspace-main {
+    min-width: 0;
+    padding: 24px !important;
+  }
+
+  .workspace-canvas {
+    min-height: calc(100vh - 48px);
+  }
+}
+
+.workspace-canvas > .workspace-page-header {
+  padding-bottom: 24px;
+  border-bottom: 1px solid #d9e2db;
+}
+
+/* Cards are grouped surfaces, not floating tiles. */
+.app-shell main section[class*='bg-surface'] {
+  background-color: #fbfdfb !important;
+  border-color: #cbd8ce !important;
+  box-shadow: none;
+}
+
+.app-shell main section[class*='bg-surface'] > div[class*='border-b'],
+.app-shell main section[class*='bg-surface'] > div[class*='border-t'] {
+  border-color: #d9e2db !important;
+}
+
+.app-shell main section[class*='bg-surface'] > div[class*='bg-background-muted'] {
+  background-color: #edf4ee !important;
+}
+
+.app-shell main section[class*='bg-surface']:hover {
+  border-color: #aabdae !important;
+  box-shadow: 0 0 0 2px rgb(95 119 88 / 0.06);
+}
+
+@media (max-width: 639px) {
+  .workspace-canvas {
+    min-height: calc(100vh - 84px);
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  .workspace-canvas > .workspace-page-header {
+    padding-bottom: 20px;
+  }
+}
+
+/* Sidebar refinement: the rail should support the workspace, not compete
+ * with it. A light navigation surface keeps the product calm and lets the
+ * active state carry the contrast. */
+.app-shell {
+  --workspace-ink: #243a2d;
+  --workspace-ink-soft: #53695a;
+  --workspace-rail: #e7efe7;
+  --workspace-rail-muted: #6d8172;
+  --workspace-rail-hover: #dce9dd;
+  --workspace-accent: #5f7758;
+}
+
+.workspace-rail,
+.workspace-drawer {
+  background: var(--workspace-rail) !important;
+  border-color: #d2ded4 !important;
+  box-shadow: none !important;
+}
+
+.workspace-sidebar {
+  color: var(--workspace-ink);
+}
+
+.workspace-sidebar > div:first-child a,
+.workspace-sidebar > div:first-child a:hover {
+  color: var(--workspace-ink) !important;
+}
+
+.workspace-sidebar > div:first-child a > span:first-child {
+  border-color: #b7cbb9;
+  background: #e8f0e9;
+}
+
+.workspace-sidebar > div:first-child a > span:first-child span:first-child {
+  border-color: #405b3b;
+}
+
+.workspace-sidebar > div:first-child a > span:first-child span:last-child {
+  background: #5f7758;
+}
+
+.workspace-sidebar nav a {
+  color: var(--workspace-rail-muted) !important;
+  font-weight: 500;
+}
+
+.workspace-sidebar nav a:hover {
+  color: var(--workspace-ink) !important;
+  background: var(--workspace-rail-hover) !important;
+}
+
+.workspace-sidebar nav a[aria-current='page'] {
+  color: var(--workspace-ink) !important;
+  background: #e4eee5 !important;
+  box-shadow: inset 3px 0 0 #5f7758 !important;
+}
+
+.workspace-sidebar nav a[aria-current='page'] svg {
+  color: #405b3b !important;
+}
+
+/* The label is also a span. Only the notification counter gets a filled
+ * treatment; ordinary menu text must remain transparent. */
+.workspace-nav a > span.flex-1 {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.workspace-nav .workspace-nav-badge {
+  background: #405b3b !important;
+  color: #fff !important;
+}
+
+.workspace-sidebar > div:last-child {
+  border-color: #d2ded4 !important;
+}
+
+.workspace-sidebar > div:last-child > div:first-child {
+  background: #edf4ee;
+}
+
+.workspace-sidebar > div:last-child p:first-child {
+  color: var(--workspace-ink) !important;
+}
+
+.workspace-sidebar > div:last-child p:last-child {
+  color: var(--workspace-rail-muted) !important;
+}
+
+.workspace-sidebar > div:last-child button {
+  color: #53695a;
+}
+
+/* Keep the navigation visually quiet and structured on desktop. */
+.workspace-brand {
+  margin: 12px 12px 8px;
+  padding: 12px 8px 20px !important;
+  border-bottom: 1px solid #dce6de;
+}
+
+.workspace-nav {
+  padding-inline: 16px !important;
+  padding-top: 10px;
+}
+
+.workspace-nav a {
+  min-height: 42px;
+  padding-inline: 12px !important;
+  border-radius: 8px !important;
+  letter-spacing: -0.01em;
+}
+
+.workspace-nav a svg {
+  width: 17px;
+  height: 17px;
+}
+
+.workspace-account {
+  margin: 12px;
+  padding: 12px 4px 4px !important;
+}
+
+.workspace-account > div:first-child {
+  padding: 10px 12px !important;
+  border-radius: 8px;
+}
+
+.workspace-account button {
+  min-height: 38px;
+  padding-inline: 12px !important;
+}
+
+/* Dashboard data rail: related numbers read as one instrument instead of
+ * four unrelated cards. */
+.dashboard-kpis {
+  gap: 0 !important;
+  overflow: hidden;
+  border: 1px solid #cbd8ce;
+  border-radius: 14px;
+  background: #f5f9f5;
+}
+
+.dashboard-kpi {
+  min-height: 126px;
+  border: 0 !important;
+  border-right: 1px solid #d5e0d7 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.dashboard-kpi:last-child {
+  border-right: 0 !important;
+}
+
+.dashboard-kpi-emphasis {
+  background: #eaf3df !important;
+}
+
+.dashboard-primary-panel {
+  background: #f3f8f0 !important;
+}
+
+.dashboard-profile-panel {
+  background: #f6f3ea !important;
+  border-color: #dcd6c6 !important;
+}
+
+.dashboard-kpi p:nth-child(2) {
+  color: #203a2d;
+  font-size: 2rem;
+  letter-spacing: -0.05em;
+}
+
+@media (max-width: 639px) {
+  .dashboard-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboard-kpi {
+    min-height: 112px;
+    border-right: 1px solid #d5e0d7 !important;
+    border-bottom: 1px solid #d5e0d7 !important;
+  }
+
+  .dashboard-kpi:nth-child(2n) {
+    border-right: 0 !important;
+  }
+
+  .dashboard-kpi:nth-last-child(-n + 2) {
+    border-bottom: 0 !important;
+  }
+}
+
+/* Tonal surfaces keep long dashboard sessions comfortable. White is reserved
+ * for controls and focused content instead of being the whole page. */
+.workspace-main {
+  background: #d6e3d8;
+}
+
+.workspace-canvas {
+  background: #edf3ec;
+  border-color: #c2d2c5;
+}
+
+.app-shell main section[class*='bg-surface'] {
+  background-color: #f8faf5 !important;
+  border-color: #c8d6ca !important;
+}
+
+.app-shell main section[class*='bg-surface'] > div[class*='bg-background-muted'] {
+  background-color: #e5efe5 !important;
+}
+
+.app-shell main section[class*='bg-surface'] input,
+.app-shell main section[class*='bg-surface'] select,
+.app-shell main section[class*='bg-surface'] textarea {
+  background-color: #fffefa;
+}
+
+.workspace-mobile-header {
+  background: #edf3ec !important;
+}
+
+/* Shared component language across forms, lists and detail views. */
+.app-shell .app-input {
+  min-height: 44px;
+  background: #fffdf7 !important;
+  border-color: #b9cbbb !important;
+  border-radius: 9px;
+  box-shadow: inset 0 1px 2px rgb(44 70 51 / 0.04);
+}
+
+.app-shell .app-input:hover {
+  border-color: #91aa95 !important;
+}
+
+.app-shell .app-input:focus {
+  background: #ffffff !important;
+  border-color: #547653 !important;
+  box-shadow: 0 0 0 3px rgb(84 118 83 / 0.16) !important;
+}
+
+.app-shell .app-field-label {
+  color: #304a38;
+  letter-spacing: -0.01em;
+}
+
+.app-shell .app-button {
+  min-height: 42px;
+  border-radius: 9px;
+  letter-spacing: -0.01em;
+}
+
+.app-shell .app-button.bg-primary-strong {
+  background: #315944 !important;
+  border-color: #315944 !important;
+  box-shadow: 0 4px 10px -7px rgb(31 67 46 / 0.7);
+}
+
+.app-shell .app-button.bg-primary-strong:hover {
+  background: #244b36 !important;
+}
+
+.app-shell .app-button.bg-surface {
+  background: #f9fbf6 !important;
+  border-color: #b7c9ba !important;
+}
+
+.app-shell .app-button.bg-surface:hover {
+  background: #e4eee4 !important;
+  border-color: #89a38d !important;
+}
+
+.app-shell .app-status-badge {
+  border-radius: 7px;
+  font-size: 0.72rem;
+}
+
+.app-shell .app-evidence-tag {
+  background: #e5efe6;
+  border-color: #c5d8c8;
+  color: #45634c;
+}
+
+/* Search/filter forms are intentionally a different tone from result panels
+ * so the next action is obvious at a glance. */
+.app-shell main form[class*='bg-surface'] {
+  background: #e2eee4 !important;
+  border-color: #b9cbbb !important;
+}
+
+.app-shell main form[class*='bg-background-muted'] {
+  background: #e6eee8 !important;
+  border-color: #bdcfc1 !important;
+}
+
+.app-shell main h2 {
+  letter-spacing: -0.025em;
+}
+
+.app-shell main a.group:hover h2 {
+  color: #315944;
+}
+
+@media (max-width: 1023px) {
+  .workspace-brand {
+    margin-top: 4px;
+  }
+
+  .workspace-canvas {
+    width: 100%;
+  }
+}
+
+.app-shell nav a[aria-current='page'],
+.auth-shell nav a[aria-current='page'] {
+  box-shadow: inset 3px 0 0 var(--color-primary-strong), 0 1px 2px rgb(32 44 34 / 0.06);
+}
+
+.app-shell input,
+.app-shell select,
+.app-shell textarea,
+.auth-shell input,
+.auth-shell select,
+.auth-shell textarea {
+  border-color: var(--color-border);
+}
+
+.app-shell input:focus,
+.app-shell select:focus,
+.app-shell textarea:focus,
+.auth-shell input:focus,
+.auth-shell select:focus,
+.auth-shell textarea:focus {
+  box-shadow: 0 0 0 3px rgb(102 123 93 / 0.18);
+}

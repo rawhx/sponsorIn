@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Button from '../../components/Button';
 import { Field, Input, Textarea } from '../../components/Form';
+import CitySelect from '../../components/CitySelect';
 
 export default function EoEventForm({ event }) {
   const isEdit = Boolean(event);
@@ -65,7 +66,7 @@ export default function EoEventForm({ event }) {
               </Field>
             </div>
             <Field label="Lokasi" htmlFor="location" error={errors.location} required>
-              <Input id="location" value={data.location} onChange={(e) => setData('location', e.target.value)} error={errors.location} maxLength={160} placeholder="Kota atau venue" />
+              <CitySelect id="location" value={data.location} onChange={(event) => setData('location', event.target.value)} error={errors.location} placeholder="Cari kota atau ketik venue" />
             </Field>
           </div>
         </section>

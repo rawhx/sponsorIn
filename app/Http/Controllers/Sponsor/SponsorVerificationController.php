@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,7 +32,7 @@ class SponsorVerificationController extends Controller
             'verification' => [
                 'status' => $verification->status->value,
                 'business_name' => $organization->legal_name,
-                'business_email' => $verification->business_email,
+                'business_email' => $request->user()->email,
                 'legal_form' => $verification->legal_form?->value,
                 'nib_masked' => $this->mask($verification->nib),
                 'tax_id_masked' => $this->mask($verification->tax_id),
@@ -61,6 +60,7 @@ class SponsorVerificationController extends Controller
                 SponsorVerificationStatus::NeedsInformation,
                 SponsorVerificationStatus::Rejected,
             ], true),
+            'registered_email' => $request->user()->email,
         ]);
     }
 
@@ -83,9 +83,7 @@ class SponsorVerificationController extends Controller
         $submit = $request->boolean('submit');
 
         $request->merge([
-            'business_email' => $request->filled('business_email')
-                ? Str::lower(trim((string) $request->input('business_email')))
-                : null,
+            'business_email' => $request->user()->email,
             'legal_form' => $request->input('legal_form') ?: null,
             'nib' => $request->input('nib') ?: null,
             'tax_id' => $request->input('tax_id') ?: null,

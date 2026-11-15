@@ -3,7 +3,7 @@ import { ChevronDown, Eye, EyeOff, Lock } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const base =
-  'w-full rounded-[8px] border border-border bg-surface px-3.5 text-[15px] text-text placeholder:text-text-muted transition-colors duration-150 focus:border-primary-strong focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-background-muted';
+  'app-input w-full rounded-[8px] border border-border bg-surface px-3.5 text-[15px] text-text placeholder:text-text-muted transition-colors duration-150 focus:border-primary-strong focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-background-muted';
 
 export function Input({ className, error, icon: Icon, rightElement, ...props }) {
   if (Icon || rightElement) {
@@ -99,7 +99,7 @@ export function Textarea({ className, error, rows = 4, ...props }) {
 export function Field({ label, htmlFor, hint, error, required, children, className }) {
   return (
     <div className={cn('space-y-1.5', className)}>
-      <label htmlFor={htmlFor} className="flex items-baseline justify-between gap-3 text-sm font-medium text-text">
+      <label htmlFor={htmlFor} className="app-field-label flex items-baseline justify-between gap-3 text-sm font-medium text-text">
         <span>
           {label}
           {required ? <span className="ml-1 text-danger-strong">*</span> : null}

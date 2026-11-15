@@ -13,7 +13,7 @@ export default function StatusBadge({ status, label, tone, className }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium leading-none',
+        'app-status-badge inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium leading-none',
         tones[tone ?? statusTone(status)],
         className
       )}
@@ -28,7 +28,7 @@ export function EvidenceTag({ children, tone = 'neutral', className }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-[6px] border px-2 py-0.5 text-[11px] font-medium leading-5',
+        'app-evidence-tag inline-flex items-center rounded-[6px] border px-2 py-0.5 text-[11px] font-medium leading-5',
         tones[tone],
         className
       )}
