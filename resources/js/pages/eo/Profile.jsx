@@ -24,12 +24,6 @@ export default function EoProfile({
     <DashboardLayout
       eyebrow="Profil Event Organizer"
       title="Profil publik"
-      actions={
-        <Link href="/eo/dashboard" className={buttonClasses({ variant: 'outline' })}>
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Kembali ke ringkasan
-        </Link>
-      }
     >
       <Head title="Profil publik" />
 

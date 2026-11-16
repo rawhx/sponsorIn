@@ -49,6 +49,17 @@ class PackageController extends Controller
 
     private function validated(Request $request): array
     {
+        if (is_string($request->input('benefits'))) {
+            $request->merge([
+                'benefits' => array_values(array_filter(array_map('trim', explode("\n", $request->input('benefits'))))),
+            ]);
+        }
+        if (is_string($request->input('deliverables'))) {
+            $request->merge([
+                'deliverables' => array_values(array_filter(array_map('trim', explode("\n", $request->input('deliverables'))))),
+            ]);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:160'],
             'support_type' => ['required', 'string'],

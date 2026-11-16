@@ -2,7 +2,29 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Button from '../../components/Button';
-import { Field, Input, Textarea } from '../../components/Form';
+import { Field, Input, Select, Textarea } from '../../components/Form';
+
+const EVENT_CATEGORIES = [
+  'Musik',
+  'Teknologi',
+  'Seni & budaya',
+  'Kuliner',
+  'Olahraga',
+  'Komunitas',
+  'Pendidikan',
+  'Kesehatan',
+  'Bisnis & Karier',
+  'Fesyen & Kriya',
+  'Film',
+  'Lingkungan',
+  'Lainnya',
+];
+
+const EVENT_FORMATS = [
+  'Offline',
+  'Online',
+  'Hybrid',
+];
 
 export default function EoEventForm({ event }) {
   const isEdit = Boolean(event);
@@ -49,11 +71,23 @@ export default function EoEventForm({ event }) {
               <Input id="title" value={data.title} onChange={(e) => setData('title', e.target.value)} error={errors.title} maxLength={160} />
             </Field>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Kategori" htmlFor="category" error={errors.category} required hint="Mis. Musik, Teknologi, Kuliner">
-                <Input id="category" value={data.category} onChange={(e) => setData('category', e.target.value)} error={errors.category} maxLength={80} />
+              <Field label="Kategori" htmlFor="category" error={errors.category} required>
+                <Select id="category" value={data.category} onChange={(e) => setData('category', e.target.value)} error={errors.category}>
+                  <option value="">Pilih kategori event</option>
+                  {EVENT_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                  {data.category && !EVENT_CATEGORIES.includes(data.category) && (
+                    <option value={data.category}>{data.category}</option>
+                  )}
+                </Select>
               </Field>
               <Field label="Format" htmlFor="format" error={errors.format} required>
-                <Input id="format" value={data.format} onChange={(e) => setData('format', e.target.value)} error={errors.format} maxLength={40} placeholder="Offline / Online / Hybrid" />
+                <Select id="format" value={data.format} onChange={(e) => setData('format', e.target.value)} error={errors.format}>
+                  {EVENT_FORMATS.map((fmt) => (
+                    <option key={fmt} value={fmt}>{fmt}</option>
+                  ))}
+                </Select>
               </Field>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">

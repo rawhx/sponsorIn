@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { FilePlus2, FileText, Handshake, Star, Users } from 'lucide-react';
+import { Plus, Star, Users } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
@@ -19,20 +19,10 @@ export default function EoDashboard({ organization, counts = {}, upcomingEvents 
       eyebrow={organization?.name ?? 'Akun EO'}
       title="Dashboard EO"
       actions={
-        <div className="flex flex-wrap gap-2">
-          <Link href="/eo/proposals/create" className={buttonClasses({ size: 'sm' })}>
-            <FilePlus2 className="h-4 w-4" aria-hidden="true" />
-            Upload Proposal
-          </Link>
-          <Link href="/eo/proposals" className={buttonClasses({ variant: 'outline', size: 'sm' })}>
-            <FileText className="h-4 w-4" aria-hidden="true" />
-            Daftar Proposal
-          </Link>
-          <Link href="/eo/sponsorships" className={buttonClasses({ variant: 'outline', size: 'sm' })}>
-            <Handshake className="h-4 w-4" aria-hidden="true" />
-            Manajemen Kerja Sama
-          </Link>
-        </div>
+        <Link href="/eo/events/create" className={buttonClasses({ size: 'sm' })}>
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Buat Event
+        </Link>
       }
     >
       <Head title="Dashboard EO" />
@@ -102,7 +92,12 @@ export default function EoDashboard({ organization, counts = {}, upcomingEvents 
               <div key={event.id} className="grid gap-2 py-4 sm:grid-cols-[150px_1fr_auto] sm:items-center sm:gap-6">
                 <p className="text-sm tabular-nums text-text-secondary-strong">{formatDate(event.date_start)}</p>
                 <div>
-                  <p className="text-sm font-medium text-text">{event.title}</p>
+                  <Link
+                    href={`/eo/events/${event.id}`}
+                    className="text-sm font-medium text-text hover:text-primary hover:underline transition-colors"
+                  >
+                    {event.title}
+                  </Link>
                   <p className="mt-0.5 text-xs text-text-secondary-strong">{event.location}</p>
                 </div>
                 <StatusBadge status={event.status} />

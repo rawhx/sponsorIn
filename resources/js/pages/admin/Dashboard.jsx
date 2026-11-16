@@ -22,11 +22,6 @@ export default function AdminDashboard({ counts, pendingVerifications, recentAud
     <DashboardLayout
       eyebrow="Operasional platform"
       title="Ringkasan admin"
-      actions={
-        <Link href="/admin/verifications" className={buttonClasses({ variant: 'outline' })}>
-          Buka antrean verifikasi
-        </Link>
-      }
     >
       <Head title="Ringkasan admin" />
 

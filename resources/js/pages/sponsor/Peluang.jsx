@@ -282,18 +282,14 @@ export default function EventShow({ event }) {
                   Masuk sebagai sponsor untuk menyimpan shortlist dan mengirim minat pada peluang ini.
                 </p>
               )}
-              <div className="mt-4 space-y-2">
-                {auth?.user ? (
-                  <Link href="/dashboard" className={buttonClasses({ variant: canShortlist ? 'ghost' : 'primary', className: 'w-full' })}>Buka ruang kerja</Link>
-                ) : (
-                  <>
-                    <Link href="/login" className={buttonClasses({ className: 'w-full' })}>Masuk sebagai sponsor</Link>
-                    <Link href="/register?role=sponsor" className={buttonClasses({ variant: 'outline', className: 'w-full' })}>
-                      Daftar sponsor
-                    </Link>
-                  </>
-                )}
-              </div>
+              {!auth?.user && (
+                <div className="mt-4 space-y-2">
+                  <Link href="/login" className={buttonClasses({ className: 'w-full' })}>Masuk sebagai sponsor</Link>
+                  <Link href="/register?role=sponsor" className={buttonClasses({ variant: 'outline', className: 'w-full' })}>
+                    Daftar sponsor
+                  </Link>
+                </div>
+              )}
               <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-text-muted">
                 SponsorIn tidak memproses pembayaran. Kesepakatan dan pembayaran dilakukan di luar platform sesuai ringkasan yang disetujui kedua pihak.
               </p>

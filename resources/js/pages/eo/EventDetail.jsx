@@ -14,25 +14,70 @@ const availabilityOptions = [
   { value: 'closed', label: 'Ditutup' },
 ];
 
+const STANDARDIZED_SOURCES = [
+  'Laporan penjualan tiket (Ticketing Platform / Internal)',
+  'Formulir pendaftaran / Registrasi peserta',
+  'Rekap presensi / Check-in kehadiran',
+  'Insight / Metrik analitik media sosial',
+  'Laporan evaluasi event sebelumnya',
+  'Rencana proyeksi internal EO',
+  'Google Analytics / Traffic website',
+  'Lainnya',
+];
+
+function parsePeriod(periodStr) {
+  if (!periodStr) return { period_start: '', period_end: '' };
+  const parts = periodStr.split(/\s*(?:s\/d|-)\s*/);
+  if (parts.length >= 2) {
+    return { period_start: parts[0].trim(), period_end: parts[1].trim() };
+  }
+  return { period_start: periodStr.trim(), period_end: '' };
+}
+
 function emptyEvidence() {
-  return { evidence_type: 'projection', value: '', unit: 'orang', period: '', source_description: '', evidence_note: '' };
+  return { evidence_type: 'projection', value: '', unit: 'orang', period_start: '', period_end: '', evidence_note: '' };
 }
 
 function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
+  const parsedPeriod = parsePeriod(evidence?.period);
+  const initialSource = evidence?.source ?? '';
+  const isInitialStandard = STANDARDIZED_SOURCES.includes(initialSource);
+
+  const [sourceType, setSourceType] = useState(
+    initialSource ? (isInitialStandard ? initialSource : 'Lainnya') : STANDARDIZED_SOURCES[0]
+  );
+  const [customSource, setCustomSource] = useState(
+    initialSource && !isInitialStandard ? initialSource : ''
+  );
+
   const initial = evidence
     ? {
         evidence_type: evidence.type,
         value: evidence.value,
         unit: evidence.unit,
-        period: evidence.period,
-        source_description: evidence.source,
+        period_start: parsedPeriod.period_start,
+        period_end: parsedPeriod.period_end,
         evidence_note: evidence.note ?? '',
       }
     : emptyEvidence();
-  const { data, setData, post, put, processing, errors, reset } = useForm(initial);
+  const { data, setData, post, put, processing, errors, reset, transform } = useForm(initial);
 
   function submit(submitEvent) {
     submitEvent.preventDefault();
+    const finalPeriod = data.period_end
+      ? `${data.period_start} s/d ${data.period_end}`
+      : data.period_start;
+    const finalSource = sourceType === 'Lainnya' ? (customSource || 'Lainnya') : sourceType;
+
+    transform((prev) => ({
+      evidence_type: prev.evidence_type,
+      value: prev.value,
+      unit: prev.unit,
+      period: finalPeriod,
+      source_description: finalSource,
+      evidence_note: prev.evidence_note,
+    }));
+
     const options = { preserveScroll: true, onSuccess: () => { reset(); onDone?.(); } };
     if (evidence) {
       put(`/eo/events/${event.id}/evidence/${evidence.id}`, options);
@@ -59,16 +104,56 @@ function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Periode" htmlFor="period" error={errors.period} required hint="Mis. Jan–Mar 2026">
-          <Input id="period" value={data.period} onChange={(e) => setData('period', e.target.value)} error={errors.period} />
+        <Field label="Tanggal mulai bukti" htmlFor="period_start" error={errors.period} required>
+          <Input
+            id="period_start"
+            type="date"
+            value={data.period_start}
+            onChange={(e) => setData('period_start', e.target.value)}
+            error={errors.period}
+          />
         </Field>
-        <Field label="Sumber data" htmlFor="source_description" error={errors.source_description} required hint="Wajib jelas">
-          <Input id="source_description" value={data.source_description} onChange={(e) => setData('source_description', e.target.value)} error={errors.source_description} placeholder="Mis. laporan penjualan tiket internal" />
+        <Field label="Tanggal selesai bukti" htmlFor="period_end" hint="Opsional untuk rentang">
+          <Input
+            id="period_end"
+            type="date"
+            value={data.period_end}
+            onChange={(e) => setData('period_end', e.target.value)}
+          />
         </Field>
       </div>
-      <Field label="Catatan" htmlFor="evidence_note" error={errors.evidence_note} hint="Opsional">
-        <Input id="evidence_note" value={data.evidence_note} onChange={(e) => setData('evidence_note', e.target.value)} error={errors.evidence_note} />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Sumber data" htmlFor="source_description" error={errors.source_description} required>
+          <Select
+            id="source_description"
+            value={sourceType}
+            onChange={(e) => setSourceType(e.target.value)}
+          >
+            {STANDARDIZED_SOURCES.map((src) => (
+              <option key={src} value={src}>{src}</option>
+            ))}
+          </Select>
+        </Field>
+        {sourceType === 'Lainnya' ? (
+          <Field label="Keterangan sumber lainnya" htmlFor="custom_source" error={errors.source_description} required>
+            <Input
+              id="custom_source"
+              value={customSource}
+              onChange={(e) => setCustomSource(e.target.value)}
+              placeholder="Sebutkan sumber data spesifik"
+            />
+          </Field>
+        ) : (
+          <Field label="Catatan" htmlFor="evidence_note" error={errors.evidence_note} hint="Opsional">
+            <Input id="evidence_note" value={data.evidence_note} onChange={(e) => setData('evidence_note', e.target.value)} error={errors.evidence_note} />
+          </Field>
+        )}
+      </div>
+      {sourceType === 'Lainnya' && (
+        <Field label="Catatan" htmlFor="evidence_note" error={errors.evidence_note} hint="Opsional">
+          <Input id="evidence_note" value={data.evidence_note} onChange={(e) => setData('evidence_note', e.target.value)} error={errors.evidence_note} />
+        </Field>
+      )}
       <div className="flex justify-end gap-2">
         {evidence ? (
           <Button type="button" variant="ghost" size="sm" onClick={onDone}>Batal</Button>
@@ -80,33 +165,70 @@ function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
 }
 
 function PackageForm({ event, supportTypes, pkg, onDone }) {
-  const initial = pkg
-    ? {
-        name: pkg.name,
-        support_type: pkg.support_type,
-        price_amount: pkg.price_amount ?? '',
-        currency: pkg.currency ?? 'IDR',
-        benefits: (pkg.benefits ?? []).join('\n'),
-        deliverables: (pkg.deliverables ?? []).join('\n'),
-        availability_status: pkg.availability_status,
-        notes: pkg.notes ?? '',
-      }
-    : { name: '', support_type: 'cash', price_amount: '', currency: 'IDR', benefits: '', deliverables: '', availability_status: 'available', notes: '' };
+  const initialBenefits = pkg?.benefits && Array.isArray(pkg.benefits) && pkg.benefits.length > 0
+    ? pkg.benefits
+    : [''];
+  const initialDeliverables = pkg?.deliverables && Array.isArray(pkg.deliverables) && pkg.deliverables.length > 0
+    ? pkg.deliverables
+    : [''];
 
-  const { data, setData, post, put, processing, errors } = useForm(initial);
+  const { data, setData, post, put, processing, errors, transform } = useForm({
+    name: pkg?.name ?? '',
+    support_type: pkg?.support_type ?? 'cash',
+    price_amount: pkg?.price_amount ?? '',
+    currency: pkg?.currency ?? 'IDR',
+    benefits: initialBenefits,
+    deliverables: initialDeliverables,
+    availability_status: pkg?.availability_status ?? 'available',
+    notes: pkg?.notes ?? '',
+  });
+
+  function addBenefit() {
+    setData('benefits', [...data.benefits, '']);
+  }
+
+  function updateBenefit(index, val) {
+    const next = [...data.benefits];
+    next[index] = val;
+    setData('benefits', next);
+  }
+
+  function removeBenefit(index) {
+    const next = data.benefits.filter((_, i) => i !== index);
+    setData('benefits', next.length > 0 ? next : ['']);
+  }
+
+  function addDeliverable() {
+    setData('deliverables', [...data.deliverables, '']);
+  }
+
+  function updateDeliverable(index, val) {
+    const next = [...data.deliverables];
+    next[index] = val;
+    setData('deliverables', next);
+  }
+
+  function removeDeliverable(index) {
+    const next = data.deliverables.filter((_, i) => i !== index);
+    setData('deliverables', next.length > 0 ? next : ['']);
+  }
 
   function submit(submitEvent) {
     submitEvent.preventDefault();
-    const payload = {
-      ...data,
-      benefits: data.benefits.split('\n').map((line) => line.trim()).filter(Boolean),
-      deliverables: data.deliverables.split('\n').map((line) => line.trim()).filter(Boolean),
-    };
+    const cleanBenefits = data.benefits.map((b) => b.trim()).filter(Boolean);
+    const cleanDeliverables = data.deliverables.map((d) => d.trim()).filter(Boolean);
+
+    transform((prev) => ({
+      ...prev,
+      benefits: cleanBenefits,
+      deliverables: cleanDeliverables,
+    }));
+
     const options = { preserveScroll: true, onSuccess: () => onDone?.() };
     if (pkg) {
-      put(`/eo/events/${event.id}/packages/${pkg.id}`, { ...options, data: payload });
+      put(`/eo/events/${event.id}/packages/${pkg.id}`, options);
     } else {
-      post(`/eo/events/${event.id}/packages`, payload, options);
+      post(`/eo/events/${event.id}/packages`, options);
     }
   }
 
@@ -134,14 +256,87 @@ function PackageForm({ event, supportTypes, pkg, onDone }) {
           </Field>
         </div>
       ) : null}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Benefit" htmlFor="benefits" error={errors.benefits} hint="Satu per baris">
-          <Textarea id="benefits" rows={4} value={data.benefits} onChange={(e) => setData('benefits', e.target.value)} placeholder={'Logo di panggung utama\nSebutan brand di media sosial'} />
-        </Field>
-        <Field label="Deliverable" htmlFor="deliverables" error={errors.deliverables} hint="Satu per baris">
-          <Textarea id="deliverables" rows={4} value={data.deliverables} onChange={(e) => setData('deliverables', e.target.value)} placeholder={'Slot booth 3x3 m\n5 konten Instagram'} />
-        </Field>
+      
+      {/* Benefit Field Array */}
+      <div className="rounded-[8px] border border-border bg-surface p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <label className="text-sm font-semibold text-text">Daftar Benefit</label>
+            <p className="text-xs text-text-muted">Keuntungan yang didapat sponsor (tambahkan per butir)</p>
+          </div>
+          <button
+            type="button"
+            onClick={addBenefit}
+            className="inline-flex items-center gap-1 rounded-[6px] border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-text hover:bg-hover transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+            Tambah Benefit
+          </button>
+        </div>
+        {errors.benefits && <p className="text-xs text-danger-strong">{errors.benefits}</p>}
+        <div className="space-y-2">
+          {data.benefits.map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <Input
+                value={item}
+                onChange={(e) => updateBenefit(index, e.target.value)}
+                placeholder={`Benefit #${index + 1} (mis. Logo di panggung utama)`}
+              />
+              {data.benefits.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeBenefit(index)}
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-border text-text-muted hover:border-danger/30 hover:bg-danger/10 hover:text-danger-strong transition-colors"
+                  title="Hapus baris"
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Deliverable Field Array */}
+      <div className="rounded-[8px] border border-border bg-surface p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <label className="text-sm font-semibold text-text">Daftar Deliverable</label>
+            <p className="text-xs text-text-muted">Kewajiban atau bukti yang harus diserahkan ke sponsor</p>
+          </div>
+          <button
+            type="button"
+            onClick={addDeliverable}
+            className="inline-flex items-center gap-1 rounded-[6px] border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-text hover:bg-hover transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+            Tambah Deliverable
+          </button>
+        </div>
+        {errors.deliverables && <p className="text-xs text-danger-strong">{errors.deliverables}</p>}
+        <div className="space-y-2">
+          {data.deliverables.map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <Input
+                value={item}
+                onChange={(e) => updateDeliverable(index, e.target.value)}
+                placeholder={`Deliverable #${index + 1} (mis. Rekap laporan foto & video)`}
+              />
+              {data.deliverables.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeDeliverable(index)}
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-border text-text-muted hover:border-danger/30 hover:bg-danger/10 hover:text-danger-strong transition-colors"
+                  title="Hapus baris"
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Ketersediaan" htmlFor="availability_status" error={errors.availability_status} required>
           <Select id="availability_status" value={data.availability_status} onChange={(e) => setData('availability_status', e.target.value)}>
