@@ -19,6 +19,7 @@ class DashboardController extends Controller
             ->whereIn('status', [
                 SponsorVerificationStatus::Submitted,
                 SponsorVerificationStatus::UnderReview,
+                SponsorVerificationStatus::NeedsInformation,
             ])
             ->latest('submitted_at')
             ->get();
