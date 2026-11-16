@@ -7,6 +7,7 @@ import {
   evidenceTypeLabels,
   formatCurrency,
   formatDateRange,
+  formatEvidencePeriod,
   formatNumber,
   supportTypeLabels,
 } from '../../lib/utils';
@@ -90,7 +91,7 @@ export default function EventShow({ event }) {
                       <div key={item.id} className="grid gap-2 px-4 py-4 sm:grid-cols-[120px_1fr_auto] sm:items-start sm:gap-4">
                         <div>
                           <p className="text-xs font-medium text-text">{evidenceTypeLabels[item.type] ?? item.type}</p>
-                          {item.period ? <p className="mt-0.5 text-[11px] text-text-muted">{item.period}</p> : null}
+                          {item.period_start || item.period ? <p className="mt-0.5 text-[11px] text-text-muted">{formatEvidencePeriod(item)}</p> : null}
                         </div>
                         <div>
                           <p className="text-lg font-semibold tabular-nums leading-tight text-text">
@@ -282,16 +283,14 @@ export default function EventShow({ event }) {
                 </p>
               )}
               <div className="mt-4 space-y-2">
-                {auth?.user ? (
-                  <Link href="/dashboard" className={buttonClasses({ variant: canShortlist ? 'ghost' : 'primary', className: 'w-full' })}>Buka ruang kerja</Link>
-                ) : (
+                {!auth?.user ? (
                   <>
                     <Link href="/login" className={buttonClasses({ className: 'w-full' })}>Masuk sebagai sponsor</Link>
                     <Link href="/register?role=sponsor" className={buttonClasses({ variant: 'outline', className: 'w-full' })}>
                       Daftar sponsor
                     </Link>
                   </>
-                )}
+                ) : null}
               </div>
               <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-text-muted">
                 SponsorIn tidak memproses pembayaran. Kesepakatan dan pembayaran dilakukan di luar platform sesuai ringkasan yang disetujui kedua pihak.

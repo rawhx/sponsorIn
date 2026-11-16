@@ -20,6 +20,16 @@ export function formatDateRange(start, end) {
   return `${formatDate(start)} – ${formatDate(end)}`;
 }
 
+export function formatEvidencePeriod(evidence) {
+  if (!evidence) return '—';
+
+  if (evidence.period_start) {
+    return formatDateRange(evidence.period_start, evidence.period_end);
+  }
+
+  return evidence.period || '—';
+}
+
 export function formatCurrency(amount, currency = 'IDR') {
   if (amount === null || amount === undefined) return 'Tidak ditentukan';
 

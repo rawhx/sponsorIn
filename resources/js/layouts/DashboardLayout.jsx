@@ -38,7 +38,7 @@ function navigationFor(role) {
       { key: 'events-calendar', label: 'Kalender Event', href: '/eo/events/calendar', icon: CalendarDays },
       { key: 'profile', label: 'Profil', href: '/eo/profile', icon: UserRound },
       { label: 'Sponsor tersedia', href: '/eo/sponsors/available', icon: Search },
-      { label: 'Daftar Proposal', href: '/eo/proposals', icon: FileText },
+      { label: 'Manajemen Proposal', href: '/eo/proposals', icon: FileText },
       { label: 'Manajemen Kerja Sama', href: '/eo/sponsorships', icon: Handshake },
       notifications,
     ];

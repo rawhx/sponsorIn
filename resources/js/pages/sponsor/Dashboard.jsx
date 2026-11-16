@@ -14,12 +14,6 @@ export default function SponsorDashboard({ organization, verification, canUseFea
     <DashboardLayout
       eyebrow={organization?.name ?? 'Akun sponsor'}
       title="Dashboard Sponsor"
-      actions={
-        <Link href="/sponsor/proposals" className={buttonClasses({ variant: 'outline' })}>
-          <Search className="h-4 w-4" aria-hidden="true" />
-          Peluang Sponsorship
-        </Link>
-      }
     >
       <Head title="Dashboard Sponsor" />
 
@@ -84,7 +78,6 @@ export default function SponsorDashboard({ organization, verification, canUseFea
                   Verifikasi usaha telah disetujui. Anda bisa melihat proposal dari EO, merespons, negosiasi, dan mengelola kerja sama.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Link href="/sponsor/proposals" className={buttonClasses({ size: 'sm' })}><Search className="h-4 w-4" />Peluang Sponsorship</Link>
                   <Link href="/sponsor/proposals" className={buttonClasses({ size: 'sm', variant: 'outline' })}><FileText className="h-4 w-4" />Daftar Proposal</Link>
                   <Link href="/sponsor/sponsorships" className={buttonClasses({ size: 'sm', variant: 'outline' })}><Handshake className="h-4 w-4" />Manajemen Kerja Sama</Link>
                 </div>
