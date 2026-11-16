@@ -20,7 +20,9 @@ class AudienceEvidenceFactory extends Factory
             'evidence_type' => AudienceEvidenceType::Projection,
             'value' => fake()->numberBetween(100, 5000),
             'unit' => 'orang',
-            'period' => 'Perencanaan acara',
+            'period' => null,
+            'period_start' => now()->subDays(30)->toDateString(),
+            'period_end' => now()->toDateString(),
             'source_description' => 'Sumber contoh untuk pengujian',
             'verification_status' => EvidenceVerificationStatus::Declared,
         ];

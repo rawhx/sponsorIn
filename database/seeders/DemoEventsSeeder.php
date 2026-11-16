@@ -46,6 +46,8 @@ class DemoEventsSeeder extends Seeder
                     'value' => $evidence[1],
                     'unit' => $evidence[2],
                     'period' => $evidence[3],
+                    'period_start' => $event->date_start->copy()->subDays(30)->toDateString(),
+                    'period_end' => ($event->date_end ?? $event->date_start)->toDateString(),
                     'source_description' => $evidence[4],
                     'evidence_note' => $evidence[5],
                     'verification_status' => $evidence[6] ?? EvidenceVerificationStatus::Declared,

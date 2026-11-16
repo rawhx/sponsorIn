@@ -20,6 +20,8 @@ class AudienceEvidence extends Model
         'value',
         'unit',
         'period',
+        'period_start',
+        'period_end',
         'source_description',
         'evidence_note',
         'file_path',
@@ -35,6 +37,8 @@ class AudienceEvidence extends Model
         return [
             'evidence_type' => AudienceEvidenceType::class,
             'value' => 'decimal:2',
+            'period_start' => 'date',
+            'period_end' => 'date',
             'verification_status' => EvidenceVerificationStatus::class,
         ];
     }

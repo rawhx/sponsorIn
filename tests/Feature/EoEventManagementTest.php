@@ -66,8 +66,9 @@ class EoEventManagementTest extends TestCase
                 'evidence_type' => 'registration',
                 'value' => 1200,
                 'unit' => 'orang',
-                'period' => 'Januari 2026',
-                'source_description' => 'Laporan internal panitia',
+                'period_start' => '2026-01-01',
+                'period_end' => '2026-01-31',
+                'source_description' => 'Laporan internal EO',
             ])
             ->assertRedirect();
 
@@ -75,18 +76,23 @@ class EoEventManagementTest extends TestCase
         $this->assertNotNull($evidence);
         $this->assertSame('1200.00', $evidence->value);
         $this->assertSame('declared', $evidence->verification_status->value);
+        $this->assertSame('2026-01-01', $evidence->period_start->toDateString());
 
         $this->actingAs($eo)
             ->put("/eo/events/{$event->id}/evidence/{$evidence->id}", [
                 'evidence_type' => 'check_in',
                 'value' => 980,
                 'unit' => 'orang',
-                'period' => 'Januari 2026',
-                'source_description' => 'Scan QR check-in',
+                'period_start' => '2026-01-05',
+                'period_end' => '2026-01-20',
+                'source_description' => 'Sistem check-in',
             ])
             ->assertRedirect();
 
-        $this->assertSame('check_in', $evidence->fresh()->evidence_type->value);
+        $updated = $evidence->fresh();
+        $this->assertSame('check_in', $updated->evidence_type->value);
+        $this->assertSame('2026-01-05', $updated->period_start->toDateString());
+        $this->assertSame('Sistem check-in', $updated->source_description);
     }
 
     public function test_eo_can_add_package_with_benefits_and_deliverables(): void
@@ -111,6 +117,39 @@ class EoEventManagementTest extends TestCase
         $this->assertSame(SupportType::Cash, $package->support_type);
         $this->assertCount(2, $package->benefits);
         $this->assertCount(1, $package->deliverables);
+    }
+
+    public function test_eo_can_update_package_with_benefit_and_deliverable_arrays(): void
+    {
+        $eo = $this->eoWithOrganization();
+        $event = $this->eventFor($eo);
+        $package = $event->packages()->create([
+            'name' => 'Paket Awal',
+            'support_type' => SupportType::Cash,
+            'price_amount' => 10000000,
+            'currency' => 'IDR',
+            'benefits' => ['Benefit lama'],
+            'deliverables' => ['Deliverable lama'],
+            'availability_status' => \App\Enums\PackageAvailability::Available,
+        ]);
+
+        $this->actingAs($eo)
+            ->put("/eo/events/{$event->id}/packages/{$package->id}", [
+                'name' => 'Sponsor Utama',
+                'support_type' => 'cash',
+                'price_amount' => 50000000,
+                'currency' => 'IDR',
+                'benefits' => ['Logo di panggung utama', 'Sebutan brand'],
+                'deliverables' => ['Booth 3x3 m', '5 konten Instagram'],
+                'availability_status' => 'available',
+                'notes' => 'Harga contoh.',
+            ])
+            ->assertRedirect();
+
+        $package->refresh();
+        $this->assertSame('Sponsor Utama', $package->name);
+        $this->assertSame(['Logo di panggung utama', 'Sebutan brand'], $package->benefits);
+        $this->assertSame(['Booth 3x3 m', '5 konten Instagram'], $package->deliverables);
     }
 
     public function test_submitting_for_review_requires_evidence(): void
@@ -138,8 +177,9 @@ class EoEventManagementTest extends TestCase
             'evidence_type' => 'projection',
             'value' => 500,
             'unit' => 'orang',
-            'period' => 'Perencanaan',
-            'source_description' => 'Estimasi panitia',
+            'period_start' => now()->toDateString(),
+            'period_end' => now()->addMonth()->toDateString(),
+            'source_description' => 'Estimasi internal EO',
         ]);
 
         $this->actingAs($eo)

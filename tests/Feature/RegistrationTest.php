@@ -6,6 +6,7 @@ use App\Enums\SponsorVerificationStatus;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -14,6 +15,8 @@ class RegistrationTest extends TestCase
 
     public function test_sponsor_registration_creates_organization_and_draft_verification(): void
     {
+        Notification::fake();
+
         $response = $this->post('/register', [
             'name' => 'Sari Wijaya',
             'email' => 'Sari@Example.com',
@@ -23,15 +26,18 @@ class RegistrationTest extends TestCase
             'organization_name' => 'PT Sari Maju',
         ]);
 
-        $response->assertRedirect(route('verification.notice'));
+        $response->assertRedirect(route('dashboard'));
 
         $user = User::where('email', 'sari@example.com')->firstOrFail();
         $this->assertSame(UserRole::Sponsor, $user->role);
+        $this->assertNotNull($user->email_verified_at);
         $this->assertNotNull($user->organization);
         $this->assertSame(
             SponsorVerificationStatus::Draft,
             $user->organization->verification->status
         );
+
+        Notification::assertNothingSent();
     }
 
     public function test_eo_registration_does_not_create_verification(): void
@@ -43,10 +49,11 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'passwordku123',
             'role' => 'eo',
             'organization_name' => 'Komunitas Budi',
-        ])->assertRedirect(route('verification.notice'));
+        ])->assertRedirect(route('dashboard'));
 
         $user = User::where('email', 'budi@example.com')->firstOrFail();
         $this->assertSame(UserRole::Eo, $user->role);
+        $this->assertNotNull($user->email_verified_at);
         $this->assertNull($user->organization->verification);
     }
 

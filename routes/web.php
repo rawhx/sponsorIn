@@ -5,12 +5,9 @@ use App\Http\Controllers\Admin\EventModerationController as AdminEventController
 use App\Http\Controllers\Admin\ReviewModerationController as AdminReviewController;
 use App\Http\Controllers\Admin\VerificationController as AdminVerificationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EO\AudienceEvidenceController;
 use App\Http\Controllers\EO\DashboardController as EoDashboardController;
@@ -58,14 +55,6 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/verify-email', EmailVerificationPromptController::class)->name('verification.notice');
-    Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
-    Route::post('/email/verification-notification', EmailVerificationNotificationController::class)
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
-
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -73,11 +62,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
 
     Route::get('/dashboard', [DashboardController::class, 'redirect'])
-        ->middleware('verified')
         ->name('dashboard');
 });
 
-Route::middleware(['auth', 'verified', 'role:sponsor'])
+Route::middleware(['auth', 'role:sponsor'])
     ->prefix('sponsor')
     ->name('sponsor.')
     ->group(function () {
@@ -116,7 +104,7 @@ Route::middleware(['auth', 'verified', 'role:sponsor'])
         });
     });
 
-Route::middleware(['auth', 'verified', 'role:eo'])
+Route::middleware(['auth', 'role:eo'])
     ->prefix('eo')
     ->name('eo.')
     ->group(function () {
@@ -160,7 +148,7 @@ Route::middleware(['auth', 'verified', 'role:eo'])
         Route::post('/sponsorships/{sponsorship}/dispute', [SponsorshipController::class, 'raiseDispute'])->name('sponsorships.dispute');
     });
 
-Route::middleware(['auth', 'verified', 'role:admin,verifier'])
+Route::middleware(['auth', 'role:admin,verifier'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
