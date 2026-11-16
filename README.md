@@ -21,7 +21,7 @@ Setiap akun memiliki `role` yang dikontrol di backend (route/middleware, bukan s
 
 **Status akun:**
 
-- **Pending**: email terverifikasi, verifikasi internal belum selesai. Melihat status verifikasi, melengkapi dokumen, menanggapi permintaan perbaikan. Tidak bisa mengirim proposal/penawaran, melihat data internal, atau menggunakan fitur sponsor aktif.
+- **Pending**: akun aktif, verifikasi internal belum selesai. Melihat status verifikasi, melengkapi dokumen, menanggapi permintaan perbaikan. Tidak bisa mengirim proposal/penawaran, melihat data internal, atau menggunakan fitur sponsor aktif.
 - **Active**: verifikasi internal disetujui. Mencari event, menyimpan shortlist, mengirim minat/penawaran, menerima proposal, berkomunikasi, mengelola sponsorship, memberi ulasan setelah selesai.
 
 **Fitur sponsor aktif (hanya setelah verifikasi Approved):**
@@ -41,7 +41,7 @@ Setiap akun memiliki `role` yang dikontrol di backend (route/middleware, bukan s
 
 #### EO (Active)
 
-- Email terverifikasi; profil tersedia; listing tunduk pada moderasi.
+- Akun aktif; profil tersedia; listing tunduk pada moderasi.
 - Melihat dashboard, event miliknya, proposal, sponsorship, rating.
 - Tidak boleh menghapus/mengubah ulasan sponsor; dapat melaporkan ulasan.
 - Larangan: tidak bisa mengubah event milik EO lain; tidak bisa mengakses area admin.
@@ -68,7 +68,7 @@ Akses `role` dicek di server/backend, bukan hanya dengan menyembunyikan tombol d
 
 1. Pengguna memilih role **Sponsor** pada halaman registrasi.
 2. Mengisi: nama, email perusahaan/usaha, password, nama perusahaan/usaha, bentuk usaha, NIB, NPWP/identitas pajak, dokumen pendukung.
-3. Sistem mengirim tautan verifikasi email. Email terverifikasi **tidak otomatis** berarti bisnis terverifikasi.
+3. Akun langsung aktif setelah registrasi. Email tidak dikirim saat registrasi; email hanya dipakai untuk reset password dan notifikasi aplikasi.
 4. Setelah pengajuan lengkap, status menjadi **Pending Verification**; fitur sponsor aktif terkunci.
 5. Verifier memeriksa data dan dokumen. Keputusan: **Approved**, **Needs Information**, atau **Rejected**.
 6. Jika **Needs Information**, sponsor menerima email dan dapat memperbarui pengajuan.
@@ -182,11 +182,10 @@ Seeder demo selesai. Gunakan password "sponsorin123" untuk semua akun demo.
 
 ### 4.3 Cara mengisi akun (registration + admin seeding)
 
-1. **Registrasi guest**: buka `/register`, pilih role `sponsor` atau `eo`, isi form. Sistem mengirim tautan verifikasi email.
-2. **Verifikasi email**: klik link yang dikirim. Email terverifikasi belum otomatis = bisnis terverifikasi.
-3. **Pengajuan verifikasi**: untuk sponsor, isi form verifikasi (`business_name`, `business_email`, `legal_form`, `nib`, `tax_id`, `supporting_document`), lalu **kirim**.
-4. **Keputusan verifier/admin**: masuk ke `/admin/verifications`, pilih `approved`, `needs_information`, atau `rejected`. Hanya admin/verifier yang bisa mengambil keputusan.
-5. Setelah **approved**, sponsor aktif: fitur `/sponsor/*` terbuka.
+1. **Registrasi guest**: buka `/register`, pilih role `sponsor` atau `eo`, isi form. Akun langsung aktif dan diarahkan ke dashboard; tidak ada email verifikasi.
+2. **Pengajuan verifikasi**: untuk sponsor, isi form verifikasi (`business_name`, `business_email`, `legal_form`, `nib`, `tax_id`, `supporting_document`), lalu **kirim**.
+3. **Keputusan verifier/admin**: masuk ke `/admin/verifications`, pilih `approved`, `needs_information`, atau `rejected`. Hanya admin/verifier yang bisa mengambil keputusan.
+4. Setelah **approved**, sponsor aktif: fitur `/sponsor/*` terbuka.
 
 ### 4.4 Peran dalam proyek (peran data)
 
@@ -387,7 +386,7 @@ Variabel penting:
 ## 8. Keamanan dan Privasi (Ringkasan)
 
 - Backend authorization untuk setiap resource; akses role dicek di middleware/server.
-- Email verifikasi, password di-hash, proteksi CSRF/XSS/SQL injection, rate limit login.
+- Password di-hash, proteksi CSRF/XSS/SQL injection, rate limit login.
 - NIB, NPWP, dokumen verifikasi, dan catatan internal **tidak pernah** tampil di profil publik.
 - Kriptografi: `business_email`, `nib`, `tax_id` dienkripsi di repa (cast `encrypted`); dokumen dienkripsi/visor.
 - Audit log mencatat perubahan status verifikasi, moderasi event, penyelesaian sponsorship, dan moderasi review.
