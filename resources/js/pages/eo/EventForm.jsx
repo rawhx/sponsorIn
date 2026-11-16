@@ -48,7 +48,7 @@ export default function EoEventForm({ event, categories = [], formats = [] }) {
         Kembali ke daftar event
       </Link>
 
-      <form onSubmit={submit} className="max-w-3xl space-y-6">
+      <form onSubmit={submit} className="space-y-6">
         <section className="rounded-[12px] border border-border bg-surface">
           <div className="border-b border-border px-5 py-4">
             <h2 className="text-sm font-semibold text-text">Informasi dasar</h2>

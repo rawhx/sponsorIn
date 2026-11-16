@@ -67,6 +67,38 @@ export function PasswordInput({ className, error, icon: Icon = Lock, ...props })
   );
 }
 
+export function CurrencyInput({ className, error, id, value, onChange, placeholder = '0', ...props }) {
+  const digits = String(value ?? '').replace(/\D/g, '');
+  const display = digits ? new Intl.NumberFormat('id-ID').format(Number(digits)) : '';
+
+  return (
+    <div className="relative flex items-center">
+      <span className="pointer-events-none absolute left-3.5 text-sm text-text-muted" aria-hidden="true">
+        Rp
+      </span>
+      <input
+        id={id}
+        inputMode="numeric"
+        autoComplete="off"
+        value={display}
+        onChange={(event) => {
+          const next = event.target.value.replace(/\D/g, '');
+          onChange?.({ target: { id, name: props.name, value: next } });
+        }}
+        placeholder={placeholder}
+        aria-invalid={Boolean(error)}
+        className={cn(
+          base,
+          'h-11 pl-10',
+          error && 'border-danger-strong focus:border-danger-strong focus:ring-danger/20',
+          className
+        )}
+        {...props}
+      />
+    </div>
+  );
+}
+
 export function Select({ className, error, children, ...props }) {
   return (
     <div className="relative">

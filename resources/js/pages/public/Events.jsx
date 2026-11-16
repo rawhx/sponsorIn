@@ -4,9 +4,10 @@ import PublicLayout from '../../layouts/PublicLayout';
 import EmptyState from '../../components/EmptyState';
 import Pagination from '../../components/Pagination';
 import { buttonClasses } from '../../components/Button';
+import CitySelect from '../../components/CitySelect';
 import { EvidenceTag } from '../../components/StatusBadge';
-import { Field, Input, Select } from '../../components/Form';
-import { formatDateRange } from '../../lib/utils';
+import { CurrencyInput, Field, Input, Select } from '../../components/Form';
+import { formatCurrency, formatDateRange } from '../../lib/utils';
 
 export default function Events({ events, filters, categories = [], supportTypes = [] }) {
   const { data, setData, get, processing } = useForm({
@@ -16,6 +17,8 @@ export default function Events({ events, filters, categories = [], supportTypes 
     date_from: filters.date_from ?? '',
     date_to: filters.date_to ?? '',
     support_type: filters.support_type ?? '',
+    min_price: filters.min_price ?? '',
+    max_price: filters.max_price ?? '',
   });
 
   const hasFilters = Object.values(data).some(Boolean);
@@ -74,11 +77,28 @@ export default function Events({ events, filters, categories = [], supportTypes 
               </Select>
             </Field>
             <Field label="Lokasi" htmlFor="location">
-              <Input
+              <CitySelect
                 id="location"
                 value={data.location}
                 onChange={(event) => setData('location', event.target.value)}
-                placeholder="Kota atau wilayah"
+              />
+            </Field>
+            <Field label="Harga minimum" htmlFor="min_price">
+              <CurrencyInput
+                id="min_price"
+                name="min_price"
+                value={data.min_price}
+                onChange={(event) => setData('min_price', event.target.value)}
+                placeholder="0"
+              />
+            </Field>
+            <Field label="Harga maksimum" htmlFor="max_price">
+              <CurrencyInput
+                id="max_price"
+                name="max_price"
+                value={data.max_price}
+                onChange={(event) => setData('max_price', event.target.value)}
+                placeholder="Tanpa batas"
               />
             </Field>
             <Field label="Mulai tanggal" htmlFor="date_from">
@@ -141,6 +161,9 @@ export default function Events({ events, filters, categories = [], supportTypes 
                     <div className="mt-3 flex flex-wrap gap-2">
                       <EvidenceTag>{event.evidence_count} bukti audiens</EvidenceTag>
                       <EvidenceTag>{event.package_count} paket</EvidenceTag>
+                      {event.price_min !== null && event.price_min !== undefined ? (
+                        <EvidenceTag>Mulai {formatCurrency(event.price_min)}</EvidenceTag>
+                      ) : null}
                       {event.support_needs ? <EvidenceTag>{event.support_needs}</EvidenceTag> : null}
                     </div>
                   </div>
