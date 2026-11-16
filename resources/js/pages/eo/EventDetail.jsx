@@ -5,8 +5,8 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge, { EvidenceTag } from '../../components/StatusBadge';
 import Button, { buttonClasses } from '../../components/Button';
 import ConfirmDialog from '../../components/ConfirmDialog';
-import { Field, Input, Select, Textarea } from '../../components/Form';
-import { cn, evidenceTypeLabels, formatCurrency, formatDateRange, formatNumber, supportTypeLabels } from '../../lib/utils';
+import { Field, Input, Select } from '../../components/Form';
+import { cn, evidenceTypeLabels, formatCurrency, formatDateRange, formatEvidencePeriod, formatNumber, supportTypeLabels } from '../../lib/utils';
 
 const availabilityOptions = [
   { value: 'available', label: 'Tersedia' },
@@ -15,7 +15,7 @@ const availabilityOptions = [
 ];
 
 function emptyEvidence() {
-  return { evidence_type: 'projection', value: '', unit: 'orang', period: '', source_description: '', evidence_note: '' };
+  return { evidence_type: 'projection', value: '', unit: 'orang', period_start: '', period_end: '', source_description: '', evidence_note: '' };
 }
 
 function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
@@ -24,12 +24,16 @@ function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
         evidence_type: evidence.type,
         value: evidence.value,
         unit: evidence.unit,
-        period: evidence.period,
+        period_start: evidence.period_start ?? '',
+        period_end: evidence.period_end ?? '',
         source_description: evidence.source,
         evidence_note: evidence.note ?? '',
       }
     : emptyEvidence();
   const { data, setData, post, put, processing, errors, reset } = useForm(initial);
+  const sourceOptions = event.evidenceSources ?? [];
+  const legacySource = evidence?.source && !sourceOptions.includes(evidence.source) ? evidence.source : null;
+  const allSources = legacySource ? [legacySource, ...sourceOptions] : sourceOptions;
 
   function submit(submitEvent) {
     submitEvent.preventDefault();
@@ -59,13 +63,21 @@ function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Periode" htmlFor="period" error={errors.period} required hint="Mis. Jan–Mar 2026">
-          <Input id="period" value={data.period} onChange={(e) => setData('period', e.target.value)} error={errors.period} />
+        <Field label="Periode mulai" htmlFor="period_start" error={errors.period_start} required>
+          <Input id="period_start" type="date" value={data.period_start} onChange={(e) => setData('period_start', e.target.value)} error={errors.period_start} />
         </Field>
-        <Field label="Sumber data" htmlFor="source_description" error={errors.source_description} required hint="Wajib jelas">
-          <Input id="source_description" value={data.source_description} onChange={(e) => setData('source_description', e.target.value)} error={errors.source_description} placeholder="Mis. laporan penjualan tiket internal" />
+        <Field label="Periode selesai" htmlFor="period_end" error={errors.period_end} required>
+          <Input id="period_end" type="date" value={data.period_end} onChange={(e) => setData('period_end', e.target.value)} error={errors.period_end} />
         </Field>
       </div>
+      <Field label="Sumber data" htmlFor="source_description" error={errors.source_description} required hint="Pilih sumber yang paling sesuai">
+        <Select id="source_description" value={data.source_description} onChange={(e) => setData('source_description', e.target.value)} error={errors.source_description}>
+          <option value="">Pilih sumber data</option>
+          {allSources.map((source) => (
+            <option key={source} value={source}>{source}</option>
+          ))}
+        </Select>
+      </Field>
       <Field label="Catatan" htmlFor="evidence_note" error={errors.evidence_note} hint="Opsional">
         <Input id="evidence_note" value={data.evidence_note} onChange={(e) => setData('evidence_note', e.target.value)} error={errors.evidence_note} />
       </Field>
@@ -79,6 +91,50 @@ function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
   );
 }
 
+function RepeatableField({ id, label, hint, items, field, errors, placeholder, onChange, onAdd, onRemove }) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline justify-between gap-3">
+        <label htmlFor={`${id}-0`} className="app-field-label text-sm font-medium text-text">{label}</label>
+        {hint ? <span className="text-xs font-normal text-text-secondary-strong">{hint}</span> : null}
+      </div>
+      <div className="space-y-2">
+        {items.map((item, index) => {
+          const error = errors?.[`${field}.${index}`];
+
+          return (
+            <div key={index} className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">
+                <Input
+                  id={`${id}-${index}`}
+                  value={item}
+                  onChange={(event) => onChange(index, event.target.value)}
+                  error={error}
+                  placeholder={placeholder}
+                  maxLength={300}
+                />
+                {error ? <p className="mt-1 text-xs text-danger-strong">{error}</p> : null}
+              </div>
+              <button
+                type="button"
+                onClick={() => onRemove(index)}
+                className="mt-0.5 rounded-[8px] p-2.5 text-text-muted hover:bg-hover hover:text-danger-strong"
+                aria-label={`Hapus ${label.toLowerCase()} ${index + 1}`}
+              >
+                <Trash2 className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <Button type="button" variant="outline" size="sm" onClick={onAdd}>
+        <Plus className="h-4 w-4" aria-hidden="true" />
+        Tambah {label.toLowerCase()}
+      </Button>
+    </div>
+  );
+}
+
 function PackageForm({ event, supportTypes, pkg, onDone }) {
   const initial = pkg
     ? {
@@ -86,27 +142,40 @@ function PackageForm({ event, supportTypes, pkg, onDone }) {
         support_type: pkg.support_type,
         price_amount: pkg.price_amount ?? '',
         currency: pkg.currency ?? 'IDR',
-        benefits: (pkg.benefits ?? []).join('\n'),
-        deliverables: (pkg.deliverables ?? []).join('\n'),
+        benefits: Array.isArray(pkg.benefits) && pkg.benefits.length > 0 ? pkg.benefits : [''],
+        deliverables: Array.isArray(pkg.deliverables) && pkg.deliverables.length > 0 ? pkg.deliverables : [''],
         availability_status: pkg.availability_status,
         notes: pkg.notes ?? '',
       }
-    : { name: '', support_type: 'cash', price_amount: '', currency: 'IDR', benefits: '', deliverables: '', availability_status: 'available', notes: '' };
+    : { name: '', support_type: 'cash', price_amount: '', currency: 'IDR', benefits: [''], deliverables: [''], availability_status: 'available', notes: '' };
 
-  const { data, setData, post, put, processing, errors } = useForm(initial);
+  const { data, setData, post, put, processing, errors, transform } = useForm(initial);
+
+  function updateItem(field, index, value) {
+    setData(field, data[field].map((item, itemIndex) => (itemIndex === index ? value : item)));
+  }
+
+  function addItem(field) {
+    setData(field, [...data[field], '']);
+  }
+
+  function removeItem(field, index) {
+    const next = data[field].filter((_, itemIndex) => itemIndex !== index);
+    setData(field, next.length > 0 ? next : ['']);
+  }
 
   function submit(submitEvent) {
     submitEvent.preventDefault();
-    const payload = {
-      ...data,
-      benefits: data.benefits.split('\n').map((line) => line.trim()).filter(Boolean),
-      deliverables: data.deliverables.split('\n').map((line) => line.trim()).filter(Boolean),
-    };
+    transform((formData) => ({
+      ...formData,
+      benefits: formData.benefits.map((line) => line.trim()).filter(Boolean),
+      deliverables: formData.deliverables.map((line) => line.trim()).filter(Boolean),
+    }));
     const options = { preserveScroll: true, onSuccess: () => onDone?.() };
     if (pkg) {
-      put(`/eo/events/${event.id}/packages/${pkg.id}`, { ...options, data: payload });
+      put(`/eo/events/${event.id}/packages/${pkg.id}`, options);
     } else {
-      post(`/eo/events/${event.id}/packages`, payload, options);
+      post(`/eo/events/${event.id}/packages`, options);
     }
   }
 
@@ -135,12 +204,30 @@ function PackageForm({ event, supportTypes, pkg, onDone }) {
         </div>
       ) : null}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Benefit" htmlFor="benefits" error={errors.benefits} hint="Satu per baris">
-          <Textarea id="benefits" rows={4} value={data.benefits} onChange={(e) => setData('benefits', e.target.value)} placeholder={'Logo di panggung utama\nSebutan brand di media sosial'} />
-        </Field>
-        <Field label="Deliverable" htmlFor="deliverables" error={errors.deliverables} hint="Satu per baris">
-          <Textarea id="deliverables" rows={4} value={data.deliverables} onChange={(e) => setData('deliverables', e.target.value)} placeholder={'Slot booth 3x3 m\n5 konten Instagram'} />
-        </Field>
+        <RepeatableField
+          id="benefits"
+          label="Benefit"
+          hint="Satu baris per benefit"
+          items={data.benefits}
+          field="benefits"
+          errors={errors}
+          placeholder="Mis. Logo di panggung utama"
+          onChange={(index, value) => updateItem('benefits', index, value)}
+          onAdd={() => addItem('benefits')}
+          onRemove={(index) => removeItem('benefits', index)}
+        />
+        <RepeatableField
+          id="deliverables"
+          label="Deliverable"
+          hint="Satu baris per deliverable"
+          items={data.deliverables}
+          field="deliverables"
+          errors={errors}
+          placeholder="Mis. Slot booth 3x3 m"
+          onChange={(index, value) => updateItem('deliverables', index, value)}
+          onAdd={() => addItem('deliverables')}
+          onRemove={(index) => removeItem('deliverables', index)}
+        />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Ketersediaan" htmlFor="availability_status" error={errors.availability_status} required>
@@ -305,7 +392,7 @@ export default function EoEventDetail({ event, canEdit, canSubmit, canClose }) {
                           <p className="mt-1 text-lg font-semibold tabular-nums text-text">
                             {formatNumber(item.value)} <span className="text-sm font-normal text-text-secondary-strong">{item.unit}</span>
                           </p>
-                          <p className="mt-0.5 text-xs text-text-secondary-strong">{item.period} · Sumber: {item.source}</p>
+                          <p className="mt-0.5 text-xs text-text-secondary-strong">{formatEvidencePeriod(item)} · Sumber: {item.source}</p>
                           {item.note ? <p className="mt-0.5 text-xs text-text-muted">{item.note}</p> : null}
                         </div>
                         {canEdit ? (
@@ -366,9 +453,32 @@ export default function EoEventDetail({ event, canEdit, canSubmit, canClose }) {
                             {supportTypeLabels[pkg.support_type] ?? pkg.support_type}
                             {pkg.support_type === 'cash' ? ` · ${formatCurrency(pkg.price_amount, pkg.currency)}` : ''}
                           </p>
-                          {(pkg.benefits ?? []).length > 0 ? (
-                            <p className="mt-2 text-xs leading-relaxed text-text-secondary">{pkg.benefits.join(' · ')}</p>
-                          ) : null}
+                          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                            <div>
+                              <p className="text-[11px] font-medium text-text-muted">BENEFIT</p>
+                              {(pkg.benefits ?? []).length > 0 ? (
+                                <ul className="mt-1.5 space-y-1">
+                                  {pkg.benefits.map((benefit, index) => (
+                                    <li key={index} className="text-xs leading-relaxed text-text-secondary">{benefit}</li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="mt-1.5 text-xs text-text-secondary">Tidak dirinci.</p>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-[11px] font-medium text-text-muted">DELIVERABLE</p>
+                              {(pkg.deliverables ?? []).length > 0 ? (
+                                <ul className="mt-1.5 space-y-1">
+                                  {pkg.deliverables.map((deliverable, index) => (
+                                    <li key={index} className="text-xs leading-relaxed text-text-secondary">{deliverable}</li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="mt-1.5 text-xs text-text-secondary">Tidak dirinci.</p>
+                              )}
+                            </div>
+                          </div>
                         </div>
                         {canEdit ? (
                           <div className="flex shrink-0 gap-1">

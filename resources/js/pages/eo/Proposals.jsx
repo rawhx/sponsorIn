@@ -4,7 +4,7 @@ export default function Proposals({ proposals, filters, counts, statuses }) {
   return (
     <ProposalIndex
       eyebrow="Kolaborasi"
-      title="Proposal masuk"
+      title="Manajemen Proposal"
       basePath="/eo/proposals"
       createHref="/eo/proposals/create"
       proposals={proposals}

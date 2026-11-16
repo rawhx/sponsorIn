@@ -1,6 +1,6 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
-import { ArrowLeft, Edit3, FileText, MapPin, Save, Star, X } from 'lucide-react';
+import { Edit3, FileText, MapPin, Save, Star, X } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import { buttonClasses } from '../../components/Button';
@@ -74,10 +74,6 @@ export default function EoProfile({
               Batal
             </button>
           )}
-          <Link href="/eo/dashboard" className={buttonClasses({ variant: 'ghost' })}>
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Kembali
-          </Link>
         </div>
       }
     >

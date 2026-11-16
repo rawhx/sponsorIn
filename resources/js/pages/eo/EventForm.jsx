@@ -2,16 +2,25 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import Button from '../../components/Button';
-import { Field, Input, Textarea } from '../../components/Form';
+import { Field, Input, Select, Textarea } from '../../components/Form';
 import CitySelect from '../../components/CitySelect';
 
-export default function EoEventForm({ event }) {
+export default function EoEventForm({ event, categories = [], formats = [] }) {
   const isEdit = Boolean(event);
+  const categoryOptions = event?.category && !categories.includes(event.category)
+    ? [event.category, ...categories]
+    : categories;
+  const normalizedFormat = event?.format
+    ? formats.find((format) => format.toLowerCase() === event.format.toLowerCase()) ?? event.format
+    : (formats[0] ?? 'Offline');
+  const formatOptions = normalizedFormat && !formats.includes(normalizedFormat)
+    ? [normalizedFormat, ...formats]
+    : formats;
 
   const { data, setData, post, put, processing, errors } = useForm({
     title: event?.title ?? '',
     category: event?.category ?? '',
-    format: event?.format ?? 'Offline',
+    format: normalizedFormat,
     date_start: event?.date_start ?? '',
     date_end: event?.date_end ?? '',
     location: event?.location ?? '',
@@ -50,11 +59,20 @@ export default function EoEventForm({ event }) {
               <Input id="title" value={data.title} onChange={(e) => setData('title', e.target.value)} error={errors.title} maxLength={160} />
             </Field>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Kategori" htmlFor="category" error={errors.category} required hint="Mis. Musik, Teknologi, Kuliner">
-                <Input id="category" value={data.category} onChange={(e) => setData('category', e.target.value)} error={errors.category} maxLength={80} />
+              <Field label="Kategori" htmlFor="category" error={errors.category} required>
+                <Select id="category" value={data.category} onChange={(event) => setData('category', event.target.value)} error={errors.category}>
+                  <option value="">Pilih kategori</option>
+                  {categoryOptions.map((category) => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </Select>
               </Field>
               <Field label="Format" htmlFor="format" error={errors.format} required>
-                <Input id="format" value={data.format} onChange={(e) => setData('format', e.target.value)} error={errors.format} maxLength={40} placeholder="Offline / Online / Hybrid" />
+                <Select id="format" value={data.format} onChange={(event) => setData('format', event.target.value)} error={errors.format}>
+                  {formatOptions.map((format) => (
+                    <option key={format} value={format}>{format}</option>
+                  ))}
+                </Select>
               </Field>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">

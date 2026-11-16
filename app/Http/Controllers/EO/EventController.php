@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -109,6 +110,7 @@ class EventController extends Controller
             'event' => [
                 ...$this->eventPayload($event),
                 'evidenceTypes' => $this->evidenceTypes(),
+                'evidenceSources' => config('event_options.evidence_sources'),
                 'supportTypes' => $this->supportTypes(),
             ],
             'canEdit' => $event->status->canBeEdited(),
@@ -125,6 +127,8 @@ class EventController extends Controller
             'event' => null,
             'audienceEvidenceTypes' => $this->evidenceTypes(),
             'supportTypes' => $this->supportTypes(),
+            'categories' => config('event_options.categories'),
+            'formats' => config('event_options.formats'),
         ]);
     }
 
@@ -156,6 +160,8 @@ class EventController extends Controller
             'event' => $this->eventPayload($event),
             'audienceEvidenceTypes' => $this->evidenceTypes(),
             'supportTypes' => $this->supportTypes(),
+            'categories' => $this->eventCategories($event),
+            'formats' => $this->eventFormats($event),
         ]);
     }
 
@@ -164,7 +170,7 @@ class EventController extends Controller
         $this->authorizeOwner($request, $event);
         abort_unless($event->status->canBeEdited(), 403, 'Event ini sedang dalam proses moderasi dan belum dapat diubah.');
 
-        $event->update($this->validated($request));
+        $event->update($this->validated($request, $event));
 
         return redirect()
             ->route('eo.events.show', $event)
@@ -215,12 +221,15 @@ class EventController extends Controller
         abort_unless($event->eo_organization_id === $request->user()->organization?->id, 403);
     }
 
-    private function validated(Request $request): array
+    private function validated(Request $request, ?Event $event = null): array
     {
+        $categories = $this->eventCategories($event);
+        $formats = $this->eventFormats($event);
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:160'],
-            'category' => ['required', 'string', 'max:80'],
-            'format' => ['required', 'string', 'max:40'],
+            'category' => ['required', 'string', Rule::in($categories)],
+            'format' => ['required', 'string', Rule::in($formats)],
             'date_start' => ['required', 'date'],
             'date_end' => ['nullable', 'date', 'after_or_equal:date_start'],
             'location' => ['required', 'string', 'max:160'],
@@ -231,6 +240,26 @@ class EventController extends Controller
         ]);
 
         return $data;
+    }
+
+    private function eventCategories(?Event $event = null): array
+    {
+        return collect(config('event_options.categories'))
+            ->push($event?->category)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function eventFormats(?Event $event = null): array
+    {
+        return collect(config('event_options.formats'))
+            ->push($event?->format)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     private function eventPayload(Event $event): array
@@ -256,6 +285,8 @@ class EventController extends Controller
                 'value' => $evidence->value,
                 'unit' => $evidence->unit,
                 'period' => $evidence->period,
+                'period_start' => $evidence->period_start?->toDateString(),
+                'period_end' => $evidence->period_end?->toDateString(),
                 'source' => $evidence->source_description,
                 'note' => $evidence->evidence_note,
                 'verification_status' => $evidence->verification_status->value,
