@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\SponsorVerification;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,12 +70,12 @@ class RegisteredUserController extends Controller
             return $user;
         });
 
-        event(new Registered($user));
+        $user->markEmailAsVerified();
 
         Auth::login($user);
 
         return redirect()
-            ->route('verification.notice')
-            ->with('success', 'Akun berhasil dibuat. Periksa email untuk memverifikasi alamat email Anda.');
+            ->route('dashboard')
+            ->with('success', 'Akun berhasil dibuat.');
     }
 }
