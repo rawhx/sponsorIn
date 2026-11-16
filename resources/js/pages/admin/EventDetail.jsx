@@ -6,7 +6,7 @@ import StatusBadge, { EvidenceTag } from '../../components/StatusBadge';
 import Button from '../../components/Button';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import { Field, Select, Textarea } from '../../components/Form';
-import { evidenceTypeLabels, formatCurrency, formatDateRange, formatNumber, supportTypeLabels } from '../../lib/utils';
+import { evidenceTypeLabels, formatCurrency, formatDateRange, formatEvidencePeriod, formatNumber, supportTypeLabels } from '../../lib/utils';
 
 export default function AdminEventDetail({ event }) {
   const { data, setData, post, processing, errors } = useForm({
@@ -98,7 +98,7 @@ export default function AdminEventDetail({ event }) {
                   <div key={item.id} className="grid gap-2 py-3.5 sm:grid-cols-[140px_1fr_auto] sm:items-start sm:gap-4">
                     <div>
                       <p className="text-xs font-medium text-text">{evidenceTypeLabels[item.type] ?? item.type}</p>
-                      <p className="mt-0.5 text-[11px] text-text-muted">{item.period}</p>
+                      <p className="mt-0.5 text-[11px] text-text-muted">{formatEvidencePeriod(item)}</p>
                     </div>
                     <div>
                       <p className="text-lg font-semibold tabular-nums text-text">

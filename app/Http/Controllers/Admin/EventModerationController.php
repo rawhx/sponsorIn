@@ -84,6 +84,8 @@ class EventModerationController extends Controller
                     'value' => $evidence->value,
                     'unit' => $evidence->unit,
                     'period' => $evidence->period,
+                    'period_start' => $evidence->period_start?->toDateString(),
+                    'period_end' => $evidence->period_end?->toDateString(),
                     'source' => $evidence->source_description,
                     'note' => $evidence->evidence_note,
                     'verification_status' => $evidence->verification_status->value,

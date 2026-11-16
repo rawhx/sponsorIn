@@ -2,7 +2,6 @@ import { Head, Link } from '@inertiajs/react';
 import { CheckCircle2, ChevronRight, ClipboardList, Flag } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
-import { buttonClasses } from '../../components/Button';
 import { formatDate } from '../../lib/utils';
 
 function formatDateTime(value) {
@@ -22,11 +21,6 @@ export default function AdminDashboard({ counts, pendingVerifications, recentAud
     <DashboardLayout
       eyebrow="Operasional platform"
       title="Ringkasan admin"
-      actions={
-        <Link href="/admin/verifications" className={buttonClasses({ variant: 'outline' })}>
-          Buka antrean verifikasi
-        </Link>
-      }
     >
       <Head title="Ringkasan admin" />
 
