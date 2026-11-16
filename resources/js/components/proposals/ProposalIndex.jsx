@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ChevronRight, Filter } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EmptyState from '../../components/EmptyState';
@@ -25,6 +25,7 @@ export default function ProposalIndex({
   const { data, setData, get, processing } = useForm({
     status: filters.status ?? '',
   });
+  const role = usePage().props.auth?.user?.role;
 
   function submit(event) {
     event.preventDefault();
@@ -109,7 +110,11 @@ export default function ProposalIndex({
           ) : (
             <EmptyState
               title="Belum ada proposal"
-              description="Proposal yang Anda kirim atau terima akan muncul di sini beserta riwayat status terkini."
+              description={
+                role === 'eo'
+                  ? 'Proposal yang Anda kirim ke sponsor akan muncul di sini beserta riwayat status terkini.'
+                  : 'Proposal yang Anda terima dari event organizer akan muncul di sini beserta riwayat status terkini.'
+              }
             />
           )}
 
