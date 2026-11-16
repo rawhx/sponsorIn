@@ -8,11 +8,11 @@ export default function ProposalDetail({ proposal, transitions, statuses, manage
 
   const asideExtra =
     proposal.status === 'accepted' ? (
-      <div className="rounded-[12px] border border-border bg-background-muted p-5">
-        <h2 className="text-sm font-semibold text-text">Kerja sama</h2>
+      <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-5">
+        <h2 className="text-sm font-bold text-slate-900">Kerja sama</h2>
         {proposal.sponsorship_id ? (
           <>
-            <p className="mt-2 text-xs leading-relaxed text-text-secondary-strong">
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
               Proposal ini sudah tercatat sebagai kerja sama aktif.
             </p>
             <Link
@@ -25,7 +25,7 @@ export default function ProposalDetail({ proposal, transitions, statuses, manage
           </>
         ) : (
           <>
-            <p className="mt-2 text-xs leading-relaxed text-text-secondary-strong">
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
               Catat kesepakatan ini sebagai kerja sama agar kedua pihak dapat memantau penyelesaian dan ulasan.
             </p>
             <button

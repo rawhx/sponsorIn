@@ -30,8 +30,8 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout
-      title="Atur ulang kata sandi"
-      description="Masukkan alamat email akun SponsorIn Anda. Kami akan mengirimkan tautan pengaturan ulang kata sandi."
+      title="Atur Ulang Kata Sandi"
+      description="Masukkan alamat email akun SponsorIn Anda. Kami akan mengirimkan tautan pemulihan kata sandi."
       features={forgotFeatures}
       asideTitle="Akses dipulihkan tanpa mengurangi keamanan data Anda."
       asideBody="Tautan pemulihan berlaku sementara dan hanya dapat digunakan satu kali. Data usaha dan arsip proposal Anda tetap terlindungi di ruang kerja."
@@ -39,8 +39,8 @@ export default function ForgotPassword() {
       <Head title="Lupa Kata Sandi" />
       <FlashMessages />
 
-      <form onSubmit={submit} className="space-y-4 sm:space-y-5">
-        <Field label="Alamat email akun" htmlFor="email" error={errors.email} required>
+      <form onSubmit={submit} className="space-y-5">
+        <Field label="Alamat Email Terdaftar" htmlFor="email" error={errors.email} required>
           <Input
             id="email"
             type="email"
@@ -50,14 +50,14 @@ export default function ForgotPassword() {
             value={data.email}
             onChange={(event) => setData('email', event.target.value)}
             error={errors.email}
-            placeholder="nama@perusahaan.id"
+            placeholder="nama@perusahaan.com"
           />
         </Field>
 
         <Button
           type="submit"
           size="lg"
-          className="w-full flex items-center justify-center gap-2"
+          className="w-full flex items-center justify-center gap-2 mt-2"
           disabled={processing}
         >
           {processing ? (
@@ -71,11 +71,11 @@ export default function ForgotPassword() {
         </Button>
       </form>
 
-      <div className="mt-6 border-t border-border pt-5 text-center text-sm text-text-secondary-strong">
+      <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs sm:text-sm text-slate-500">
         Sudah mengingat kata sandi?{' '}
         <Link
           href="/login"
-          className="inline-flex items-center gap-1 font-medium text-primary-strong underline decoration-primary/30 underline-offset-4 transition-colors hover:text-text"
+          className="inline-flex items-center gap-1 font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
           Kembali ke halaman masuk

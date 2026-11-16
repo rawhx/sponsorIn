@@ -1,12 +1,13 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Search, X } from 'lucide-react';
+import { Calendar, Filter, MapPin, Search, Tag, X } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import EmptyState from '../../components/EmptyState';
 import Pagination from '../../components/Pagination';
-import { buttonClasses } from '../../components/Button';
+import Button, { buttonClasses } from '../../components/Button';
+import CitySelect from '../../components/CitySelect';
 import { EvidenceTag } from '../../components/StatusBadge';
-import { Field, Input, Select } from '../../components/Form';
-import { formatDateRange } from '../../lib/utils';
+import { Field, Input, Select, CurrencyInput } from '../../components/Form';
+import { formatCurrency, formatDateRange } from '../../lib/utils';
 
 export default function Events({ events, filters, categories = [], supportTypes = [] }) {
   const { data, setData, get, processing } = useForm({
@@ -16,42 +17,37 @@ export default function Events({ events, filters, categories = [], supportTypes 
     date_from: filters.date_from ?? '',
     date_to: filters.date_to ?? '',
     support_type: filters.support_type ?? '',
+    min_price: filters.min_price ?? '',
+    max_price: filters.max_price ?? '',
   });
 
   const hasFilters = Object.values(data).some(Boolean);
 
   function submit(event) {
     event.preventDefault();
-    get('/sponsor/events', { preserveState: true, preserveScroll: true, replace: true });
+    get(window.location.pathname, { preserveState: true, preserveScroll: true, replace: true });
   }
 
   function reset() {
-    Object.keys(data).forEach((key) => setData(key, ''));
-    router.get('/sponsor/events', {}, { preserveState: false, preserveScroll: true, replace: true });
+    router.get(window.location.pathname, {}, { preserveState: false, preserveScroll: true, replace: true });
   }
 
   return (
     <DashboardLayout
       eyebrow="Peluang sponsorship"
-      title="Daftar Peluang"
-      description="Jelajahi event yang membuka kesempatan kerja sama sponsorship."
-      className="bg-background"
+      title="Daftar Peluang Event"
+      description="Jelajahi event aktif yang membuka kesempatan kolaborasi sponsorship dengan data audiens terverifikasi."
     >
       <Head title="Daftar Peluang" />
-      <section className="mx-auto w-full max-w-6xl px-5 pb-16">
-        {/* <div className="max-w-2xl">
-          <p className="text-xs font-medium tracking-[0.08em] text-text-muted">PELUANG SPONSORSHIP</p>
-          <h1 className="mt-3 text-[clamp(1.8rem,3.5vw,2.6rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-text">
-            Jelajahi event yang membuka kesempatan kerja sama
-          </h1>
-          <p className="mt-4 text-[15px] leading-relaxed text-text-secondary-strong">
-            Filter berdasarkan kategori, lokasi, tanggal, atau jenis dukungan. Setiap event
-            menampilkan jumlah bukti audiens, paket yang tersedia, dan detail organizer.
-          </p>
-        </div> */}
 
-        <form onSubmit={submit} className="mt-10 rounded-[12px] border border-border bg-surface p-4 sm:p-5">
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      {/* Filter Card */}
+      <div className="rounded-2xl border border-border/80 bg-surface p-5 sm:p-6 shadow-xs">
+        <div className="flex items-center gap-2 mb-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
+          <Filter className="h-3.5 w-3.5 text-primary" />
+          Filter Peluang
+        </div>
+        <form onSubmit={submit}>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Kata kunci" htmlFor="q" className="lg:col-span-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" aria-hidden="true" />
@@ -81,11 +77,27 @@ export default function Events({ events, filters, categories = [], supportTypes 
               </Select>
             </Field>
             <Field label="Lokasi" htmlFor="location">
-              <Input
+              <CitySelect
                 id="location"
                 value={data.location}
                 onChange={(event) => setData('location', event.target.value)}
-                placeholder="Kota atau wilayah"
+                placeholder="Pilih kota atau kabupaten"
+              />
+            </Field>
+            <Field label="Dana minimum" htmlFor="min_price">
+              <CurrencyInput
+                id="min_price"
+                value={data.min_price}
+                onChange={(value) => setData('min_price', value)}
+                placeholder="cth. 5.000.000"
+              />
+            </Field>
+            <Field label="Dana maksimum" htmlFor="max_price">
+              <CurrencyInput
+                id="max_price"
+                value={data.max_price}
+                onChange={(value) => setData('max_price', value)}
+                placeholder="cth. 50.000.000"
               />
             </Field>
             <Field label="Mulai tanggal" htmlFor="date_from">
@@ -95,85 +107,108 @@ export default function Events({ events, filters, categories = [], supportTypes 
               <Input id="date_to" type="date" value={data.date_to} onChange={(event) => setData('date_to', event.target.value)} />
             </Field>
             <div className="flex items-end gap-2">
-              <button type="submit" className={buttonClasses({ className: 'flex-1' })} disabled={processing}>
-                {processing ? 'Menyaring…' : 'Terapkan'}
-              </button>
-              {hasFilters ? (
+              <Button type="submit" className="flex-1" loading={processing}>
+                Terapkan
+              </Button>
+              {hasFilters && (
                 <button
                   type="button"
                   onClick={reset}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary-strong hover:bg-hover hover:text-text"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"
                   aria-label="Hapus filter"
+                  title="Hapus filter"
                 >
                   <X className="h-4 w-4" />
                 </button>
-              ) : null}
+              )}
             </div>
           </div>
         </form>
+      </div>
 
-        <div className="mt-8 flex items-baseline justify-between gap-4 border-b border-border pb-3">
-          <p className="text-sm text-text-secondary-strong">
-            <span className="font-medium text-text tabular-nums">{events.total}</span> event ditemukan
-          </p>
-          <p className="text-xs text-text-muted">Diurutkan dari tanggal terdekat</p>
-        </div>
+      {/* Meta header */}
+      <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between border-b border-border/80 pb-4">
+        <p className="text-sm text-text-secondary">
+          Ditemukan <span className="font-semibold text-text tabular-nums">{events.total}</span> event tersedia
+        </p>
+        <p className="text-xs text-text-muted">Diurutkan berdasarkan tanggal pelaksanaan terdekat</p>
+      </div>
 
-        {events.data.length > 0 ? (
-          <>
-            <div className="divide-y divide-border">
-              {events.data.map((event) => (
-                <Link
-                  key={event.id}
-                  href={`/sponsor/events/${event.slug}`}
-                  className="group grid gap-4 py-6 sm:grid-cols-[160px_1fr] sm:gap-8"
-                >
-                  <div>
-                    <p className="text-sm font-medium leading-relaxed tabular-nums text-text">
-                      {formatDateRange(event.date_start, event.date_end)}
-                    </p>
-                    <p className="mt-1.5 text-xs text-text-secondary-strong">{event.location}</p>
-                    <p className="mt-3 text-xs text-text-muted">{event.category}</p>
+      {/* Event list */}
+      {events.data.length > 0 ? (
+        <div className="mt-4 space-y-3">
+          {events.data.map((event) => (
+            <Link
+              key={event.id}
+              href={`/sponsor/events/${event.slug}`}
+              className="group block rounded-2xl border border-border/70 bg-surface p-5 sm:p-6 transition-all hover:border-primary/40 hover:shadow-sm"
+            >
+              <div className="grid gap-4 sm:grid-cols-[180px_1fr] sm:gap-6">
+                <div className="space-y-1.5 border-b border-border/50 pb-3 sm:border-b-0 sm:border-r sm:border-border/60 sm:pb-0 sm:pr-6">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span>{formatDateRange(event.date_start, event.date_end)}</span>
                   </div>
-                  <div>
-                    <h2 className="text-[18px] font-semibold leading-snug tracking-[-0.015em] text-text group-hover:text-primary-strong">
+                  <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                    <MapPin className="h-3.5 w-3.5 text-text-muted" />
+                    <span className="truncate">{event.location}</span>
+                  </div>
+                  <div className="pt-1">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-background px-2 py-0.5 text-[11px] font-medium text-text-muted">
+                      <Tag className="h-3 w-3" />
+                      {event.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-base sm:text-lg font-semibold text-text group-hover:text-primary transition-colors">
                       {event.title}
                     </h2>
-                    <p className="mt-1 text-sm text-text-secondary-strong">{event.organizer}</p>
-                    {event.audience_summary ? (
-                      <p className="mt-2.5 line-clamp-2 max-w-2xl text-sm leading-relaxed text-text-secondary-strong">
-                        {event.audience_summary}
-                      </p>
-                    ) : null}
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <EvidenceTag>{event.evidence_count} bukti audiens</EvidenceTag>
-                      <EvidenceTag>{event.package_count} paket</EvidenceTag>
-                      {event.support_needs ? <EvidenceTag>{event.support_needs}</EvidenceTag> : null}
-                    </div>
                   </div>
-                </Link>
-              ))}
-            </div>
-            <div className="mt-6">
-              <Pagination paginator={events} />
-            </div>
-          </>
-        ) : (
+                  <p className="mt-1 text-xs text-text-secondary font-medium">Oleh {event.organizer}</p>
+                  {event.audience_summary && (
+                    <p className="mt-2.5 line-clamp-2 text-sm leading-relaxed text-text-secondary">
+                      {event.audience_summary}
+                    </p>
+                  )}
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    {event.price_min !== null && event.price_min !== undefined ? (
+                      <EvidenceTag tone="success">Mulai dari {formatCurrency(event.price_min)}</EvidenceTag>
+                    ) : (
+                      <EvidenceTag tone="warning">Dana negosiasi</EvidenceTag>
+                    )}
+                    <EvidenceTag tone="primary">{event.evidence_count} bukti audiens</EvidenceTag>
+                    <EvidenceTag>{event.package_count} paket sponsorship</EvidenceTag>
+                    {event.support_needs && (
+                      <EvidenceTag tone="neutral">{event.support_needs}</EvidenceTag>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+          <div className="pt-4">
+            <Pagination paginator={events} />
+          </div>
+        </div>
+      ) : (
+        <div className="mt-6">
           <EmptyState
-            className="mt-8"
             illustration="search"
             title="Belum ada event yang cocok"
-            description="Coba longgarkan filter, ubah rentang tanggal, atau hapus kata kunci."
+            description="Coba longgarkan filter pencarian, ubah rentang tanggal, atau bersihkan kata kunci."
             action={
               hasFilters ? (
-                <button type="button" onClick={reset} className={buttonClasses({ variant: 'outline' })}>
+                <Button type="button" variant="outline" onClick={reset}>
                   Hapus semua filter
-                </button>
+                </Button>
               ) : null
             }
           />
-        )}
-      </section>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

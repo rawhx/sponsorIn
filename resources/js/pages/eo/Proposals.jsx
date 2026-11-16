@@ -6,7 +6,6 @@ export default function Proposals({ proposals, filters, counts, statuses }) {
       eyebrow="Kolaborasi"
       title="Manajemen Proposal"
       basePath="/eo/proposals"
-      createHref="/eo/proposals/create"
       proposals={proposals}
       filters={filters}
       counts={counts}

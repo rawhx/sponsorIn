@@ -24,58 +24,61 @@ export default function Notifications({ notifications, unreadCount }) {
 
   return (
     <DashboardLayout
-      eyebrow="Kotak masuk"
+      eyebrow="Pusat Pemberitahuan"
       title="Notifikasi"
       actions={
         unreadCount > 0 ? (
-          <Button variant="outline" onClick={markAll} disabled={processing}>
+          <Button variant="outline" size="sm" onClick={markAll} disabled={processing}>
             <CheckCheck className="h-4 w-4" aria-hidden="true" />
-            Tandai semua dibaca
+            Tandai Semua Dibaca
           </Button>
         ) : null
       }
     >
-      <Head title="Notifikasi" />
+      <Head title="Pusat Notifikasi" />
 
       {notifications.data.length > 0 ? (
-        <>
-          <div className="divide-y divide-border border-y border-border">
+        <div className="space-y-4">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs divide-y divide-slate-100">
             {notifications.data.map((notification) => (
               <button
                 key={notification.id}
                 type="button"
                 onClick={() => open(notification)}
                 className={cn(
-                  'group flex w-full items-start gap-4 px-1 py-4 text-left transition-colors hover:bg-hover',
-                  notification.read ? '' : 'bg-primary/[0.03]'
+                  'group flex w-full items-start gap-4 p-4 sm:p-5 text-left transition-colors hover:bg-slate-50 cursor-pointer',
+                  notification.read ? 'bg-white opacity-85' : 'bg-emerald-50/30'
                 )}
               >
-                <span className={cn('mt-0.5 shrink-0', notification.read ? 'text-text-muted' : 'text-primary-strong')}>
-                  <Bell className="h-4 w-4" aria-hidden="true" />
+                <span
+                  className={cn(
+                    'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors',
+                    notification.read ? 'bg-slate-100 text-slate-400' : 'bg-emerald-100 text-emerald-700'
+                  )}
+                >
+                  <Bell className="h-4.5 w-4.5" aria-hidden="true" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline justify-between gap-4">
-                    <span className={cn('text-sm', notification.read ? 'text-text-secondary-strong' : 'font-medium text-text')}>
+                    <span className={cn('text-sm', notification.read ? 'font-medium text-slate-700' : 'font-bold text-slate-900')}>
                       {notification.title}
                     </span>
-                    <span className="shrink-0 text-xs tabular-nums text-text-muted">{formatDateTime(notification.created_at)}</span>
+                    <span className="shrink-0 text-xs tabular-nums text-slate-400">{formatDateTime(notification.created_at)}</span>
                   </span>
                   {notification.body ? (
-                    <span className="mt-1 block text-sm leading-relaxed text-text-secondary-strong">{notification.body}</span>
+                    <span className="mt-1 block text-xs sm:text-sm leading-relaxed text-slate-600">{notification.body}</span>
                   ) : null}
                 </span>
               </button>
             ))}
           </div>
-          <div className="mt-5">
-            <Pagination paginator={notifications} />
-          </div>
-        </>
+          <Pagination paginator={notifications} />
+        </div>
       ) : (
         <EmptyState
           illustration="bell"
           title="Belum ada notifikasi"
-          description="Pembaruan penting seputar verifikasi, moderasi event, dan proposal akan muncul di sini."
+          description="Pembaruan penting seputar verifikasi legalitas, moderasi event, dan status proposal akan muncul di sini."
         />
       )}
     </DashboardLayout>

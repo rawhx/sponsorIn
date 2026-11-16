@@ -142,6 +142,48 @@ class ProposalLifecycleTest extends TestCase
             ->assertStatus(422);
     }
 
+    public function test_proposal_create_page_requires_a_selected_sponsor(): void
+    {
+        $eo = $this->eoOrganization();
+
+        $this->actingAs($eo->owner)
+            ->get('/eo/proposals/create')
+            ->assertRedirect(route('eo.sponsors.available'))
+            ->assertSessionHas('error', 'Pilih brand sponsor dari menu Sponsor Tersedia terlebih dahulu.');
+    }
+
+    public function test_proposal_create_page_prefills_the_selected_sponsor(): void
+    {
+        $eo = $this->eoOrganization();
+        $sponsor = $this->activeSponsorOrganization(['proposal_preference' => ProposalPreference::Open]);
+
+        $this->actingAs($eo->owner)
+            ->get('/eo/proposals/create?sponsor='.$sponsor->id)
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('eo/ProposalForm')
+                ->where('selectedSponsor.id', $sponsor->id)
+                ->where('selectedSponsor.name', $sponsor->display_name)
+                ->missing('sponsors')
+            );
+    }
+
+    public function test_proposal_create_page_rejects_sponsors_outside_the_available_list(): void
+    {
+        $eo = $this->eoOrganization();
+        $closed = $this->activeSponsorOrganization(['proposal_preference' => ProposalPreference::Closed]);
+        $unverified = $this->sponsorOrganization();
+
+        $this->actingAs($eo->owner)
+            ->get('/eo/proposals/create?sponsor='.$closed->id)
+            ->assertRedirect(route('eo.sponsors.available'))
+            ->assertSessionHas('error');
+
+        $this->actingAs($eo->owner)
+            ->get('/eo/proposals/create?sponsor='.$unverified->id)
+            ->assertRedirect(route('eo.sponsors.available'))
+            ->assertSessionHas('error');
+    }
+
     public function test_recipient_can_accept_proposal(): void
     {
         $eo = $this->eoOrganization();

@@ -19,44 +19,50 @@ export default function ProposalDetailView({ eyebrow, basePath, proposal, transi
     >
       <Head title={`Proposal · ${proposal.event.title}`} />
 
-      <Link href={backHref} className="inline-flex items-center gap-2 text-sm text-text-secondary-strong hover:text-text">
+      <Link href={backHref} className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         {backLabel}
       </Link>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-8">
         <div className="min-w-0 space-y-6">
           <ProposalHeader proposal={proposal} counterpartRoleLabel={counterpartRoleLabel} />
 
-          <section className="rounded-[12px] border border-border bg-surface">
-            <div className="border-b border-border px-5 py-4">
-              <h2 className="text-sm font-semibold text-text">Isi proposal</h2>
+          <section className="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+            <div className="border-b border-slate-100 bg-slate-50/70 px-5 py-4">
+              <h2 className="text-sm font-bold text-slate-900">Rincian Penawaran & Permintaan</h2>
             </div>
-            <div className="space-y-4 px-5 py-4">
+            <div className="space-y-5 p-5">
               <div>
-                <p className="text-xs text-text-muted">Dukungan yang diminta</p>
-                <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-text-secondary-strong">{proposal.requested_support}</p>
+                <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Dukungan yang Diminta / Ditawarkan</p>
+                <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-slate-700 bg-slate-50/70 p-4 rounded-xl border border-slate-100 font-medium">
+                  {proposal.requested_support}
+                </p>
               </div>
               {proposal.deliverables ? (
                 <div>
-                  <p className="text-xs text-text-muted">Deliverable</p>
-                  <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-text-secondary-strong">{proposal.deliverables}</p>
+                  <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Deliverables (Kewajiban Timbal Balik)</p>
+                  <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-slate-700 bg-slate-50/70 p-4 rounded-xl border border-slate-100">
+                    {proposal.deliverables}
+                  </p>
                 </div>
               ) : null}
               {proposal.terms_summary ? (
                 <div>
-                  <p className="text-xs text-text-muted">Ringkasan ketentuan</p>
-                  <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-text-secondary-strong">{proposal.terms_summary}</p>
+                  <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Ketentuan & Syarat Khusus</p>
+                  <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-slate-700 bg-slate-50/70 p-4 rounded-xl border border-slate-100">
+                    {proposal.terms_summary}
+                  </p>
                 </div>
               ) : null}
-              <div className="grid gap-3 border-t border-border pt-4 text-sm sm:grid-cols-2">
+              <div className="grid gap-4 border-t border-slate-100 pt-4 text-sm sm:grid-cols-2">
                 <div>
-                  <p className="text-xs text-text-muted">Event</p>
-                  <p className="mt-0.5 text-text-secondary-strong">{proposal.event.location} · {formatDate(proposal.event.date_start)}</p>
+                  <p className="text-xs font-medium text-slate-400">Lokasi & Tanggal Event</p>
+                  <p className="mt-0.5 font-semibold text-slate-800">{proposal.event.location} · {formatDate(proposal.event.date_start)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-text-muted">Paket</p>
-                  <p className="mt-0.5 text-text-secondary-strong">{proposal.package?.name ?? 'Tanpa paket tertentu'}</p>
+                  <p className="text-xs font-medium text-slate-400">Paket Terpilih</p>
+                  <p className="mt-0.5 font-semibold text-slate-800">{proposal.package?.name ?? 'Tanpa paket tertentu'}</p>
                 </div>
               </div>
             </div>
@@ -65,7 +71,7 @@ export default function ProposalDetailView({ eyebrow, basePath, proposal, transi
           <ProposalThread proposal={withViewer} basePath={basePath} />
         </div>
 
-        <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+        <aside className="space-y-5 lg:sticky lg:top-20 lg:self-start">
           {asideExtra}
           <ProposalStatusPanel proposal={proposal} transitions={transitions} basePath={basePath} statuses={statuses} />
         </aside>

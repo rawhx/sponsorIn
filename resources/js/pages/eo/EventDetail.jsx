@@ -46,31 +46,31 @@ function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4 rounded-[12px] border border-border bg-background-muted p-4">
+    <form onSubmit={submit} className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-5">
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="Jenis bukti" htmlFor="evidence_type" error={errors.evidence_type} required>
+        <Field label="Jenis Bukti" htmlFor="evidence_type" error={errors.evidence_type} required>
           <Select id="evidence_type" value={data.evidence_type} onChange={(e) => setData('evidence_type', e.target.value)}>
             {evidenceTypes.map((type) => (
               <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </Select>
         </Field>
-        <Field label="Nilai" htmlFor="value" error={errors.value} required>
+        <Field label="Nilai Angka" htmlFor="value" error={errors.value} required>
           <Input id="value" type="number" min="0" value={data.value} onChange={(e) => setData('value', e.target.value)} error={errors.value} />
         </Field>
         <Field label="Satuan" htmlFor="unit" error={errors.unit} required>
-          <Input id="unit" value={data.unit} onChange={(e) => setData('unit', e.target.value)} error={errors.unit} placeholder="orang / klik" />
+          <Input id="unit" value={data.unit} onChange={(e) => setData('unit', e.target.value)} error={errors.unit} placeholder="orang / tiket / klik" />
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Periode mulai" htmlFor="period_start" error={errors.period_start} required>
+        <Field label="Periode Mulai" htmlFor="period_start" error={errors.period_start} required>
           <Input id="period_start" type="date" value={data.period_start} onChange={(e) => setData('period_start', e.target.value)} error={errors.period_start} />
         </Field>
-        <Field label="Periode selesai" htmlFor="period_end" error={errors.period_end} required>
+        <Field label="Periode Selesai" htmlFor="period_end" error={errors.period_end} required>
           <Input id="period_end" type="date" value={data.period_end} onChange={(e) => setData('period_end', e.target.value)} error={errors.period_end} />
         </Field>
       </div>
-      <Field label="Sumber data" htmlFor="source_description" error={errors.source_description} required hint="Pilih sumber yang paling sesuai">
+      <Field label="Sumber Data" htmlFor="source_description" error={errors.source_description} required hint="Pilih sumber yang paling obyektif">
         <Select id="source_description" value={data.source_description} onChange={(e) => setData('source_description', e.target.value)} error={errors.source_description}>
           <option value="">Pilih sumber data</option>
           {allSources.map((source) => (
@@ -78,14 +78,14 @@ function EvidenceForm({ event, evidence, evidenceTypes, onDone }) {
           ))}
         </Select>
       </Field>
-      <Field label="Catatan" htmlFor="evidence_note" error={errors.evidence_note} hint="Opsional">
+      <Field label="Catatan Tambahan" htmlFor="evidence_note" error={errors.evidence_note} hint="Opsional">
         <Input id="evidence_note" value={data.evidence_note} onChange={(e) => setData('evidence_note', e.target.value)} error={errors.evidence_note} />
       </Field>
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 pt-2">
         {evidence ? (
-          <Button type="button" variant="ghost" size="sm" onClick={onDone}>Batal</Button>
+          <Button type="button" variant="outline" size="sm" onClick={onDone}>Batal</Button>
         ) : null}
-        <Button type="submit" size="sm" disabled={processing}>{processing ? 'Menyimpan…' : evidence ? 'Simpan bukti' : 'Tambah bukti'}</Button>
+        <Button type="submit" size="sm" disabled={processing}>{processing ? 'Menyimpan…' : evidence ? 'Simpan Bukti' : 'Tambahkan Bukti'}</Button>
       </div>
     </form>
   );
@@ -95,8 +95,8 @@ function RepeatableField({ id, label, hint, items, field, errors, placeholder, o
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={`${id}-0`} className="app-field-label text-sm font-medium text-text">{label}</label>
-        {hint ? <span className="text-xs font-normal text-text-secondary-strong">{hint}</span> : null}
+        <label htmlFor={`${id}-0`} className="app-field-label text-sm font-semibold text-slate-700">{label}</label>
+        {hint ? <span className="text-xs text-slate-500">{hint}</span> : null}
       </div>
       <div className="space-y-2">
         {items.map((item, index) => {
@@ -113,12 +113,12 @@ function RepeatableField({ id, label, hint, items, field, errors, placeholder, o
                   placeholder={placeholder}
                   maxLength={300}
                 />
-                {error ? <p className="mt-1 text-xs text-danger-strong">{error}</p> : null}
+                {error ? <p className="mt-1 text-xs text-rose-600 font-medium">{error}</p> : null}
               </div>
               <button
                 type="button"
                 onClick={() => onRemove(index)}
-                className="mt-0.5 rounded-[8px] p-2.5 text-text-muted hover:bg-hover hover:text-danger-strong"
+                className="mt-0.5 rounded-lg p-2.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 aria-label={`Hapus ${label.toLowerCase()} ${index + 1}`}
               >
                 <Trash2 className="h-4 w-4" aria-hidden="true" />
@@ -127,7 +127,7 @@ function RepeatableField({ id, label, hint, items, field, errors, placeholder, o
           );
         })}
       </div>
-      <Button type="button" variant="outline" size="sm" onClick={onAdd}>
+      <Button type="button" variant="outline" size="sm" onClick={onAdd} className="mt-1">
         <Plus className="h-4 w-4" aria-hidden="true" />
         Tambah {label.toLowerCase()}
       </Button>
@@ -180,12 +180,12 @@ function PackageForm({ event, supportTypes, pkg, onDone }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4 rounded-[12px] border border-border bg-background-muted p-4">
+    <form onSubmit={submit} className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-5">
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Nama paket" htmlFor="name" error={errors.name} required>
-          <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} error={errors.name} placeholder="Mis. Sponsor Utama" />
+        <Field label="Nama Paket" htmlFor="name" error={errors.name} required>
+          <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} error={errors.name} placeholder="Mis. Platinum Sponsor" />
         </Field>
-        <Field label="Jenis dukungan" htmlFor="support_type" error={errors.support_type} required>
+        <Field label="Bentuk Dukungan" htmlFor="support_type" error={errors.support_type} required>
           <Select id="support_type" value={data.support_type} onChange={(e) => setData('support_type', e.target.value)}>
             {supportTypes.map((type) => (
               <option key={type.value} value={type.value}>{type.label}</option>
@@ -195,10 +195,10 @@ function PackageForm({ event, supportTypes, pkg, onDone }) {
       </div>
       {data.support_type === 'cash' ? (
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nilai (Rp)" htmlFor="price_amount" error={errors.price_amount} hint="Kosongkan bila bisa dinegosiasi">
+          <Field label="Nominal Harga (Rp)" htmlFor="price_amount" error={errors.price_amount} hint="Dapat dinegosiasi jika kosong">
             <Input id="price_amount" type="number" min="0" value={data.price_amount} onChange={(e) => setData('price_amount', e.target.value)} error={errors.price_amount} />
           </Field>
-          <Field label="Mata uang" htmlFor="currency" error={errors.currency}>
+          <Field label="Mata Uang" htmlFor="currency" error={errors.currency}>
             <Input id="currency" value={data.currency} onChange={(e) => setData('currency', e.target.value.toUpperCase())} maxLength={3} />
           </Field>
         </div>
@@ -206,44 +206,44 @@ function PackageForm({ event, supportTypes, pkg, onDone }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <RepeatableField
           id="benefits"
-          label="Benefit"
+          label="Benefit Sponsor"
           hint="Satu baris per benefit"
           items={data.benefits}
           field="benefits"
           errors={errors}
-          placeholder="Mis. Logo di panggung utama"
+          placeholder="Mis. Pencantuman logo pada backdrop utama"
           onChange={(index, value) => updateItem('benefits', index, value)}
           onAdd={() => addItem('benefits')}
           onRemove={(index) => removeItem('benefits', index)}
         />
         <RepeatableField
           id="deliverables"
-          label="Deliverable"
+          label="Deliverable (Kewajiban)"
           hint="Satu baris per deliverable"
           items={data.deliverables}
           field="deliverables"
           errors={errors}
-          placeholder="Mis. Slot booth 3x3 m"
+          placeholder="Mis. Booth pameran ukuran 3x3 meter"
           onChange={(index, value) => updateItem('deliverables', index, value)}
           onAdd={() => addItem('deliverables')}
           onRemove={(index) => removeItem('deliverables', index)}
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Ketersediaan" htmlFor="availability_status" error={errors.availability_status} required>
+        <Field label="Status Ketersediaan" htmlFor="availability_status" error={errors.availability_status} required>
           <Select id="availability_status" value={data.availability_status} onChange={(e) => setData('availability_status', e.target.value)}>
             {availabilityOptions.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
             ))}
           </Select>
         </Field>
-        <Field label="Catatan" htmlFor="notes" error={errors.notes} hint="Opsional">
+        <Field label="Catatan Tambahan" htmlFor="notes" error={errors.notes} hint="Opsional">
           <Input id="notes" value={data.notes} onChange={(e) => setData('notes', e.target.value)} error={errors.notes} />
         </Field>
       </div>
-      <div className="flex justify-end gap-2">
-        {pkg ? <Button type="button" variant="ghost" size="sm" onClick={onDone}>Batal</Button> : null}
-        <Button type="submit" size="sm" disabled={processing}>{processing ? 'Menyimpan…' : pkg ? 'Simpan paket' : 'Tambah paket'}</Button>
+      <div className="flex justify-end gap-2 pt-2">
+        {pkg ? <Button type="button" variant="outline" size="sm" onClick={onDone}>Batal</Button> : null}
+        <Button type="submit" size="sm" disabled={processing}>{processing ? 'Menyimpan…' : pkg ? 'Simpan Paket' : 'Tambahkan Paket'}</Button>
       </div>
     </form>
   );
@@ -298,81 +298,83 @@ export default function EoEventDetail({ event, canEdit, canSubmit, canClose }) {
 
   return (
     <DashboardLayout
-      eyebrow="Ruang kerja EO"
+      eyebrow="Detail Dossier Event"
       title={event.title}
       actions={
-        <>
+        <div className="flex items-center gap-2">
           <StatusBadge status={event.status} />
           {canEdit ? (
-            <Link href={`/eo/events/${event.id}/edit`} className={buttonClasses({ variant: 'outline' })}>
+            <Link href={`/eo/events/${event.id}/edit`} className={buttonClasses({ variant: 'outline', size: 'sm' })}>
               <Pencil className="h-4 w-4" aria-hidden="true" />
-              Ubah
+              Ubah Data
             </Link>
           ) : null}
-        </>
+        </div>
       }
     >
       <Head title={event.title} />
 
-      <Link href="/eo/events" className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary-strong hover:text-text">
+      <Link href="/eo/events" className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Kembali ke daftar event
       </Link>
 
       {event.status === 'needs_changes' && event.moderation_reason_public ? (
-        <div className="mb-6 rounded-[12px] border border-warning/30 bg-warning/10 px-4 py-3">
-          <p className="text-xs font-medium text-warning-strong">CATATAN MODERATOR</p>
-          <p className="mt-1 text-sm leading-relaxed text-text-secondary-strong">{event.moderation_reason_public}</p>
-          <p className="mt-2 text-xs text-text-secondary-strong">Perbaiki sesuai catatan lalu kirim ulang untuk review.</p>
+        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900 shadow-xs">
+          <p className="text-xs font-bold tracking-wider uppercase text-amber-700">Catatan Perbaikan dari Moderator</p>
+          <p className="mt-1.5 text-sm leading-relaxed">{event.moderation_reason_public}</p>
+          <p className="mt-2 text-xs text-amber-700">Silakan lengkapi atau perbaiki data sesuai catatan, kemudian kirim ulang event untuk review.</p>
         </div>
       ) : null}
 
       {event.status === 'rejected' && event.moderation_reason_public ? (
-        <div className="mb-6 rounded-[12px] border border-danger/25 bg-danger/10 px-4 py-3">
-          <p className="text-xs font-medium text-danger-strong">ALASAN PENOLAKAN</p>
-          <p className="mt-1 text-sm leading-relaxed text-text-secondary-strong">{event.moderation_reason_public}</p>
+        <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 p-5 text-rose-900 shadow-xs">
+          <p className="text-xs font-bold tracking-wider uppercase text-rose-700">Alasan Penolakan</p>
+          <p className="mt-1.5 text-sm leading-relaxed">{event.moderation_reason_public}</p>
         </div>
       ) : null}
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
         <div className="min-w-0 space-y-8">
-          <section className="rounded-[12px] border border-border bg-surface p-5">
-            <div className="flex flex-wrap gap-x-7 gap-y-2 text-sm text-text-secondary-strong">
-              <span className="inline-flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-text-muted" aria-hidden="true" />
+          {/* General info */}
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <div className="flex flex-wrap gap-x-6 gap-y-2.5 text-sm font-medium text-slate-600">
+              <span className="inline-flex items-center gap-2 tabular-nums">
+                <CalendarDays className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                 {formatDateRange(event.date_start, event.date_end)}
               </span>
               <span className="inline-flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-text-muted" aria-hidden="true" />
+                <MapPin className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                 {event.location}
               </span>
               <EvidenceTag tone="primary">{event.category}</EvidenceTag>
               <EvidenceTag>{event.format}</EvidenceTag>
             </div>
-            <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-text-secondary-strong">{event.description}</p>
+            <p className="mt-4 whitespace-pre-line text-sm sm:text-[15px] leading-relaxed text-slate-700">{event.description}</p>
           </section>
 
-          <section>
-            <div className="flex items-end justify-between gap-4 border-b border-border pb-3">
+          {/* Evidence section */}
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
-                <h2 className="text-sm font-semibold text-text">Bukti audiens</h2>
-                <p className="mt-1 text-xs text-text-secondary-strong">Minimal satu bukti dengan sumber yang jelas sebelum dikirim.</p>
+                <h2 className="text-base font-bold text-slate-900">Bukti Audiens Terverifikasi</h2>
+                <p className="text-xs text-slate-500">Minimal 1 berkas bukti bersumber sebelum event diajukan untuk moderasi.</p>
               </div>
               {canEdit && !showEvidence && !editingEvidence ? (
                 <Button size="sm" variant="outline" onClick={() => setShowEvidence(true)}>
-                  <Plus className="h-4 w-4" aria-hidden="true" />Tambah
+                  <Plus className="h-4 w-4" aria-hidden="true" />Tambah Bukti
                 </Button>
               ) : null}
             </div>
 
             {canEdit && showEvidence ? (
-              <div className="mt-4">
+              <div className="mt-5">
                 <EvidenceForm event={event} evidenceTypes={event.evidenceTypes ?? []} onDone={() => setShowEvidence(false)} />
               </div>
             ) : null}
 
             {event.evidence.length > 0 ? (
-              <div className="mt-4 divide-y divide-border">
+              <div className="mt-4 divide-y divide-slate-100">
                 {event.evidence.map((item) => (
                   <div key={item.id} className="py-4">
                     {canEdit && editingEvidence === item.id ? (
@@ -386,21 +388,21 @@ export default function EoEventDetail({ event, canEdit, canSubmit, canClose }) {
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium text-text">{evidenceTypeLabels[item.type] ?? item.type}</p>
+                            <p className="text-sm font-bold text-slate-900">{evidenceTypeLabels[item.type] ?? item.type}</p>
                             <StatusBadge status={item.verification_status} />
                           </div>
-                          <p className="mt-1 text-lg font-semibold tabular-nums text-text">
-                            {formatNumber(item.value)} <span className="text-sm font-normal text-text-secondary-strong">{item.unit}</span>
+                          <p className="mt-1 text-lg font-bold tabular-nums text-slate-900">
+                            {formatNumber(item.value)} <span className="text-xs font-normal text-slate-500">{item.unit}</span>
                           </p>
-                          <p className="mt-0.5 text-xs text-text-secondary-strong">{formatEvidencePeriod(item)} · Sumber: {item.source}</p>
-                          {item.note ? <p className="mt-0.5 text-xs text-text-muted">{item.note}</p> : null}
+                          <p className="mt-0.5 text-xs text-slate-600 font-medium">{formatEvidencePeriod(item)} · Sumber: {item.source}</p>
+                          {item.note ? <p className="mt-0.5 text-xs text-slate-400 italic">{item.note}</p> : null}
                         </div>
                         {canEdit ? (
                           <div className="flex shrink-0 gap-1">
-                            <button type="button" onClick={() => setEditingEvidence(item.id)} className="rounded-[8px] p-2 text-text-muted hover:bg-hover hover:text-text" aria-label="Ubah bukti">
+                            <button type="button" onClick={() => setEditingEvidence(item.id)} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors" aria-label="Ubah bukti">
                               <Pencil className="h-4 w-4" aria-hidden="true" />
                             </button>
-                            <button type="button" onClick={() => removeEvidence(item)} className="rounded-[8px] p-2 text-text-muted hover:bg-hover hover:text-danger-strong" aria-label="Hapus bukti">
+                            <button type="button" onClick={() => removeEvidence(item)} className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors" aria-label="Hapus bukti">
                               <Trash2 className="h-4 w-4" aria-hidden="true" />
                             </button>
                           </div>
@@ -411,81 +413,82 @@ export default function EoEventDetail({ event, canEdit, canSubmit, canClose }) {
                 ))}
               </div>
             ) : (
-              <p className="mt-4 rounded-[10px] border border-dashed border-border px-4 py-4 text-sm text-text-secondary-strong">
-                Belum ada bukti audiens. Tambahkan minimal satu agar event dapat dikirim untuk review.
-              </p>
+              <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-6 text-center text-sm text-slate-500">
+                Belum ada bukti audiens. Tambahkan minimal satu bukti agar event dapat diajukan untuk review publikasi.
+              </div>
             )}
           </section>
 
-          <section>
-            <div className="flex items-end justify-between gap-4 border-b border-border pb-3">
+          {/* Packages section */}
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
-                <h2 className="text-sm font-semibold text-text">Paket sponsorship</h2>
-                <p className="mt-1 text-xs text-text-secondary-strong">Rincian benefit dan deliverable tiap paket.</p>
+                <h2 className="text-base font-bold text-slate-900">Paket Sponsorship</h2>
+                <p className="text-xs text-slate-500">Rincian benefit dan deliverable yang ditawarkan ke brand sponsor.</p>
               </div>
               {canEdit && !showPackage && !editingPackage ? (
                 <Button size="sm" variant="outline" onClick={() => setShowPackage(true)}>
-                  <Plus className="h-4 w-4" aria-hidden="true" />Tambah
+                  <Plus className="h-4 w-4" aria-hidden="true" />Tambah Paket
                 </Button>
               ) : null}
             </div>
 
             {canEdit && showPackage ? (
-              <div className="mt-4">
+              <div className="mt-5">
                 <PackageForm event={event} supportTypes={event.supportTypes ?? []} onDone={() => setShowPackage(false)} />
               </div>
             ) : null}
 
             {event.packages.length > 0 ? (
-              <div className="mt-4 divide-y divide-border">
+              <div className="mt-4 divide-y divide-slate-100">
                 {event.packages.map((pkg) => (
-                  <div key={pkg.id} className="py-4">
+                  <div key={pkg.id} className="py-5">
                     {canEdit && editingPackage === pkg.id ? (
                       <PackageForm event={event} pkg={pkg} supportTypes={event.supportTypes ?? []} onDone={() => setEditingPackage(null)} />
                     ) : (
                       <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="text-[15px] font-semibold text-text">{pkg.name}</h3>
+                            <h3 className="text-base font-bold text-slate-900">{pkg.name}</h3>
                             <StatusBadge status={pkg.availability_status} />
                           </div>
-                          <p className="mt-0.5 text-xs text-text-secondary-strong">
+                          <p className="mt-0.5 text-xs font-semibold text-emerald-700">
                             {supportTypeLabels[pkg.support_type] ?? pkg.support_type}
                             {pkg.support_type === 'cash' ? ` · ${formatCurrency(pkg.price_amount, pkg.currency)}` : ''}
                           </p>
                           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                            <div>
-                              <p className="text-[11px] font-medium text-text-muted">BENEFIT</p>
+                            <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                              <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Benefit</p>
                               {(pkg.benefits ?? []).length > 0 ? (
-                                <ul className="mt-1.5 space-y-1">
+                                <ul className="mt-1 space-y-1">
                                   {pkg.benefits.map((benefit, index) => (
-                                    <li key={index} className="text-xs leading-relaxed text-text-secondary">{benefit}</li>
+                                    <li key={index} className="text-xs leading-relaxed text-slate-600">• {benefit}</li>
                                   ))}
                                 </ul>
                               ) : (
-                                <p className="mt-1.5 text-xs text-text-secondary">Tidak dirinci.</p>
+                                <p className="mt-1 text-xs text-slate-400">Tidak dirinci.</p>
                               )}
                             </div>
-                            <div>
-                              <p className="text-[11px] font-medium text-text-muted">DELIVERABLE</p>
+                            <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                              <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Deliverable</p>
                               {(pkg.deliverables ?? []).length > 0 ? (
-                                <ul className="mt-1.5 space-y-1">
+                                <ul className="mt-1 space-y-1">
                                   {pkg.deliverables.map((deliverable, index) => (
-                                    <li key={index} className="text-xs leading-relaxed text-text-secondary">{deliverable}</li>
+                                    <li key={index} className="text-xs leading-relaxed text-slate-600">• {deliverable}</li>
                                   ))}
                                 </ul>
                               ) : (
-                                <p className="mt-1.5 text-xs text-text-secondary">Tidak dirinci.</p>
+                                <p className="mt-1 text-xs text-slate-400">Tidak dirinci.</p>
                               )}
                             </div>
                           </div>
                         </div>
                         {canEdit ? (
                           <div className="flex shrink-0 gap-1">
-                            <button type="button" onClick={() => setEditingPackage(pkg.id)} className="rounded-[8px] p-2 text-text-muted hover:bg-hover hover:text-text" aria-label="Ubah paket">
+                            <button type="button" onClick={() => setEditingPackage(pkg.id)} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors" aria-label="Ubah paket">
                               <Pencil className="h-4 w-4" aria-hidden="true" />
                             </button>
-                            <button type="button" onClick={() => removePackage(pkg)} className="rounded-[8px] p-2 text-text-muted hover:bg-hover hover:text-danger-strong" aria-label="Hapus paket">
+                            <button type="button" onClick={() => removePackage(pkg)} className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors" aria-label="Hapus paket">
                               <Trash2 className="h-4 w-4" aria-hidden="true" />
                             </button>
                           </div>
@@ -496,66 +499,67 @@ export default function EoEventDetail({ event, canEdit, canSubmit, canClose }) {
                 ))}
               </div>
             ) : (
-              <p className="mt-4 rounded-[10px] border border-dashed border-border px-4 py-4 text-sm text-text-secondary-strong">
+              <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-6 text-center text-sm text-slate-500">
                 Belum ada paket sponsorship yang dicantumkan.
-              </p>
+              </div>
             )}
           </section>
         </div>
 
-        <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-[12px] border border-border bg-background-muted p-5">
-            <h2 className="text-sm font-semibold text-text">Langkah event</h2>
-            <ol className="mt-3 space-y-2.5 text-xs leading-relaxed text-text-secondary-strong">
-              <li className={cn('flex gap-2', event.evidence.length > 0 && 'text-text')}>
-                <span className="tabular-nums">1.</span> Isi informasi dasar event.
+        {/* Aside stepper & submit */}
+        <aside className="space-y-5 lg:sticky lg:top-20 lg:self-start">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+            <h2 className="text-sm font-bold text-slate-900">Checklist Kelengkapan Event</h2>
+            <ol className="mt-3 space-y-2.5 text-xs leading-relaxed text-slate-600">
+              <li className={cn('flex gap-2', event.evidence.length > 0 && 'text-emerald-800 font-semibold')}>
+                <span>1.</span> Isi informasi dasar & deskripsi.
               </li>
-              <li className={cn('flex gap-2', event.evidence.length > 0 && 'text-text')}>
-                <span className="tabular-nums">2.</span> Tambahkan bukti audiens bersumber.
+              <li className={cn('flex gap-2', event.evidence.length > 0 && 'text-emerald-800 font-semibold')}>
+                <span>2.</span> Lampirkan bukti audiens bersumber.
               </li>
-              <li className={cn('flex gap-2', event.packages.length > 0 && 'text-text')}>
-                <span className="tabular-nums">3.</span> Cantumkan paket sponsorship.
+              <li className={cn('flex gap-2', event.packages.length > 0 && 'text-emerald-800 font-semibold')}>
+                <span>3.</span> Buat paket sponsorship & benefit.
               </li>
-              <li className={cn('flex gap-2', event.status !== 'draft' && 'text-text')}>
-                <span className="tabular-nums">4.</span> Kirim untuk moderasi admin.
+              <li className={cn('flex gap-2', event.status !== 'draft' && 'text-emerald-800 font-semibold')}>
+                <span>4.</span> Ajukan event untuk moderasi admin.
               </li>
             </ol>
           </div>
 
           {canSubmit ? (
-            <div className="rounded-[12px] border border-border p-5">
-              <h2 className="text-sm font-semibold text-text">Kirim untuk review</h2>
-              <p className="mt-2 text-xs leading-relaxed text-text-secondary-strong">
-                Setelah dikirim, event tidak dapat diubah hingga admin memberikan keputusan.
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <h2 className="text-sm font-bold text-slate-900">Ajukan Publikasi Event</h2>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+                Setelah diajukan, event tidak dapat diubah sementara waktu hingga tim admin/verifier memberikan keputusan.
               </p>
               <Button className="mt-4 w-full" onClick={submitForReview} disabled={event.evidence.length === 0}>
                 <Send className="h-4 w-4" aria-hidden="true" />
-                Kirim untuk review
+                Ajukan untuk Moderasi
               </Button>
               {event.evidence.length === 0 ? (
-                <p className="mt-2 text-xs text-warning-strong">Tambahkan bukti audiens terlebih dahulu.</p>
+                <p className="mt-2 text-xs font-medium text-amber-600">Tambahkan minimal 1 bukti audiens terlebih dahulu.</p>
               ) : null}
             </div>
           ) : null}
 
           {canClose ? (
-            <div className="rounded-[12px] border border-border p-5">
-              <h2 className="text-sm font-semibold text-text">Tutup event</h2>
-              <p className="mt-2 text-xs leading-relaxed text-text-secondary-strong">
-                Event yang ditutup tidak lagi tampil pada daftar peluang publik.
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <h2 className="text-sm font-bold text-slate-900">Tutup Peluang Event</h2>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+                Event yang ditutup tidak lagi tampil di daftar peluang sponsor.
               </p>
               <Button variant="destructive-outline" className="mt-4 w-full" onClick={closeEvent}>
                 <XCircle className="h-4 w-4" aria-hidden="true" />
-                Tutup event
+                Tutup Event Ini
               </Button>
             </div>
           ) : null}
 
           {event.status === 'under_review' ? (
-            <div className="rounded-[12px] border border-info/25 bg-info/10 p-5">
-              <p className="text-sm font-medium text-info-strong">Sedang ditinjau</p>
-              <p className="mt-1.5 text-xs leading-relaxed text-text-secondary-strong">
-                Admin sedang memeriksa event Anda. Anda akan mendapat kabar setelah keputusan dibuat.
+            <div className="rounded-2xl border border-sky-200 bg-sky-50 p-5 text-sky-900">
+              <p className="text-sm font-bold text-sky-900">Sedang Ditinjau Tim Moderasi</p>
+              <p className="mt-1 text-xs leading-relaxed text-sky-700">
+                Event Anda sedang dalam proses verifikasi berkas oleh admin SponsorIn. Notifikasi akan dikirimkan begitu keputusan dibuat.
               </p>
             </div>
           ) : null}

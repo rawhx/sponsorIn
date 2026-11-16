@@ -43,22 +43,21 @@ export default function EventCalendar({
 
   return (
     <DashboardLayout
-      eyebrow="Ruang kerja EO"
+      eyebrow="Ruang Kerja EO"
       title="Kalender Event"
+      description="Pantau jadwal pelaksanaan event, status publikasi, dan venue dalam satu tampilan kalender bulanan."
       actions={
         <Link href="/eo/events/create" className={buttonClasses()}>
           <Plus className="h-4 w-4" aria-hidden="true" />
-          Buat event
+          Buat Event Baru
         </Link>
       }
     >
-      <Head title="Kalender Event" />
+      <Head title="Kalender Event EO" />
 
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-text-secondary-strong">
-            Pantau jadwal event, status moderasi, dan lokasi dalam satu tampilan.
-          </p>
+          <h2 className="text-xl font-bold capitalize text-slate-900">{monthLabel}</h2>
         </div>
         <div className="flex items-center gap-2">
           <Link
@@ -72,7 +71,7 @@ export default function EventCalendar({
             href="/eo/events/calendar"
             className={buttonClasses({ variant: 'outline', size: 'sm' })}
           >
-            Hari ini
+            Hari Ini
           </Link>
           <Link
             href={`/eo/events/calendar?month=${nextMonth}`}
@@ -84,18 +83,15 @@ export default function EventCalendar({
         </div>
       </div>
 
-      <section className="mt-6 overflow-hidden rounded-[14px] border border-border bg-surface">
-        <div className="border-b border-border bg-background-muted px-5 py-4">
-          <h2 className="text-lg font-semibold capitalize tracking-[-0.02em] text-text">{monthLabel}</h2>
-        </div>
-        <div className="grid grid-cols-7 border-b border-border bg-background-muted">
+      <section className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
+        <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50/80">
           {dayLabels.map((label) => (
-            <div key={label} className="px-2 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted sm:px-3">
+            <div key={label} className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-3">
               {label}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-7 divide-x divide-y divide-slate-100">
           {days.map(({ key, date, inMonth }) => {
             const dayEvents = events.filter((event) => event.date_start <= key && event.date_end >= key);
             const isToday = today === key;
@@ -103,29 +99,26 @@ export default function EventCalendar({
             return (
               <div
                 key={key}
-                className={`min-h-[128px] border-b border-r border-border p-2 last:border-r-0 sm:min-h-[154px] sm:p-3 ${
-                  inMonth ? 'bg-surface' : 'bg-background-muted/50'
+                className={`min-h-[110px] p-2 sm:min-h-[140px] sm:p-2.5 transition-colors ${
+                  inMonth ? 'bg-white' : 'bg-slate-50/40 opacity-60'
                 }`}
               >
-                <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium ${
-                  isToday ? 'bg-primary text-white' : inMonth ? 'text-text' : 'text-text-muted'
+                <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold tabular-nums ${
+                  isToday ? 'bg-emerald-600 text-white shadow-2xs' : inMonth ? 'text-slate-800' : 'text-slate-400'
                 }`}>
                   {formatDay(date)}
                 </span>
-                <div className="mt-2 space-y-1.5">
+                <div className="mt-1.5 space-y-1.5">
                   {dayEvents.map((event) => (
                     <Link
                       key={`${key}-${event.id}`}
                       href={`/eo/events/${event.id}`}
-                      className="block rounded-[7px] border border-primary/15 bg-primary/8 px-2 py-1.5 transition-colors hover:border-primary/40 hover:bg-primary/12"
+                      className="block rounded-lg border border-emerald-200 bg-emerald-50/70 p-2 transition-all hover:border-emerald-400 hover:bg-emerald-100/80"
                     >
-                      <p className="truncate text-[11px] font-semibold leading-tight text-primary-strong">{event.title}</p>
-                      <div className="mt-1 hidden items-center gap-1 text-[10px] text-text-secondary-strong sm:flex">
+                      <p className="truncate text-xs font-bold text-emerald-950">{event.title}</p>
+                      <div className="mt-1 hidden items-center gap-1 text-[11px] text-emerald-800 sm:flex truncate">
                         <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
                         <span className="truncate">{event.location}</span>
-                      </div>
-                      <div className="mt-1 hidden sm:block">
-                        <StatusBadge status={event.status} />
                       </div>
                     </Link>
                   ))}

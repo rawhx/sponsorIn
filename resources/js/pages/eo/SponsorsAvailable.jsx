@@ -1,13 +1,12 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { MapPin, Search, SlidersHorizontal } from 'lucide-react';
+import { MapPin, Search, SlidersHorizontal, Building2, Send, X } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { buttonClasses } from '../../components/Button';
 import { EvidenceTag } from '../../components/StatusBadge';
 import { Field, Input } from '../../components/Form';
-import { formatDate } from '../../lib/utils';
 
 const preferenceLabels = {
-  open: 'Menerima proposal',
+  open: 'Menerima Proposal',
   selective: 'Selektif',
   closed: 'Tertutup',
 };
@@ -34,8 +33,6 @@ export default function SponsorsAvailable({
   }
 
   function reset() {
-    setData('q', '');
-    setData('preference', '');
     router.get('/eo/sponsors/available', {}, { preserveState: false, preserveScroll: true, replace: true });
   }
 
@@ -47,154 +44,153 @@ export default function SponsorsAvailable({
     return false;
   });
 
-  const activePreference = data.preference ?? '';
-
   return (
     <DashboardLayout
-      eyebrow="Sponsor"
-      title="Sponsor tersedia"
-      actions={
-        <Link href="/eo/proposals/create" className={buttonClasses()}>
-          Buat proposal
-        </Link>
-      }
+      eyebrow="Eksplorasi Brand Mitra"
+      title="Sponsor Tersedia"
+      description="Temukan brand sponsor aktif yang terbuka untuk menerima pengajuan proposal event."
     >
-      <Head title="Sponsor tersedia" />
+      <Head title="Sponsor Tersedia" />
 
+      {/* Filter Card */}
       <form
         onSubmit={submit}
-        className="mt-8 rounded-[14px] border border-border bg-surface p-4 shadow-sm sm:p-5"
+        className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs"
       >
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
-          <div className="relative min-w-0">
-          <Search className="pointer-events-none absolute left-3 top-[2.4rem] h-4 w-4 text-text-muted" aria-hidden="true" />
-          <Field
-            label="Cari"
-            htmlFor="q"
-            className="w-full"
-            error={errors.q}
-          >
-            <Input
-              id="q"
-              value={data.q}
-              onChange={(event) => setData('q', event.target.value)}
-              placeholder="Nama atau lokasi"
-              className="pl-9"
-            />
-          </Field>
-        </div>
-
-        <div className="space-y-1.5">
-          <p className="text-sm font-medium text-text">Preferensi</p>
-          <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] border px-4 text-sm font-medium transition-colors ${
-              !data.preference
-                ? 'border-primary-strong bg-primary/10 text-primary-strong'
-                : 'border-border bg-surface text-text-secondary-strong hover:bg-hover hover:text-text'
-            }`}
-            onClick={() => setData('preference', '')}
-          >
-            Semua
-          </button>
-          {Object.entries(preferences).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] px-4 text-sm font-medium transition-colors ${
-                data.preference === value
-                  ? 'bg-primary text-white'
-                  : 'border border-border bg-surface text-text-secondary-strong hover:bg-hover hover:text-text'
-              }`}
-              onClick={() => setData('preference', value)}
+          <div className="min-w-0">
+            <Field
+              label="Cari Brand / Lokasi"
+              htmlFor="q"
+              className="w-full"
+              error={errors.q}
             >
-              {label}
-            </button>
-          ))}
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                <Input
+                  id="q"
+                  value={data.q}
+                  onChange={(event) => setData('q', event.target.value)}
+                  placeholder="Ketik nama brand atau kota domisili..."
+                  className="pl-10"
+                />
+              </div>
+            </Field>
           </div>
-        </div>
 
-        <div className="flex shrink-0 gap-2">
-          <button
-            type="submit"
-            className={buttonClasses()}
-            disabled={processing}
-          >
-            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
-            {processing ? 'Menyaring…' : 'Terapkan filter'}
-          </button>
-          {data.q || data.preference ? (
+          <div className="space-y-1.5">
+            <p className="text-sm font-semibold text-slate-700">Preferensi Penerimaan</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                className={`inline-flex h-10 shrink-0 items-center justify-center rounded-lg border px-3 text-xs sm:text-sm font-medium transition-all ${
+                  !data.preference
+                    ? 'border-emerald-600 bg-emerald-50 text-emerald-800 font-bold'
+                    : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+                onClick={() => setData('preference', '')}
+              >
+                Semua
+              </button>
+              {Object.entries(preferences).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`inline-flex h-10 shrink-0 items-center justify-center rounded-lg border px-3 text-xs sm:text-sm font-medium transition-all ${
+                    data.preference === value
+                      ? 'border-emerald-600 bg-emerald-600 text-white font-bold shadow-2xs'
+                      : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                  }`}
+                  onClick={() => setData('preference', value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex shrink-0 gap-2">
             <button
-              type="button"
-              onClick={reset}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-[10px] border border-border bg-surface px-4 text-sm text-text-secondary-strong transition-colors hover:bg-hover hover:text-text"
+              type="submit"
+              className={buttonClasses({ size: 'md' })}
+              disabled={processing}
             >
-              Reset
+              <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+              {processing ? 'Menyaring…' : 'Terapkan'}
             </button>
-          ) : null}
-        </div>
+            {data.q || data.preference ? (
+              <button
+                type="button"
+                onClick={reset}
+                className={buttonClasses({ variant: 'outline', size: 'md' })}
+                title="Reset filter"
+              >
+                <X className="h-4 w-4" />
+                Reset
+              </button>
+            ) : null}
+          </div>
         </div>
       </form>
 
       <section className="mt-8">
-        <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
-          <p className="text-sm text-text-secondary-strong">
-            <span className="font-medium tabular-nums text-text">{filtered.length}</span> sponsor
-            <span className="hidden text-text-muted sm:inline"> yang cocok dengan filter</span>
+        <div className="flex items-baseline justify-between border-b border-slate-200 pb-3">
+          <p className="text-sm font-medium text-slate-600">
+            Ditemukan <span className="font-bold text-slate-900 tabular-nums">{filtered.length}</span> brand sponsor
           </p>
-          <p className="text-xs text-text-muted">
-            Terverifikasi dan siap menerima proposal.
+          <p className="text-xs text-slate-400">
+            Terverifikasi & siap menerima proposal resmi
           </p>
         </div>
 
         {filtered.length > 0 ? (
-          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {filtered.map((sponsor) => (
               <div
                 key={sponsor.id}
-                className="flex h-full flex-col rounded-[14px] border border-border bg-surface p-5 transition-colors hover:border-primary/40"
+                className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-xs transition-all hover:border-emerald-500/50 hover:shadow-md"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-border bg-background-muted text-primary-strong">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.5A3.5 3.5 0 0 0 21 15V11a9 9 0 1 0-18 0v4c0 .5.1 1 .3 1.4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
+                <div>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 font-bold">
+                      <Building2 className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <EvidenceTag tone={preferenceTones[sponsor.preference]}>
+                      {preferenceLabels[sponsor.preference]}
+                    </EvidenceTag>
                   </div>
-                  <EvidenceTag tone={preferenceTones[sponsor.preference]}>
-                    {preferenceLabels[sponsor.preference]}
-                  </EvidenceTag>
+
+                  <h2 className="mt-4 text-base font-bold text-slate-900">{sponsor.name}</h2>
+
+                  <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                    <MapPin className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
+                    {sponsor.location || 'Lokasi tidak disebutkan'}
+                  </p>
+
+                  {sponsor.contact ? (
+                    <p className="mt-2 text-xs text-slate-500 font-medium">
+                      Narahubung: <span className="text-slate-700">{sponsor.contact}</span>
+                    </p>
+                  ) : null}
                 </div>
 
-                <h2 className="mt-4 text-[16px] font-semibold text-text">{sponsor.name}</h2>
-
-                <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-text-secondary-strong">
-                  <MapPin className="h-3.5 w-3.5 text-text-muted" aria-hidden="true" />
-                  {sponsor.location || '—'}
-                </p>
-
-                {sponsor.contact ? (
-                  <p className="mt-2 text-xs text-text-secondary-strong">
-                    Kontak: {sponsor.contact}
-                  </p>
-                ) : null}
-
-                <div className="mt-4 flex gap-2">
+                <div className="mt-6 border-t border-slate-100 pt-4">
                   <Link
                     href={`/eo/proposals/create?sponsor=${sponsor.id}`}
-                    className={buttonClasses({ size: 'sm', className: 'justify-center' })}
+                    className={buttonClasses({ size: 'sm', className: 'w-full' })}
                   >
-                    Kirim proposal
+                    <Send className="h-3.5 w-3.5" />
+                    Ajukan Proposal ke Brand Ini
                   </Link>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="mt-6 rounded-[14px] border border-border bg-surface p-6 text-center">
-            <p className="text-sm font-medium text-text">Belum ada sponsor yang cocok</p>
-            <p className="mt-1 text-sm text-text-secondary-strong">
-              Coba ubah kata kunci, atau pilih preferensi lainnya.
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xs">
+            <p className="text-base font-semibold text-slate-800">Tidak ada brand sponsor yang cocok</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Coba sesuaikan kata kunci pencarian atau pilih filter preferensi lain.
             </p>
           </div>
         )}

@@ -1,9 +1,9 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { CalendarDays, Handshake, MapPin, MessageSquare, Star } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, CalendarDays, CheckCircle2, MapPin, MessageSquare, Star } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
-import { buttonClasses } from '../../components/Button';
-import { Field, Textarea } from '../../components/Form';
+import Button, { buttonClasses } from '../../components/Button';
+import { Field, Select, Textarea } from '../../components/Form';
 import { formatDate } from '../../lib/utils';
 import SponsorshipChat from '../../components/sponsorships/SponsorshipChat';
 
@@ -34,206 +34,295 @@ export default function SponsorshipDetail({ sponsorship }) {
 
   return (
     <DashboardLayout
-      eyebrow="Kerja Sama"
+      eyebrow="Kerja Sama Sponsorship"
       title={s.event.title}
       actions={
-        <Link href="/sponsor/sponsorships" className={buttonClasses({ variant: 'ghost' })}>
-          Kembali ke daftar
+        <Link href="/sponsor/sponsorships" className={buttonClasses({ variant: 'outline', size: 'sm' })}>
+          <ArrowLeft className="h-4 w-4" />
+          Daftar Kerja Sama
         </Link>
       }
     >
-      <Head title={s.event.title} />
+      <Head title={`Kerja Sama · ${s.event.title}`} />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6">
-          <section className="rounded-[12px] border border-border bg-surface">
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-4">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+        {/* Main Column */}
+        <div className="min-w-0 space-y-6">
+          {/* Header & Agreed Terms Card */}
+          <section className="rounded-2xl border border-border/80 bg-surface shadow-xs">
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/70 p-5 sm:p-6">
               <div>
-                <p className="text-sm font-medium text-text">{s.eo}</p>
-                <p className="mt-1 flex flex-wrap items-center gap-3 text-xs text-text-secondary-strong">
+                <p className="text-sm font-semibold text-text">Penyelenggara: {s.eo}</p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-4 text-xs text-text-secondary">
                   <span className="inline-flex items-center gap-1.5">
-                    <CalendarDays className="h-3.5 w-3.5" />
+                    <CalendarDays className="h-3.5 w-3.5 text-primary" />
                     {formatDate(s.event.date_start)}{s.event.date_end && s.event.date_end !== s.event.date_start ? ` – ${formatDate(s.event.date_end)}` : ''}
                   </span>
-                  {s.event.location ? (
+                  {s.event.location && (
                     <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5" />
+                      <MapPin className="h-3.5 w-3.5 text-text-muted" />
                       {s.event.location}
                     </span>
-                  ) : null}
-                </p>
+                  )}
+                </div>
               </div>
               <StatusBadge status={s.status} />
             </div>
-            <div className="space-y-5 px-5 py-5">
+
+            <div className="space-y-5 p-5 sm:p-6">
               <div>
-                <h2 className="text-sm font-semibold text-text">Ringkasan kesepakatan</h2>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-text-secondary-strong">
-                  {s.agreed_terms || 'Tidak ada ringkasan tercatat.'}
-                </p>
-              </div>
-              {s.deliverables ? (
-                <div>
-                  <h2 className="text-sm font-semibold text-text">Deliverables</h2>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-text-secondary-strong">{s.deliverables}</p>
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">Ringkasan Kesepakatan</h2>
+                <div className="mt-2 rounded-xl bg-background/60 p-4 border border-border/60">
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">
+                    {s.agreed_terms || 'Tidak ada ringkasan kesepakatan tercatat.'}
+                  </p>
                 </div>
-              ) : null}
+              </div>
+
+              {s.deliverables && (
+                <div>
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">Deliverables Disepakati</h2>
+                  <div className="mt-2 rounded-xl bg-background/60 p-4 border border-border/60">
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">
+                      {s.deliverables}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 
+          {/* Chat Component */}
           <SponsorshipChat sponsorship={s} basePath="/sponsor/sponsorships" />
 
-          {s.status === 'completed' && isSponsor && !s.review ? (
-            <section className="rounded-[12px] border border-border bg-surface">
-              <div className="border-b border-border px-5 py-4">
-                <h2 className="text-sm font-semibold text-text">Beri rating ke EO</h2>
-                <p className="mt-1 text-xs text-text-secondary-strong">Ulasan publik, dapat diedit dalam 24 jam.</p>
+          {/* Review Submission Section (if completed and no review yet) */}
+          {s.status === 'completed' && isSponsor && !s.review && (
+            <section className="rounded-2xl border border-border/80 bg-surface shadow-xs">
+              <div className="border-b border-border/70 p-5 sm:p-6">
+                <h2 className="text-base font-semibold text-text">Beri Rating & Ulasan untuk EO</h2>
+                <p className="mt-0.5 text-xs text-text-secondary">
+                  Ulasan ini akan tampil di profil publik organizer. Anda dapat mengubahnya dalam waktu 24 jam.
+                </p>
               </div>
-              <form onSubmit={submitReview} className="space-y-4 px-5 py-5">
+
+              <form onSubmit={submitReview} className="space-y-4 p-5 sm:p-6">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {[['overall_rating','Keseluruhan'],['communication_rating','Komunikasi'],['professionalism_rating','Profesionalisme'],['deliverables_rating','Deliverables']].map(([name,label]) => (
+                  {[
+                    ['overall_rating', 'Rating Keseluruhan'],
+                    ['communication_rating', 'Kualitas Komunikasi'],
+                    ['professionalism_rating', 'Tingkat Profesionalisme'],
+                    ['deliverables_rating', 'Realisasi Deliverable'],
+                  ].map(([name, label]) => (
                     <Field key={name} label={label}>
-                      <select
+                      <Select
                         value={reviewForm.data[name]}
                         onChange={(e) => reviewForm.setData(name, Number(e.target.value))}
-                        className="w-full rounded-[8px] border border-border bg-surface px-3 py-2 text-sm text-text"
                       >
-                        {[5,4,3,2,1].map((v) => <option key={v} value={v}>{v}</option>)}
-                      </select>
+                        {[5, 4, 3, 2, 1].map((v) => (
+                          <option key={v} value={v}>
+                            {v} Bintang {v === 5 ? '(Sangat Puas)' : v === 4 ? '(Puas)' : v === 3 ? '(Cukup)' : v === 2 ? '(Kurang)' : '(Sangat Buruk)'}
+                          </option>
+                        ))}
+                      </Select>
                     </Field>
                   ))}
                 </div>
-                <Field label="Komentar (opsional)">
-                  <Textarea value={reviewForm.data.comment} onChange={(e) => reviewForm.setData('comment', e.target.value)} rows={4} />
+
+                <Field label="Ulasan Tambahan (opsional)" htmlFor="comment">
+                  <Textarea
+                    id="comment"
+                    value={reviewForm.data.comment}
+                    onChange={(e) => reviewForm.setData('comment', e.target.value)}
+                    rows={4}
+                    placeholder="Ceritakan pengalaman kerja sama Anda bersama pihak EO…"
+                  />
                 </Field>
-                <button type="submit" className={buttonClasses()} disabled={reviewForm.processing}>Kirim ulasan</button>
+
+                <Button type="submit" loading={reviewForm.processing}>
+                  Kirim Ulasan
+                </Button>
               </form>
             </section>
-          ) : null}
+          )}
 
-          {s.review ? (
-            <section className="rounded-[12px] border border-border bg-surface">
-              <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                <h2 className="text-sm font-semibold text-text">Ulasan Anda</h2>
-                {s.can_edit_review ? (
-                  <span className="text-xs text-text-muted">Dapat diedit dalam 24 jam</span>
-                ) : null}
-              </div>
-              <div className="px-5 py-5 space-y-3">
-                <div className="flex items-center gap-2 text-sm text-text">
-                  <Star className="h-4 w-4" />
-                  <span>{s.review.overall_rating}/5</span>
+          {/* Existing Review Display & Edit */}
+          {s.review && (
+            <section className="rounded-2xl border border-border/80 bg-surface shadow-xs">
+              <div className="flex items-center justify-between border-b border-border/70 p-5 sm:p-6">
+                <div>
+                  <h2 className="text-base font-semibold text-text">Ulasan Anda</h2>
+                  <p className="mt-0.5 text-xs text-text-secondary">Ulasan publik yang telah dikirim</p>
                 </div>
-                {s.review.comment ? <p className="text-sm text-text-secondary-strong whitespace-pre-wrap">{s.review.comment}</p> : null}
+                {s.can_edit_review && (
+                  <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                    Dapat diedit (24 jam)
+                  </span>
+                )}
               </div>
-              {s.can_edit_review && isSponsor ? (
-                <form onSubmit={submitReview} className="border-t border-border space-y-4 px-5 py-5">
+
+              <div className="p-5 sm:p-6 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-semibold text-text">
+                  <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                  <span>{s.review.overall_rating} dari 5 Bintang</span>
+                </div>
+                {s.review.comment && (
+                  <p className="text-sm leading-relaxed text-text-secondary whitespace-pre-wrap rounded-xl bg-background/50 p-4 border border-border/50">
+                    {s.review.comment}
+                  </p>
+                )}
+              </div>
+
+              {s.can_edit_review && isSponsor && (
+                <form onSubmit={submitReview} className="border-t border-border/70 p-5 sm:p-6 space-y-4 bg-background/30 rounded-b-2xl">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted">Perbarui Ulasan</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {[['overall_rating','Keseluruhan'],['communication_rating','Komunikasi'],['professionalism_rating','Profesionalisme'],['deliverables_rating','Deliverables']].map(([name,label]) => (
+                    {[
+                      ['overall_rating', 'Rating Keseluruhan'],
+                      ['communication_rating', 'Kualitas Komunikasi'],
+                      ['professionalism_rating', 'Tingkat Profesionalisme'],
+                      ['deliverables_rating', 'Realisasi Deliverable'],
+                    ].map(([name, label]) => (
                       <Field key={name} label={label}>
-                        <select
+                        <Select
                           value={reviewForm.data[name]}
                           onChange={(e) => reviewForm.setData(name, Number(e.target.value))}
-                          className="w-full rounded-[8px] border border-border bg-surface px-3 py-2 text-sm text-text"
                         >
-                          {[5,4,3,2,1].map((v) => <option key={v} value={v}>{v}</option>)}
-                        </select>
+                          {[5, 4, 3, 2, 1].map((v) => (
+                            <option key={v} value={v}>{v} Bintang</option>
+                          ))}
+                        </Select>
                       </Field>
                     ))}
                   </div>
+
                   <Field label="Komentar (opsional)">
-                    <Textarea value={reviewForm.data.comment} onChange={(e) => reviewForm.setData('comment', e.target.value)} rows={4} />
+                    <Textarea
+                      value={reviewForm.data.comment}
+                      onChange={(e) => reviewForm.setData('comment', e.target.value)}
+                      rows={3}
+                    />
                   </Field>
-                  <button type="submit" className={buttonClasses()} disabled={reviewForm.processing}>Perbarui ulasan</button>
+
+                  <Button type="submit" size="sm" loading={reviewForm.processing}>
+                    Perbarui Ulasan
+                  </Button>
                 </form>
-              ) : null}
+              )}
             </section>
-          ) : null}
+          )}
         </div>
 
-        <aside className="space-y-4">
-          <div className="rounded-[12px] border border-border bg-surface p-5">
-            <h2 className="text-sm font-semibold text-text">Tindakan</h2>
-            <div className="mt-4 space-y-2">
-              {s.status === 'active' && isSponsor ? (
-                <button
+        {/* Aside Sidebar */}
+        <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+          {/* Actions Card */}
+          <div className="rounded-2xl border border-border/80 bg-surface p-6 shadow-xs">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">Aksi Kerja Sama</h2>
+            <div className="mt-4 space-y-3">
+              {s.status === 'active' && (
+                <Button
                   type="button"
-                  onClick={() => requestForm.post(`/sponsor/sponsorships/${s.id}/request-completion`, { preserveScroll: true })}
-                  className={buttonClasses({ className: 'w-full justify-center' })}
-                  disabled={requestForm.processing}
+                  onClick={() => requestForm.post(`/${isSponsor ? 'sponsor' : 'eo'}/sponsorships/${s.id}/request-completion`, { preserveScroll: true })}
+                  className="w-full justify-center"
+                  loading={requestForm.processing}
                 >
-                  Minta penyelesaian
-                </button>
-              ) : null}
-              {s.status === 'active' && !isSponsor ? (
-                <button
-                  type="button"
-                  onClick={() => requestForm.post(`/eo/sponsorships/${s.id}/request-completion`, { preserveScroll: true })}
-                  className={buttonClasses({ className: 'w-full justify-center' })}
-                  disabled={requestForm.processing}
-                >
-                  Minta penyelesaian
-                </button>
-              ) : null}
-              {s.status === 'completion_requested' ? (
-                <>
-                  <button
+                  <CheckCircle2 className="h-4 w-4" />
+                  Minta Penyelesaian
+                </Button>
+              )}
+
+              {s.status === 'completion_requested' && (
+                <div className="space-y-3">
+                  <Button
                     type="button"
                     onClick={() => confirmForm.post(`/${isSponsor ? 'sponsor' : 'eo'}/sponsorships/${s.id}/confirm-completion`, { preserveScroll: true })}
-                    className={buttonClasses({ className: 'w-full justify-center' })}
-                    disabled={confirmForm.processing}
+                    className="w-full justify-center"
+                    loading={confirmForm.processing}
                   >
-                    Konfirmasi selesai
-                  </button>
-                  <form onSubmit={(e) => { e.preventDefault(); disputeForm.post(`/${isSponsor ? 'sponsor' : 'eo'}/sponsorships/${s.id}/dispute`, { preserveScroll: true }); }} className="space-y-2">
-                    <Field label="Alasan sengketa">
-                      <Textarea value={disputeForm.data.reason} onChange={(e) => disputeForm.setData('reason', e.target.value)} rows={3} required />
+                    <CheckCircle2 className="h-4 w-4" />
+                    Konfirmasi Selesai
+                  </Button>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      disputeForm.post(`/${isSponsor ? 'sponsor' : 'eo'}/sponsorships/${s.id}/dispute`, { preserveScroll: true });
+                    }}
+                    className="space-y-2 pt-2 border-t border-border/60"
+                  >
+                    <Field label="Ajukan Sengketa" htmlFor="dispute_reason">
+                      <Textarea
+                        id="dispute_reason"
+                        value={disputeForm.data.reason}
+                        onChange={(e) => disputeForm.setData('reason', e.target.value)}
+                        rows={3}
+                        placeholder="Jelaskan alasan deliverable belum terpenuhi…"
+                        required
+                      />
                     </Field>
-                    <button type="submit" className={buttonClasses({ variant: 'outline', className: 'w-full justify-center' })} disabled={disputeForm.processing}>
-                      Ajukan sengketa
-                    </button>
+                    <Button
+                      type="submit"
+                      variant="destructive-outline"
+                      className="w-full justify-center"
+                      loading={disputeForm.processing}
+                    >
+                      <AlertTriangle className="h-4 w-4" />
+                      Ajukan Sengketa
+                    </Button>
                   </form>
-                </>
-              ) : null}
-              {s.status === 'needs_admin_review' ? (
-                <p className="text-xs text-text-secondary-strong">Menunggu peninjauan admin (7 hari tanpa respons).</p>
-              ) : null}
-              {s.status === 'disputed' ? (
-                <p className="text-xs text-text-secondary-strong">Dalam sengketa. Menunggu peninjauan admin.</p>
-              ) : null}
+                </div>
+              )}
+
+              {s.status === 'needs_admin_review' && (
+                <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-xs text-warning-strong">
+                  Menunggu peninjauan admin karena tidak ada respons selama 7 hari kerja.
+                </div>
+              )}
+
+              {s.status === 'disputed' && (
+                <div className="rounded-xl border border-danger/30 bg-danger/10 p-4 text-xs text-danger-strong">
+                  Status dalam sengketa. Tim operasional admin sedang memediasi kedua pihak.
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-border bg-surface p-5">
-            <h2 className="text-sm font-semibold text-text">Info</h2>
-            <dl className="mt-3 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-text-muted">Pihak</dt>
-                <dd className="text-text-secondary-strong">{s.sponsor} × {s.eo}</dd>
+          {/* Dossier Meta Info Card */}
+          <div className="rounded-2xl border border-border/80 bg-surface p-6 shadow-xs">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">Informasi Kontrak</h2>
+            <dl className="mt-4 divide-y divide-border/60 text-xs">
+              <div className="flex justify-between py-2.5">
+                <dt className="text-text-secondary">Pihak Terkait</dt>
+                <dd className="font-medium text-text text-right">{s.sponsor} & {s.eo}</dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-text-muted">Status</dt>
-                <dd className="text-text-secondary-strong">{s.status}</dd>
+              <div className="flex justify-between py-2.5">
+                <dt className="text-text-secondary">Status</dt>
+                <dd><StatusBadge status={s.status} /></dd>
               </div>
-              {s.accepted_at ? (
-                <div className="flex justify-between">
-                  <dt className="text-text-muted">Disetujui</dt>
-                  <dd className="text-text-secondary-strong">{formatDate(s.accepted_at)}</dd>
+              {s.accepted_at && (
+                <div className="flex justify-between py-2.5">
+                  <dt className="text-text-secondary">Disetujui</dt>
+                  <dd className="tabular-nums font-medium text-text">{formatDate(s.accepted_at)}</dd>
                 </div>
-              ) : null}
-              {s.completed_at ? (
-                <div className="flex justify-between">
-                  <dt className="text-text-muted">Selesai</dt>
-                  <dd className="text-text-secondary-strong">{formatDate(s.completed_at)}</dd>
+              )}
+              {s.completed_at && (
+                <div className="flex justify-between py-2.5">
+                  <dt className="text-text-secondary">Selesai</dt>
+                  <dd className="tabular-nums font-medium text-text">{formatDate(s.completed_at)}</dd>
                 </div>
-              ) : null}
+              )}
             </dl>
-            {s.proposal_id ? (
-              <Link href={isSponsor ? `/sponsor/proposals/${s.proposal_id}` : `/eo/proposals/${s.proposal_id}`} className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-primary-strong">
-                <MessageSquare className="h-3.5 w-3.5" />
-                Lihat proposal
-              </Link>
-            ) : null}
+
+            {s.proposal_id && (
+              <div className="mt-4 pt-3 border-t border-border/60">
+                <Link
+                  href={isSponsor ? `/sponsor/proposals/${s.proposal_id}` : `/eo/proposals/${s.proposal_id}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-strong transition-colors"
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Lihat Riwayat Proposal
+                </Link>
+              </div>
+            )}
           </div>
         </aside>
       </div>

@@ -9,7 +9,8 @@ const navItems = [
   { label: 'Cara Kerja', href: '/#cara-kerja' },
   { label: 'Untuk EO', href: '/#untuk-eo' },
   { label: 'Untuk Sponsor', href: '/#untuk-sponsor' },
-  { label: 'Event', href: '/events' },
+  { label: 'Jelajahi Event', href: '/events' },
+  { label: 'Penyelenggara', href: '/organizers' },
 ];
 
 export default function PublicLayout({ children }) {
@@ -17,19 +18,19 @@ export default function PublicLayout({ children }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-white text-slate-800">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
           <Logo />
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-6 lg:flex" aria-label="Navigasi utama">
+          <nav className="hidden items-center gap-7 lg:flex" aria-label="Navigasi utama">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-text-secondary no-underline hover:text-text"
+                className="text-sm font-medium text-slate-600 no-underline transition-colors hover:text-emerald-700"
               >
                 {item.label}
               </Link>
@@ -46,12 +47,12 @@ export default function PublicLayout({ children }) {
               <>
                 <Link
                   href="/login"
-                  className="text-sm text-text-secondary no-underline hover:text-text"
+                  className="px-3 py-1.5 text-sm font-medium text-slate-600 no-underline transition-colors hover:text-slate-900"
                 >
                   Masuk
                 </Link>
                 <Link href="/register" className={buttonClasses({ size: 'sm' })}>
-                  Daftar
+                  Mulai Sekarang
                 </Link>
               </>
             )}
@@ -60,7 +61,7 @@ export default function PublicLayout({ children }) {
           {/* Mobile toggle */}
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-border text-text-secondary transition-colors hover:bg-hover hover:text-text lg:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? 'Tutup menu' : 'Buka menu'}
@@ -72,53 +73,53 @@ export default function PublicLayout({ children }) {
         {/* Mobile menu */}
         <AnimatePresence>
           {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-border bg-surface px-5 lg:hidden"
-          >
-            <div className="py-4">
-            <nav className="flex flex-col gap-0.5" aria-label="Navigasi seluler">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-[8px] px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-hover hover:text-text"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-            <div className="mt-4 flex items-center gap-2.5 border-t border-border pt-4">
-            {auth?.user ? (
-              <Link
-                href="/dashboard"
-                className={buttonClasses({ size: 'sm', className: 'flex-1' })}
-              >
-                Ruang Kerja
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className={buttonClasses({ size: 'sm', variant: 'outline', className: 'flex-1' })}
-                >
-                  Masuk
-                </Link>
-                <Link
-                  href="/register"
-                  className={buttonClasses({ size: 'sm', className: 'flex-1' })}
-                >
-                  Daftar
-                </Link>
-              </>
-            )}
-            </div>
-            </div>
-          </motion.div>
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden border-t border-slate-200 bg-white px-5 shadow-lg lg:hidden"
+            >
+              <div className="py-4">
+                <nav className="flex flex-col gap-1" aria-label="Navigasi seluler">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-emerald-700"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </nav>
+                <div className="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
+                  {auth?.user ? (
+                    <Link
+                      href="/dashboard"
+                      className={buttonClasses({ size: 'sm', className: 'flex-1' })}
+                    >
+                      Buka Ruang Kerja
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        className={buttonClasses({ size: 'sm', variant: 'outline', className: 'flex-1' })}
+                      >
+                        Masuk
+                      </Link>
+                      <Link
+                        href="/register"
+                        className={buttonClasses({ size: 'sm', className: 'flex-1' })}
+                      >
+                        Daftar
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </header>
@@ -127,43 +128,43 @@ export default function PublicLayout({ children }) {
       <main className="flex-1">{children}</main>
 
       {/* ── Footer ── */}
-      <footer className="mt-24 border-t border-border">
+      <footer className="mt-20 border-t border-slate-200 bg-slate-50/50">
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto]">
           {/* Brand */}
-          <div className="max-w-xs">
+          <div className="max-w-sm">
             <Logo />
-            <p className="mt-3 text-sm leading-relaxed text-text-secondary">
-              Ruang kerja sponsorship yang menempatkan bukti, persetujuan, dan jejak kerja sama di depan.
+            <p className="mt-3 text-sm leading-relaxed text-slate-500">
+              Platform sponsorship terstruktur yang menempatkan bukti audiens, kesepakatan tertulis, dan jejak kerja sama dalam satu tempat terpadu.
             </p>
           </div>
 
           {/* Links */}
-            <div className="flex gap-12 text-sm">
-              <div className="space-y-3">
-                <p className="text-xs font-medium tracking-[0.08em] text-text-muted uppercase">Navigasi</p>
-                <div className="space-y-2">
-                  <Link href="/#cara-kerja" className="block text-text-secondary transition-colors hover:text-text">
-                    Cara Kerja
-                  </Link>
-                  <Link href="/#untuk-eo" className="block text-text-secondary transition-colors hover:text-text">
-                    Untuk EO
-                  </Link>
-                  <Link href="/#untuk-sponsor" className="block text-text-secondary transition-colors hover:text-text">
-                    Untuk Sponsor
-                  </Link>
-                  <Link href="/events" className="block text-text-secondary transition-colors hover:text-text">
-                    Event
-                  </Link>
-                </div>
-              </div>
+          <div className="flex flex-wrap gap-12 text-sm">
             <div className="space-y-3">
-              <p className="text-xs font-medium tracking-[0.07em] text-text-muted uppercase">Akun</p>
+              <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Navigasi</p>
               <div className="space-y-2">
-                <Link href="/login" className="block text-text-secondary transition-colors hover:text-text">
-                  Masuk
+                <Link href="/#cara-kerja" className="block text-slate-600 transition-colors hover:text-emerald-700">
+                  Cara Kerja
                 </Link>
-                <Link href="/register" className="block text-text-secondary transition-colors hover:text-text">
-                  Daftar
+                <Link href="/#untuk-eo" className="block text-slate-600 transition-colors hover:text-emerald-700">
+                  Untuk EO
+                </Link>
+                <Link href="/#untuk-sponsor" className="block text-slate-600 transition-colors hover:text-emerald-700">
+                  Untuk Sponsor
+                </Link>
+                <Link href="/events" className="block text-slate-600 transition-colors hover:text-emerald-700">
+                  Jelajahi Event
+                </Link>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Akun & Akses</p>
+              <div className="space-y-2">
+                <Link href="/login" className="block text-slate-600 transition-colors hover:text-emerald-700">
+                  Masuk Akun
+                </Link>
+                <Link href="/register" className="block text-slate-600 transition-colors hover:text-emerald-700">
+                  Daftar Sekarang
                 </Link>
               </div>
             </div>
@@ -171,9 +172,9 @@ export default function PublicLayout({ children }) {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-border">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-3 text-xs text-text-muted sm:px-8">
-            <p>SponsorIn</p>
+        <div className="border-t border-slate-200/80">
+          <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-2 px-5 py-4 text-xs text-slate-500 sm:flex-row sm:px-8">
+            <p>© {new Date().getFullYear()} SponsorIn. Hak cipta dilindungi.</p>
             <p>Platform kolaborasi sponsorship untuk brand dan penyelenggara event</p>
           </div>
         </div>

@@ -49,7 +49,7 @@ export default function ConfirmDialog({
           <button
             type="button"
             aria-label="Tutup dialog"
-            className="absolute inset-0 bg-text/25 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs"
             onClick={onCancel}
           />
           <motion.div
@@ -59,7 +59,7 @@ export default function ConfirmDialog({
             aria-modal="true"
             aria-labelledby="confirm-title"
             aria-describedby={description ? 'confirm-description' : undefined}
-            className="relative w-full max-w-md rounded-[14px] border border-border bg-surface p-5 shadow-[0_18px_50px_-24px_rgba(52,59,50,0.45)] sm:p-6"
+            className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl sm:p-7"
             initial={{ opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
@@ -68,7 +68,7 @@ export default function ConfirmDialog({
             <button
               type="button"
               onClick={onCancel}
-              className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-text-muted transition-colors hover:bg-hover hover:text-text"
+              className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
               aria-label="Tutup"
             >
               <X className="h-4 w-4" aria-hidden="true" />
@@ -77,23 +77,23 @@ export default function ConfirmDialog({
             <span
               className={
                 tone === 'danger'
-                  ? 'inline-flex h-10 w-10 items-center justify-center rounded-full bg-danger/10 text-danger-strong'
-                  : 'inline-flex h-10 w-10 items-center justify-center rounded-full bg-warning/10 text-warning-strong'
+                  ? 'inline-flex h-11 w-11 items-center justify-center rounded-xl bg-rose-50 text-rose-600 ring-4 ring-rose-50/50'
+                  : 'inline-flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-4 ring-amber-50/50'
               }
             >
               <AlertTriangle className="h-5 w-5" aria-hidden="true" />
             </span>
 
-            <h2 id="confirm-title" className="mt-4 text-[17px] font-semibold leading-snug tracking-[-0.01em] text-text">
+            <h2 id="confirm-title" className="mt-4 text-lg font-bold tracking-tight text-slate-900">
               {title}
             </h2>
             {description ? (
-              <p id="confirm-description" className="mt-2 text-sm leading-relaxed text-text-secondary-strong">
+              <p id="confirm-description" className="mt-2 text-sm leading-relaxed text-slate-600">
                 {description}
               </p>
             ) : null}
 
-            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
               <Button variant="outline" onClick={onCancel} disabled={processing} className="w-full sm:w-auto">
                 {cancelLabel}
               </Button>

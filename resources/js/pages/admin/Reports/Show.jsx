@@ -1,8 +1,9 @@
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, AlertCircle, CheckCircle2, Clock, Flag, User } from 'lucide-react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import DashboardLayout from '../../../layouts/DashboardLayout';
 import StatusBadge from '../../../components/StatusBadge';
-import { buttonClasses } from '../../../components/Button';
+import Button, { buttonClasses } from '../../../components/Button';
+import { Field, Select, Textarea } from '../../../components/Form';
 import { formatDate } from '../../../lib/utils';
 
 function formatDateTime(value) {
@@ -24,92 +25,136 @@ function severityTone(status) {
   return 'neutral';
 }
 
-function targetLabel(report) {
-  const map = {
-    event: 'Event',
-    account: 'Akun',
-    review: 'Ulasan',
-    sponsorship: 'Kerja sama',
-    proposal: 'Proposal',
-  };
-  return map[report?.target_type ?? ''] ?? 'Laporan';
-}
-
 export default function AdminReportsShow({ report }) {
+  const { data, setData, post, processing, errors } = useForm({
+    status: report?.status ?? 'in_review',
+    resolution: report?.resolution ?? '',
+    note: '',
+  });
+
+  function submitResolution(e) {
+    e.preventDefault();
+    post(`/admin/reports/${report.id}/resolve`, { preserveScroll: true });
+  }
+
   return (
     <DashboardLayout
-      eyebrow="Laporan penyalahgunaan"
-      title="Detail laporan"
+      eyebrow="Operasional platform"
+      title={`Detail Laporan #${report?.id ?? '—'}`}
       actions={
-        <Link href="/admin/reports" className={buttonClasses({ variant: 'outline' })}>
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Kembali ke daftar
-        </Link>
+        <div className="flex items-center gap-3">
+          <StatusBadge status={report?.status} tone={severityTone(report?.status)} />
+          <Link href="/admin/reports" className={buttonClasses({ variant: 'outline', size: 'sm' })}>
+            <ArrowLeft className="h-4 w-4" />
+            Kembali
+          </Link>
+        </div>
       }
     >
-      <Head title={`Detail laporan #${report?.id ?? '—'}`} />
+      <Head title={`Laporan #${report?.id ?? '—'}`} />
 
-      <div className="flex flex-col gap-6">
-        <div className="rounded-[12px] border border-border bg-surface p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-xs font-medium tracking-[0.06em] text-text-muted">LAPORAN</p>
-              <h1 className="mt-1.5 text-2xl font-semibold text-text">{targetLabel(report)}</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <Flag className="h-4 w-4 text-text-muted" aria-hidden="true" />
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+        {/* Main Column */}
+        <div className="min-w-0 space-y-6">
+          <section className="rounded-2xl border border-border/80 bg-surface shadow-xs p-6 space-y-5">
+            <div className="flex items-center justify-between border-b border-border/70 pb-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted">Target Laporan</p>
+                <h1 className="mt-1 text-xl font-bold text-text">{report?.target_label ?? 'Laporan'}</h1>
+              </div>
               <StatusBadge status={report?.status} tone={severityTone(report?.status)} />
             </div>
-          </div>
 
-          <dl className="mt-5 grid gap-4 border-t border-border pt-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <dt className="text-xs text-text-muted">Alasan</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-text">{report?.reason ?? '—'}</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-text-muted">Detail</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-text-secondary-strong">{report?.details ?? '—'}</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-text-muted">Dilaporkan oleh</dt>
-              <dd className="mt-0.5 text-sm text-text-secondary-strong">
-                {report?.reporter ?? '—'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-text-muted">Ditugaskan ke</dt>
-              <dd className="mt-0.5 text-sm text-text-secondary-strong">
-                {report?.assigned_admin ?? '—'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-text-muted">Dikirim</dt>
-              <dd className="mt-0.5 text-sm text-text-secondary-strong">{formatDateTime(report?.created_at)}</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-text-muted">Selesai</dt>
-              <dd className="mt-0.5 text-sm text-text-secondary-strong">{formatDateTime(report?.resolved_at)}</dd>
-            </div>
-          </dl>
+            <dl className="grid gap-4 text-xs sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <dt className="text-text-muted">Alasan Pengaduan</dt>
+                <dd className="mt-1 font-medium text-sm text-text leading-relaxed">{report?.reason ?? '—'}</dd>
+              </div>
+
+              {report?.details && (
+                <div className="sm:col-span-2">
+                  <dt className="text-text-muted">Rincian Tambahan</dt>
+                  <dd className="mt-1 rounded-xl bg-background/60 p-4 border border-border/50 text-text-secondary leading-relaxed">
+                    {report.details}
+                  </dd>
+                </div>
+              )}
+
+              <div>
+                <dt className="text-text-muted">Dilaporkan Oleh</dt>
+                <dd className="mt-0.5 font-medium text-text">{report?.reporter ?? '—'}</dd>
+              </div>
+
+              <div>
+                <dt className="text-text-muted">Admin Penanggung Jawab</dt>
+                <dd className="mt-0.5 font-medium text-text">{report?.assigned_admin ?? '—'}</dd>
+              </div>
+
+              <div>
+                <dt className="text-text-muted">Tanggal Masuk</dt>
+                <dd className="mt-0.5 tabular-nums text-text-secondary">{formatDateTime(report?.created_at)}</dd>
+              </div>
+
+              <div>
+                <dt className="text-text-muted">Tanggal Selesai</dt>
+                <dd className="mt-0.5 tabular-nums text-text-secondary">{formatDateTime(report?.resolved_at)}</dd>
+              </div>
+            </dl>
+          </section>
+
+          {report?.resolution && (
+            <section className="rounded-2xl border border-border/80 bg-surface shadow-xs p-6 space-y-2">
+              <h2 className="text-sm font-semibold text-text">Penanganan Terakhir</h2>
+              <p className="rounded-xl bg-background/60 p-4 border border-border/50 text-xs leading-relaxed text-text-secondary">
+                {report.resolution}
+              </p>
+            </section>
+          )}
         </div>
 
-        {report?.resolution ? (
-          <div className="rounded-[12px] border border-border bg-surface p-6">
-            <h2 className="text-sm font-semibold text-text">Penanganan</h2>
-            <p className="mt-2 text-sm leading-relaxed text-text-secondary-strong">{report.resolution}</p>
-          </div>
-        ) : null}
+        {/* Aside Sidebar: Action Form */}
+        <aside className="lg:sticky lg:top-24 lg:self-start">
+          <form onSubmit={submitResolution} className="rounded-2xl border border-border/80 bg-surface shadow-xs p-6 space-y-4">
+            <div className="border-b border-border/70 pb-3">
+              <h2 className="text-base font-semibold text-text">Tindak Lanjut Laporan</h2>
+              <p className="mt-0.5 text-xs text-text-secondary">Perbarui status dan catatan penanganan masalah</p>
+            </div>
 
-        <div className="rounded-[12px] border border-border bg-background-muted p-6">
-          <h2 className="text-sm font-semibold text-text">Panduan penanganan</h2>
-          <ul className="mt-3 space-y-2.5 text-xs leading-relaxed text-text-secondary-strong">
-            <li>Tindak lanjut dilakukan melalui menu <span className="text-text">Tindak Lanjut</span> di atas.</li>
-            <li>Status laporan diperbarui: Terbuka, Sedang Ditinjau, Terklarifikasi, atau Dibatalkan.</li>
-            <li>Setiap perubahan dicatat pada audit log internal.</li>
-            <li>Detail penyelesaian disimpan sebagai bukti bahwa laporan telah ditangani.</li>
-          </ul>
-        </div>
+            <Field label="Status Penanganan" htmlFor="status" error={errors.status} required>
+              <Select id="status" value={data.status} onChange={(e) => setData('status', e.target.value)} error={errors.status}>
+                <option value="in_review">Sedang Ditinjau</option>
+                <option value="resolved">Terklarifikasi / Selesai</option>
+                <option value="dismissed">Batalkan / Tidak Valid</option>
+              </Select>
+            </Field>
+
+            <Field label="Catatan Resolusi" htmlFor="resolution" error={errors.resolution}>
+              <Textarea
+                id="resolution"
+                value={data.resolution}
+                onChange={(e) => setData('resolution', e.target.value)}
+                error={errors.resolution}
+                rows={3}
+                placeholder="Tindakan yang telah diambil terhadap target laporan…"
+              />
+            </Field>
+
+            <Field label="Catatan Internal Audit" htmlFor="note" error={errors.note}>
+              <Textarea
+                id="note"
+                value={data.note}
+                onChange={(e) => setData('note', e.target.value)}
+                error={errors.note}
+                rows={2}
+                placeholder="Alasan perubahan untuk jejak audit internal…"
+              />
+            </Field>
+
+            <Button type="submit" className="w-full" loading={processing}>
+              Simpan Tindak Lanjut
+            </Button>
+          </form>
+        </aside>
       </div>
     </DashboardLayout>
   );

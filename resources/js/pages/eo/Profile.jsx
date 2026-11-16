@@ -1,13 +1,12 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
-import { Edit3, FileText, MapPin, Save, Star, X } from 'lucide-react';
+import { Edit3, Save, Star, X } from 'lucide-react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
-import { buttonClasses } from '../../components/Button';
+import Button, { buttonClasses } from '../../components/Button';
 import { Field, Input, Select, Textarea } from '../../components/Form';
 import CitySelect from '../../components/CitySelect';
-import { EvidenceTag } from '../../components/StatusBadge';
-import { formatDateRange, legalFormLabels, proposalPreferenceLabels } from '../../lib/utils';
+import { formatDateRange, proposalPreferenceLabels } from '../../lib/utils';
 
 export default function EoProfile({
   organization,
@@ -59,17 +58,18 @@ export default function EoProfile({
 
   return (
     <DashboardLayout
-      eyebrow="Profil Event Organizer"
-      title="Profil publik"
+      eyebrow="Profil Organisasi EO"
+      title="Profil Publik Penyelenggara"
+      description="Kelola informasi yang dapat dilihat oleh calon brand sponsor pada direktori publik."
       actions={
         <div className="flex flex-wrap gap-2">
           {!editing ? (
-            <button type="button" onClick={startEditing} className={buttonClasses({ variant: 'outline' })}>
+            <button type="button" onClick={startEditing} className={buttonClasses({ variant: 'outline', size: 'sm' })}>
               <Edit3 className="h-4 w-4" aria-hidden="true" />
-              Edit profil
+              Edit Profil
             </button>
           ) : (
-            <button type="button" onClick={cancelEditing} className={buttonClasses({ variant: 'outline' })}>
+            <button type="button" onClick={cancelEditing} className={buttonClasses({ variant: 'outline', size: 'sm' })}>
               <X className="h-4 w-4" aria-hidden="true" />
               Batal
             </button>
@@ -77,39 +77,41 @@ export default function EoProfile({
         </div>
       }
     >
-      <Head title="Profil publik" />
+      <Head title="Profil Publik EO" />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
         <div>
           {editing ? (
-            <form onSubmit={submit} className="rounded-[12px] border border-border bg-surface p-6">
-              <div className="flex items-start justify-between gap-4">
+            <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4 mb-5">
                 <div>
-                  <p className="text-xs font-medium tracking-[0.06em] text-text-muted">EDIT PROFIL EO</p>
-                  <h2 className="mt-1.5 text-xl font-semibold text-text">Informasi organisasi</h2>
+                  <p className="text-xs font-bold tracking-wider text-slate-400 uppercase">Mode Pengubahan Profil</p>
+                  <h2 className="mt-1 text-lg font-bold text-slate-900">Perbarui Data Organisasi</h2>
                 </div>
-                <button type="submit" className={buttonClasses({ size: 'sm' })} disabled={form.processing}>
+                <Button type="submit" size="sm" disabled={form.processing}>
                   <Save className="h-4 w-4" aria-hidden="true" />
-                  {form.processing ? 'Menyimpan…' : 'Simpan perubahan'}
-                </button>
+                  {form.processing ? 'Menyimpan…' : 'Simpan Perubahan'}
+                </Button>
               </div>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <Field label="Nama tampilan" htmlFor="display_name" required className="sm:col-span-2">
+              <div className="space-y-4">
+                <Field label="Nama Organisasi / Tampilan" htmlFor="display_name" required>
                   <Input id="display_name" value={form.data.display_name} onChange={(event) => form.setData('display_name', event.target.value)} error={form.errors.display_name} />
                 </Field>
-                <Field label="Deskripsi" htmlFor="description" className="sm:col-span-2">
-                  <Textarea id="description" rows={5} value={form.data.description} onChange={(event) => form.setData('description', event.target.value)} error={form.errors.description} />
+                <Field label="Deskripsi Profil Organisasi" htmlFor="description">
+                  <Textarea id="description" rows={5} value={form.data.description} onChange={(event) => form.setData('description', event.target.value)} error={form.errors.description} placeholder="Ceritakan fokus bidang, sejarah komunitas, atau jenis event spesialisasi Anda..." />
                 </Field>
-                <Field label="Kategori" htmlFor="category">
-                  <Select id="category" value={form.data.category} onChange={(event) => form.setData('category', event.target.value)} error={form.errors.category}>
-                    <option value="">Pilih kategori</option>
-                    {categories.map((category) => <option key={category} value={category}>{category}</option>)}
-                  </Select>
-                </Field>
-                <Field label="Lokasi" htmlFor="location">
-                  <CitySelect id="location" value={form.data.location} onChange={(event) => form.setData('location', event.target.value)} error={form.errors.location} />
-                </Field>
-                <Field label="Preferensi proposal" htmlFor="proposal_preference">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Kategori Utama" htmlFor="category">
+                    <Select id="category" value={form.data.category} onChange={(event) => form.setData('category', event.target.value)} error={form.errors.category}>
+                      <option value="">Pilih kategori</option>
+                      {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+                    </Select>
+                  </Field>
+                  <Field label="Lokasi Domisili" htmlFor="location">
+                    <CitySelect id="location" value={form.data.location} onChange={(event) => form.setData('location', event.target.value)} error={form.errors.location} />
+                  </Field>
+                </div>
+                <Field label="Preferensi Penerimaan Proposal" htmlFor="proposal_preference">
                   <Select id="proposal_preference" value={form.data.proposal_preference} onChange={(event) => form.setData('proposal_preference', event.target.value)} error={form.errors.proposal_preference}>
                     <option value="">Pilih preferensi</option>
                     <option value="open">Menerima semua proposal</option>
@@ -119,71 +121,63 @@ export default function EoProfile({
                 </Field>
               </div>
             </form>
-          ) : <section className="rounded-[12px] border border-border bg-surface p-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-medium tracking-[0.06em] text-text-muted">EVENT ORGANIZER</p>
-                <h1 className="mt-1.5 text-2xl font-semibold leading-tight text-text">{organization?.name ?? 'Belum diisi'}</h1>
-                <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary-strong">
-                  {organization?.description ?? 'Profil ini masih kosong. Tambahkan deskripsi dan buat event untuk menampilkan potensi di platform.'}
-                </p>
-              </div>
-              {(organization?.rating_average ?? null) !== null ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-semibold text-text">{organization.rating_average ?? '—'}</span>
-                  <Star className="h-4 w-4 text-text-muted" aria-hidden="true" />
-                  <span className="text-xs tabular-nums text-text-secondary-strong">{organization.review_count ?? 0} ulasan</span>
+          ) : (
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <span className="rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider">
+                    Penyelenggara Event
+                  </span>
+                  <h1 className="mt-2 text-2xl font-bold leading-tight text-slate-900">{organization?.name ?? 'Belum diisi'}</h1>
+                  <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
+                    {organization?.description ?? 'Profil ini masih kosong. Tambahkan deskripsi agar calon mitra sponsor mengenal rekam jejak Anda.'}
+                  </p>
                 </div>
-              ) : null}
-            </div>
+                {(organization?.rating_average ?? null) !== null ? (
+                  <div className="flex items-center gap-1.5 rounded-xl bg-slate-50 p-2.5 border border-slate-100">
+                    <Star className="h-4 w-4 fill-amber-400 text-amber-500" aria-hidden="true" />
+                    <span className="text-base font-bold text-slate-900">{Number(organization.rating_average).toFixed(1)}</span>
+                    <span className="text-xs text-slate-400 font-medium">({organization.review_count ?? 0} ulasan)</span>
+                  </div>
+                ) : null}
+              </div>
 
-            <dl className="mt-5 grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <dt className="text-xs text-text-muted">Lokasi</dt>
-                <dd className="mt-0.5 text-sm text-text-secondary-strong">{organization?.location ?? '—'}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-text-muted">Kategori</dt>
-                <dd className="mt-0.5 text-sm text-text-secondary-strong">{organization?.category ?? '—'}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-text-muted">Bentuk hukum</dt>
-                <dd className="mt-0.5 text-sm text-text-secondary-strong">{organization?.legal_form ?? '—'}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-text-muted">Preferensi proposal</dt>
-                <dd className="mt-0.5 text-sm text-text-secondary-strong">{proposalPreferenceLabels[organization?.proposal_preference] ?? '—'}</dd>
-              </div>
-            </dl>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {active > 0 ? (
-                <StatusBadge status={`approved-${active}`}>{active} verifikasi disetujui</StatusBadge>
-              ) : null}
-              {pending > 0 ? (
-                <StatusBadge status="pending">{pending} permintaan sedang diproses</StatusBadge>
-              ) : null}
-              {active > 0 || pending > 0 ? null : (
-                <StatusBadge status="neutral">Belum ada verifikasi</StatusBadge>
-              )}
-            </div>
-          </section>}
+              <dl className="mt-6 grid gap-4 border-t border-slate-100 pt-5 sm:grid-cols-2">
+                <div>
+                  <dt className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Lokasi Domisili</dt>
+                  <dd className="mt-1 font-medium text-slate-800">{organization?.location ?? '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kategori Spesialisasi</dt>
+                  <dd className="mt-1 font-medium text-slate-800">{organization?.category ?? '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Bentuk Badan Usaha</dt>
+                  <dd className="mt-1 font-medium text-slate-800">{organization?.legal_form ?? '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Preferensi Penerimaan</dt>
+                  <dd className="mt-1 font-medium text-slate-800">{proposalPreferenceLabels[organization?.proposal_preference] ?? '—'}</dd>
+                </div>
+              </dl>
+            </section>
+          )}
 
           {eventsCount > 0 ? (
-            <section className="mt-6 rounded-[12px] border border-border bg-surface p-5">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-sm font-semibold text-text">Event yang dipublikasikan</h2>
-                <span className="text-xs tabular-nums text-text-secondary-strong">{publishedEventsCount} terbit</span>
+            <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 className="text-sm font-bold text-slate-900">Event yang Dipublikasikan</h2>
+                <span className="text-xs font-semibold text-emerald-700">{publishedEventsCount} Terbit</span>
               </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {events.map((event) => (
-                  <div key={event.id} className="rounded-[8px] border border-border bg-background-muted p-3">
+                  <div key={event.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4 transition-colors hover:border-slate-200">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="truncate text-xs font-medium text-text">{event.title}</h3>
+                      <h3 className="truncate text-sm font-bold text-slate-900">{event.title}</h3>
                       <StatusBadge status="published" />
                     </div>
-                    <p className="mt-1 text-xs text-text-secondary-strong">{event.location}</p>
-                    <p className="mt-1 text-[11px] text-text-muted">{formatDateRange(event.date_start, event.date_end)}</p>
+                    <p className="mt-1 text-xs text-slate-500">{event.location}</p>
+                    <p className="mt-1 text-xs tabular-nums text-slate-400">{formatDateRange(event.date_start, event.date_end)}</p>
                   </div>
                 ))}
               </div>
@@ -191,61 +185,26 @@ export default function EoProfile({
           ) : null}
         </div>
 
-        <aside>
-          <div className="rounded-[12px] border border-border bg-surface p-5">
-            <h2 className="text-sm font-semibold text-text">Profil</h2>
-            <dl className="mt-3 divide-y divide-border">
-              <div className="flex items-start gap-3 py-3">
-                <FileText className="mt-1 h-4 w-4 text-text-muted" aria-hidden="true" />
-                <div>
-                  <p className="text-xs text-text-muted">Deskripsi</p>
-                  <p className="mt-1 text-sm text-text-secondary-strong">{organization?.description ?? '—'}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 py-3">
-                <MapPin className="mt-1 h-4 w-4 text-text-muted" aria-hidden="true" />
-                <div>
-                  <p className="text-xs text-text-muted">Lokasi</p>
-                  <p className="mt-1 text-sm text-text-secondary-strong">{organization?.location ?? '—'}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 py-3">
-                <span className="h-4 w-4 text-text-muted" aria-hidden="true"></span>
-                <div>
-                  <p className="text-xs text-text-muted">Bentuk hukum</p>
-                  <p className="mt-1 text-sm text-text-secondary-strong">{legalFormLabels[organization?.legal_form] ?? '—'}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 py-3">
-                <span className="h-4 w-4 text-text-muted" aria-hidden="true"></span>
-                <div>
-                  <p className="text-xs text-text-muted">Preferensi proposal</p>
-                  <p className="mt-1 text-sm text-text-secondary-strong">{proposalPreferenceLabels[organization?.proposal_preference] ?? '—'}</p>
-                </div>
-              </div>
-            </dl>
-          </div>
-
-          <div className="rounded-[12px] border border-border bg-background-muted p-5">
+        {/* Aside */}
+        <aside className="space-y-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
             <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-primary-strong" aria-hidden="true" />
-              <h2 className="text-sm font-semibold text-text">Rating</h2>
+              <Star className="h-4 w-4 fill-amber-400 text-amber-500" aria-hidden="true" />
+              <h2 className="text-sm font-bold text-slate-900">Rating & Reputasi</h2>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-xl font-semibold text-text">{averageRating ?? 'Belum ada ulasan'}</span>
-              <Star className="h-4 w-4 text-text-muted" aria-hidden="true" />
+              <span className="text-2xl font-extrabold text-slate-900">{averageRating ?? '—'}</span>
+              <span className="text-xs text-slate-500 font-medium">/ 5.0</span>
             </div>
-            <p className="mt-1 text-xs text-text-secondary-strong">{totalRatings ?? 0} ulasan dari sponsor</p>
+            <p className="mt-1 text-xs text-slate-500">{totalRatings ?? 0} ulasan dari brand sponsor mitra</p>
           </div>
 
-          {active > 0 ? (
-            <div className="rounded-[12px] border border-border bg-background-muted p-5">
-              <h2 className="text-sm font-semibold text-text">Verifikasi yang disetujui</h2>
-              <p className="mt-1 text-xs leading-relaxed text-text-secondary-strong">
-                {active} of {verifications?.length ?? 0} pengajuan terverifikasi. Verifikasi adalah histori status usaha, bukan jaminan kelayakan.
-              </p>
-            </div>
-          ) : null}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+            <h2 className="text-sm font-bold text-slate-900">Status Validasi Profil</h2>
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
+              Profil Anda aktif dan dapat ditemukan oleh brand sponsor di direktori publik platform SponsorIn.
+            </p>
+          </div>
         </aside>
       </div>
     </DashboardLayout>

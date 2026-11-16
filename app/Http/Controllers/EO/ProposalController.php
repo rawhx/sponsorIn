@@ -61,10 +61,27 @@ class ProposalController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): Response|RedirectResponse
     {
         $organization = $request->user()->organization;
         abort_unless($organization, 404);
+
+        $sponsorId = $request->integer('sponsor');
+
+        $selectedSponsor = $sponsorId > 0
+            ? Organization::query()
+                ->whereKey($sponsorId)
+                ->where('type', OrganizationType::Sponsor)
+                ->whereHas('verification', fn ($query) => $query->where('status', 'approved'))
+                ->whereIn('proposal_preference', [ProposalPreference::Open, ProposalPreference::Selective])
+                ->first()
+            : null;
+
+        if (! $selectedSponsor) {
+            return redirect()
+                ->route('eo.sponsors.available')
+                ->with('error', 'Pilih brand sponsor dari menu Sponsor Tersedia terlebih dahulu.');
+        }
 
         $events = $organization->events()
             ->whereIn('status', [EventStatus::Published])
@@ -80,40 +97,14 @@ class ProposalController extends Controller
                 ]),
             ]);
 
-        $sponsorId = $request->input('sponsor');
-        $selectedSponsor = null;
-
-        if (filled($sponsorId)) {
-            $selectedSponsor = Organization::query()
-                ->where('id', $sponsorId)
-                ->where('type', OrganizationType::Sponsor)
-                ->whereHas('verification', fn ($query) => $query->where('status', 'approved'))
-                ->whereIn('proposal_preference', [ProposalPreference::Open, ProposalPreference::Selective])
-                ->first();
-        }
-
-        $sponsors = Organization::query()
-            ->where('type', OrganizationType::Sponsor)
-            ->whereIn('proposal_preference', [ProposalPreference::Open, ProposalPreference::Selective])
-            ->whereHas('verification', fn ($query) => $query->where('status', 'approved'))
-            ->orderBy('display_name')
-            ->get(['id', 'display_name', 'location', 'proposal_preference'])
-            ->map(fn (Organization $sponsor) => [
-                'id' => $sponsor->id,
-                'name' => $sponsor->display_name,
-                'location' => $sponsor->location,
-                'proposal_preference' => $sponsor->proposal_preference->value,
-            ]);
-
         return Inertia::render('eo/ProposalForm', [
             'events' => $events,
-            'sponsors' => $sponsors,
-            'selectedSponsor' => $selectedSponsor ? [
+            'selectedSponsor' => [
                 'id' => $selectedSponsor->id,
                 'name' => $selectedSponsor->display_name,
                 'location' => $selectedSponsor->location,
                 'proposal_preference' => $selectedSponsor->proposal_preference->value,
-            ] : null,
+            ],
         ]);
     }
 

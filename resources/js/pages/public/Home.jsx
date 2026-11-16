@@ -7,7 +7,6 @@ import {
   FileText,
   Handshake,
   MapPin,
-  Search,
   ShieldCheck,
   Users,
 } from 'lucide-react';
@@ -15,47 +14,6 @@ import PublicLayout from '../../layouts/PublicLayout';
 import { buttonClasses } from '../../components/Button';
 import { EvidenceTag } from '../../components/StatusBadge';
 import { formatDateRange } from '../../lib/utils';
-
-const steps = [
-  {
-    number: '01',
-    title: 'Cari fitur yang cocok',
-    body: 'Gunakan filter kategori, lokasi, tanggal, dan jenis dukungan. Setiap kartu menampilkan bukti audiens, paket, dan status verifikasi EO.',
-  },
-  {
-    number: '02',
-    title: 'Baca dossier sebelum menghubungi',
-    body: 'Lihat perbandingan paket, ringkasan audiens, sumber setiap angka, dan status verifikasi. Baca dulu, baru kirim minat.',
-  },
-  {
-    number: '03',
-    title: 'Simpan keputusan sementara',
-    body: 'Tambahkan ke shortlist dan bandingkan beberapa posisi. Tentukan mana yang ingin dilanjutkan dan mana yang tidak.',
-  },
-  {
-    number: '04',
-    title: 'Lanjutkan dalam satu alur',
-    body: 'Proposal, pengiriman, tanggapan, dan keputusan berada dalam satu riwayat yang bisa dilacak berulang kali.',
-  },
-];
-
-const benefitItems = [
-  {
-    icon: Search,
-    title: 'Temukan proposal dengan jelas',
-    body: 'Semua proposal terpublikasi dari EO bisa dilihat lengkap dalam satu tempat.',
-  },
-  {
-    icon: FileText,
-    title: 'Respons langsung',
-    body: 'Sponsor bisa merespons, diskusikan, dan negosiasi tanpa perlu mencari kontak terpisah.',
-  },
-  {
-    icon: Handshake,
-    title: 'Kerja sama terdokumentasi',
-    body: 'Setiap tahapan, pesan, dan kesepakatan tercatat rapi di Manajemen Kerja Sama.',
-  },
-];
 
 const evidenceRows = [
   {
@@ -68,11 +26,11 @@ const evidenceRows = [
   },
   {
     type: 'Tiket terjual',
-    description: 'Jumlah tiket yang terjual. Tidak otomatis berarti hadir, karena ada sebaran tiket.',
+    description: 'Jumlah tiket yang terjual secara nyata sebelum pelaksanaan event.',
   },
   {
     type: 'Check-in',
-    description: 'Jumlah kehadiran yang tercatat saat event berlangsung, bila bukti tersedia.',
+    description: 'Jumlah kehadiran aktual yang tercatat saat event berlangsung di lokasi.',
   },
 ];
 
@@ -80,65 +38,72 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
   return (
     <PublicLayout>
       {/* Hero */}
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:items-end lg:gap-16 lg:pb-24 lg:pt-20">
+      <section className="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-b from-slate-50/70 to-white">
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)] lg:items-center lg:gap-16 lg:pb-24 lg:pt-20">
           <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <h1 className="max-w-xl text-[clamp(2.8rem,6.5vw,5.25rem)] font-semibold leading-[0.94] tracking-[-0.065em] text-text">
-                Temukan kerja sama yang siap dibicarakan
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-xs font-semibold text-emerald-800 shadow-2xs mb-4">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                Platform Kolaborasi Sponsorship Terverifikasi
+              </div>
+              <h1 className="text-4xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                Temukan kerja sama sponsorship yang siap dieksekusi.
               </h1>
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-text-secondary-strong sm:text-lg">
-                SponsorIn mempertemukan EO yang punya event dengan sponsor yang mencari peluang relevan lengkap dengan proposal, bukti audiens, dan ruang diskusi.
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                SponsorIn mempertemukan EO yang memiliki event berkualitas dengan brand sponsor relevan. Lengkap dengan proposal resmi, verifikasi identitas, dan ruang negosiasi terpusat.
               </p>
 
-              <div className="mt-8 flex flex-wrap items-center gap-2.5">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link href="/register" className={buttonClasses({ size: 'lg' })}>
-                  Mulai sekarang
+                  Mulai Sekarang
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
                 <Link href="/events" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
-                  Lihat event
+                  Jelajahi Event
                 </Link>
               </div>
 
-              <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-text-secondary-strong">
+              <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs sm:text-sm font-medium text-slate-600">
                 {[
-                  { icon: ShieldCheck, label: 'Bukti audiens jelas' },
-                  { icon: BadgeCheck, label: 'Status terverifikasi' },
-                  { icon: Handshake, label: 'Alur terdokumentasi' },
+                  { icon: ShieldCheck, label: 'Bukti audiens terverifikasi' },
+                  { icon: BadgeCheck, label: 'Legalitas usaha terperiksa' },
+                  { icon: Handshake, label: 'Jejak kesepakatan tertata' },
                 ].map(({ icon: Icon, label }) => (
                   <p key={label} className="flex items-center gap-2">
-                    <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                    <Icon className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
                     {label}
                   </p>
                 ))}
               </div>
             </motion.div>
           </div>
+
           <Reveal className="relative">
-            <div className="bg-primary p-6 text-background sm:p-8">
+            <div className="rounded-3xl border border-emerald-600/20 bg-gradient-to-br from-emerald-700 to-emerald-900 p-7 text-white shadow-xl sm:p-9">
               <div className="flex items-start justify-between gap-6">
                 <div>
-                  <p className="text-sm font-medium text-background/80">Ruang kerja sponsorship</p>
-                  <p className="mt-2 max-w-xs text-2xl font-semibold leading-tight text-white">
-                    Dari proposal pertama sampai kerja sama berjalan.
+                  <p className="text-xs font-semibold tracking-wider text-emerald-200 uppercase">Ruang Kerja Sponsorship</p>
+                  <p className="mt-2 text-2xl font-bold leading-tight text-white">
+                    Dari proposal pertama hingga kerja sama tuntas tercatat.
                   </p>
                 </div>
-                <Handshake className="h-8 w-8 shrink-0 text-white/80" aria-hidden="true" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-xs text-white">
+                  <Handshake className="h-6 w-6" aria-hidden="true" />
+                </div>
               </div>
-              <div className="mt-10 grid grid-cols-3 gap-3 border-t border-background/25 pt-5">
-                <Stat value={stats.events ?? 0} label="event aktif" />
-                <Stat value={stats.organizers ?? 0} label="EO" />
-                <Stat value={stats.regions ?? 0} label="wilayah" />
+              <div className="mt-10 grid grid-cols-3 gap-4 border-t border-white/15 pt-6">
+                <Stat value={stats.events ?? 0} label="Event Aktif" />
+                <Stat value={stats.organizers ?? 0} label="Penyelenggara" />
+                <Stat value={stats.regions ?? 0} label="Kota & Wilayah" />
               </div>
               {categories.length > 0 ? (
-                <p className="mt-6 text-sm leading-relaxed text-background/85">
-                  Jelajahi kategori: {categories.slice(0, 3).join(' · ')}
-                </p>
+                <div className="mt-6 rounded-xl bg-white/10 p-3 text-xs leading-relaxed text-emerald-100">
+                  <span className="font-semibold text-white">Kategori populer:</span> {categories.slice(0, 3).join(' · ')}
+                </div>
               ) : null}
             </div>
           </Reveal>
@@ -146,33 +111,33 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
       </section>
 
       {/* Cara Kerja */}
-      <section id="cara-kerja" className="border-y border-border bg-background-muted">
-        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
+      <section id="cara-kerja" className="border-b border-slate-200 bg-slate-50/60 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="max-w-2xl">
-            <p className="text-sm font-medium text-primary">Cara Kerja</p>
-            <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-              Satu alur, dua sisi, terpusat
+            <p className="text-xs font-semibold tracking-wider text-emerald-700 uppercase">Alur Kerja</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              Satu alur terintegrasi, transparan untuk kedua pihak.
             </h2>
-            <p className="mt-4 text-sm leading-relaxed text-text-secondary-strong sm:text-base">
-              EO upload proposal, sponsor temukan & respons. Semua negosiasi dan kerja sama terdokumentasi di satu tempat.
+            <p className="mt-3 text-sm sm:text-base leading-relaxed text-slate-600">
+              EO mempublikasikan event, sponsor menemukan kecocokan dan merespons. Seluruh negosiasi hingga penyelesaian terekam rapi.
             </p>
           </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { step: '01', icon: FileText, title: 'EO Upload Proposal', body: 'Upload event & proposal dalam satu form, bisa draft atau langsung publikasikan.' },
-              { step: '02', icon: Users, title: 'Sponsor Menemukan', body: 'Sponsor melihat proposal terpublikasi, membandingkan, dan merespons langsung.' },
-              { step: '03', icon: Handshake, title: 'Negosiasi Terpusat', body: 'Diskusi, klarifikasi, dan negosiasi lewat fitur Manajemen Kerja Sama.' },
-              { step: '04', icon: BadgeCheck, title: 'Kerja Sama Terkelola', body: 'Status, kesepakatan, dan riwayat tercatat sampai proses selesai.' },
+              { step: '01', icon: FileText, title: 'EO Unggah Event', body: 'Lengkapi dossier event, tentukan paket sponsorship, serta sertakan data estimasi audiens.' },
+              { step: '02', icon: Users, title: 'Sponsor Menemukan', body: 'Sponsor menelusuri katalog peluang, membandingkan demografi, lalu mengajukan minat.' },
+              { step: '03', icon: Handshake, title: 'Diskusi & Negosiasi', body: 'Koordinasi klausul kontrak dan hak promosi melalui ruang obrolan kerja sama terpadu.' },
+              { step: '04', icon: BadgeCheck, title: 'Selesai & Evaluasi', body: 'Konfirmasi bukti penyelesaian kewajiban dan berikan ulasan reputasi yang obyektif.' },
             ].map((item) => (
-              <div key={item.step} className="rounded-[14px] border border-border bg-surface p-5">
+              <div key={item.step} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs hover:border-slate-300 transition-all">
                 <div className="flex items-center justify-between">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-primary/10 text-primary">
-                    <item.icon className="h-4.5 w-4.5" />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 font-bold">
+                    <item.icon className="h-5 w-5" />
                   </span>
-                  <span className="text-sm font-semibold tabular-nums text-text-muted">{item.step}</span>
+                  <span className="text-xs font-bold tabular-nums text-slate-400">{item.step}</span>
                 </div>
-                <h3 className="mt-4 text-[16px] font-semibold text-text">{item.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-text-secondary-strong">{item.body}</p>
+                <h3 className="mt-4 text-base font-bold text-slate-900">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.body}</p>
               </div>
             ))}
           </div>
@@ -180,40 +145,49 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
       </section>
 
       {/* For EO */}
-      <section id="untuk-eo" className="bg-background scroll-mt-20">
-        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+      <section id="untuk-eo" className="scroll-mt-20 border-b border-slate-200 bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             <div>
-              <p className="text-sm font-medium text-primary">Untuk Event Organizer</p>
-              <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-                Upload event & proposal dalam satu form
+              <p className="text-xs font-semibold tracking-wider text-emerald-700 uppercase">Untuk Event Organizer</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                Jangkau sponsor kredibel tanpa repot penawaran door-to-door.
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-text-secondary-strong sm:text-base">
-                EO cukup mengupload proposal beserta detail eventnya. Tanpa perlu menargetkan sponsor satu per satu. Semua sponsor yang aktif bisa melihat dan merespons langsung.
+              <p className="mt-4 text-sm sm:text-base leading-relaxed text-slate-600">
+                Cukup publikasikan profil event dan paket sponsorship Anda. Proposal Anda dapat diakses langsung oleh seluruh brand sponsor yang aktif di ekosistem SponsorIn.
               </p>
-              <ul className="mt-6 space-y-3 text-sm text-text-secondary-strong">
-                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Satu form untuk event & proposal</li>
-                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Bisa simpan draft atau langsung publikasikan</li>
-                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Kelola peminat & negosiasi di Manajemen Kerja Sama</li>
+              <ul className="mt-6 space-y-3.5 text-sm text-slate-700 font-medium">
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
+                  Satu formulir terstruktur untuk profil event, paket, dan data penonton
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
+                  Bisa simpan draf rancangan sebelum dikirim untuk moderasi
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
+                  Kelola peminat dan ruang obrolan kerja sama di dashboard terpusat
+                </li>
               </ul>
-              <div className="mt-7">
+              <div className="mt-8">
                 <Link href="/register?role=eo" className={buttonClasses({ size: 'lg' })}>
-                  Daftar sebagai EO
+                  Daftar sebagai Penyelenggara Event
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>
             </div>
-            <div className="rounded-[14px] border border-border bg-surface p-6">
-              <p className="text-xs font-medium tracking-[0.08em] text-text-muted">ALUR EO</p>
-              <div className="mt-4 divide-y divide-border">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6 sm:p-8 shadow-xs">
+              <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Alur Pengelolaan EO</p>
+              <div className="mt-5 divide-y divide-slate-200">
                 {[
-                  { title: 'Upload Proposal', body: 'Isi event & proposal, lampirkan file, simpan draft atau publikasikan.' },
-                  { title: 'Daftar Proposal', body: 'Kelola semua proposal yang sudah dibuat dan dipublikasikan.' },
-                  { title: 'Manajemen Kerja Sama', body: 'Terima respons sponsor, negosiasi via chat, kelola status & revisi.' },
+                  { title: '1. Buat & Kelola Event', body: 'Rincikan informasi event, tanggal mulai/selesai, venue, dan target segmen penonton.' },
+                  { title: '2. Lampirkan Bukti Audiens', body: 'Sertakan tautan proyeksi, jumlah pendaftar, atau rekam jejak event sebelumnya.' },
+                  { title: '3. Tanggapi Minat Sponsor', body: 'Diskusikan penawaran khusus dan kunci kesepakatan dengan brand mitra.' },
                 ].map((item) => (
                   <div key={item.title} className="py-4 first:pt-0 last:pb-0">
-                    <h3 className="text-sm font-semibold text-text">{item.title}</h3>
-                    <p className="mt-1 text-sm text-text-secondary-strong">{item.body}</p>
+                    <h3 className="text-sm font-bold text-slate-900">{item.title}</h3>
+                    <p className="mt-1 text-sm text-slate-600 leading-relaxed">{item.body}</p>
                   </div>
                 ))}
               </div>
@@ -223,42 +197,51 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
       </section>
 
       {/* For Sponsor */}
-      <section id="untuk-sponsor" className="scroll-mt-20 border-y border-border bg-background-muted">
-        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-16">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+      <section id="untuk-sponsor" className="scroll-mt-20 border-b border-slate-200 bg-slate-50/60 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             <div className="order-2 lg:order-1">
-              <div className="rounded-[14px] border border-border bg-surface p-6">
-                <p className="text-xs font-medium tracking-[0.08em] text-text-muted">ALUR SPONSOR</p>
-                <div className="mt-4 divide-y divide-border">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+                <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Alur Keputusan Sponsor</p>
+                <div className="mt-5 divide-y divide-slate-100">
                   {[
-                    { title: 'Jelajahi Proposal', body: 'Lihat semua proposal yang dipublikasikan EO dengan detail lengkap.' },
-                    { title: 'Daftar Proposal', body: 'Kelola proposal yang sudah direspon & pantau statusnya.' },
-                    { title: 'Manajemen Kerja Sama', body: 'Negosiasi, diskusikan, dan kelola kerja sama sampai selesai.' },
+                    { title: '1. Telusuri Katalog Peluang', body: 'Filter berdasarkan kota, rentang tanggal, kategori event, dan jenis dukungan.' },
+                    { title: '2. Bandingkan Dossier', body: 'Simpan ke shortlist untuk menganalisis rasio biaya terhadap proyeksi pengunjung.' },
+                    { title: '3. Ajukan Minat & Negosiasi', body: 'Kirim respons proposal dan koordinasikan hak aktivasi brand secara langsung.' },
                   ].map((item) => (
                     <div key={item.title} className="py-4 first:pt-0 last:pb-0">
-                      <h3 className="text-sm font-semibold text-text">{item.title}</h3>
-                      <p className="mt-1 text-sm text-text-secondary-strong">{item.body}</p>
+                      <h3 className="text-sm font-bold text-slate-900">{item.title}</h3>
+                      <p className="mt-1 text-sm text-slate-600 leading-relaxed">{item.body}</p>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
             <div className="order-1 lg:order-2">
-              <p className="text-sm font-medium text-primary">Untuk Sponsor</p>
-              <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-                Temukan proposal yang relevan, respons langsung
+              <p className="text-xs font-semibold tracking-wider text-emerald-700 uppercase">Untuk Brand Sponsor</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                Temukan event relevan dengan transparansi data yang jelas.
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-text-secondary-strong sm:text-base">
-                Semua proposal dari EO yang dipublikasikan bisa dilihat di satu tempat. Bandingkan, diskusikan, dan lanjutkan negosiasi tanpa harus dicari manual.
+              <p className="mt-4 text-sm sm:text-base leading-relaxed text-slate-600">
+                Pilih proposal event yang tepat untuk target pasar Anda tanpa membuang waktu menyortir proposal acak. Verifikasi usaha melindungi brand Anda dalam setiap tahapan kerja sama.
               </p>
-              <ul className="mt-6 space-y-3 text-sm text-text-secondary-strong">
-                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Akses proposal terpublikasi dari semua EO</li>
-                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Respons & negosiasi terpusat</li>
-                <li className="flex items-start gap-2.5"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />Riwayat kerja sama terdokumentasi</li>
+              <ul className="mt-6 space-y-3.5 text-sm text-slate-700 font-medium">
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
+                  Akses langsung ke ratusan proposal terkurasi dari berbagai daerah
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
+                  Bandingkan beberapa event lewat fitur Shortlist
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">✓</span>
+                  Ruang kerja bergaransi dengan riwayat pertukaran pesan yang terdokumentasi
+                </li>
               </ul>
-              <div className="mt-7">
+              <div className="mt-8">
                 <Link href="/register?role=sponsor" className={buttonClasses({ size: 'lg' })}>
-                  Daftar sebagai Sponsor
+                  Daftar sebagai Brand Sponsor
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>
@@ -267,92 +250,62 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
         </div>
       </section>
 
-      {/* Transparency */}
-      <section className="border-y border-border bg-background">
-        <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20 lg:py-24">
-          <Reveal>
-            <p className="text-sm font-medium text-primary">Transparansi data</p>
-            <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-              Angka audiens tidak berdiri sendiri.
-            </h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-text-secondary-strong sm:text-[15px]">
-              Setiap jenis bukti punya arti berbeda. Proyeksi, registrasi, tiket terjual, dan
-              check-in tidak pernah disamakan tanpa label sumber.
-            </p>
-            <div className="mt-6 border-l-2 border-primary pl-4">
-              <p className="text-sm font-medium leading-relaxed text-text">
-                Proyeksi tidak ditampilkan sebagai kehadiran aktual.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.08}>
-            <dl className="grid gap-4 divide-y border-border border-t">
-              {evidenceRows.map((row) => (
-                <div key={row.type}>
-                  <dt className="text-xs font-semibold text-text-secondary-strong">{row.type}</dt>
-                  <dd className="mt-1 text-sm leading-relaxed text-text-secondary-strong">{row.description}</dd>
-                </div>
-              ))}
-            </dl>
-          </Reveal>
-        </div>
-      </section>
-
       {/* Featured events */}
       {featuredEvents.length > 0 && (
-        <section className="bg-background">
-          <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-24">
-            <Reveal className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <section className="border-b border-slate-200 bg-white py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-5 sm:px-8">
+            <Reveal className="flex flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="text-sm font-medium text-primary">Event yang membuka peluang</p>
-                <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-text">
-                  Profil EO, paket, dan bukti audiens terlihat di kartu.
+                <p className="text-xs font-semibold tracking-wider text-emerald-700 uppercase">Peluang Sponsorship Terbuka</p>
+                <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+                  Event pilihan siap kerja sama.
                 </h2>
               </div>
               <Link
                 href="/events"
-                className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-text"
+                className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
               >
-                Lihat semua
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                Lihat Semua Event
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Reveal>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {featuredEvents.map((event, index) => (
                 <Reveal key={event.id} delay={index * 0.05}>
                   <Link
                     href={`/events/${event.slug}`}
-                    className="group flex h-full flex-col rounded-[14px] border border-border bg-surface p-5 transition-colors hover:border-primary/40"
+                    className="group flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-xs transition-all hover:border-emerald-500/50 hover:shadow-md"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-3 text-[12px]">
-                      <span className="inline-flex items-center gap-1.5 font-medium text-text-secondary-strong">
-                        <MapPin className="h-3.5 w-3.5 text-text-muted" aria-hidden="true" />
-                        {event.location}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 tabular-nums text-text-secondary-strong">
-                        <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
-                        {formatDateRange(event.date_start, event.date_end)}
-                      </span>
+                    <div>
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+                        <span className="inline-flex items-center gap-1.5 font-medium">
+                          <MapPin className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+                          {event.location}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 font-medium tabular-nums">
+                          <CalendarDays className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+                          {formatDateRange(event.date_start, event.date_end)}
+                        </span>
+                      </div>
+
+                      <h3 className="mt-4 text-lg font-bold leading-snug tracking-tight text-slate-900 transition-colors group-hover:text-emerald-700">
+                        {event.title}
+                      </h3>
+                      <p className="mt-1 text-xs font-medium text-slate-500">
+                        {event.organizer} · <span className="text-emerald-700 font-semibold">{event.category}</span>
+                      </p>
+
+                      {event.audience_summary ? (
+                        <p className="mt-3 line-clamp-2 text-xs sm:text-sm leading-relaxed text-slate-600">
+                          {event.audience_summary}
+                        </p>
+                      ) : null}
                     </div>
 
-                    <h3 className="mt-4 font-semibold leading-snug tracking-[-0.02em] text-text transition-colors group-hover:text-primary">
-                      {event.title}
-                    </h3>
-                    <p className="mt-1 text-text-secondary-strong">
-                      {event.organizer} · {event.category}
-                    </p>
-
-                    {event.audience_summary ? (
-                      <p className="mt-3 line-clamp-2 max-w-xl text-sm leading-relaxed text-text-secondary-strong">
-                        {event.audience_summary}
-                      </p>
-                    ) : null}
-
-                    <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2 border-t border-border pt-4">
-                      <EvidenceTag>{event.evidence_count} bukti audiens</EvidenceTag>
-                      <EvidenceTag>{event.package_count} paket</EvidenceTag>
+                    <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+                      <EvidenceTag>{event.evidence_count} Bukti Audiens</EvidenceTag>
+                      <EvidenceTag>{event.package_count} Paket Dukungan</EvidenceTag>
                       {event.support_needs ? <EvidenceTag>{event.support_needs}</EvidenceTag> : null}
                     </div>
                   </Link>
@@ -364,14 +317,14 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
       )}
 
       {/* CTA */}
-      <section className="bg-primary">
-        <div className="mx-auto grid max-w-6xl gap-8 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end lg:gap-16 lg:py-20">
+      <section className="bg-gradient-to-r from-emerald-800 to-emerald-950 py-16 text-white sm:py-20">
+        <div className="mx-auto grid max-w-6xl gap-8 px-5 sm:px-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-center">
           <Reveal>
-            <h2 className="text-[clamp(1.85rem,3.6vw,2.6rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-white">
-              Mulai kolaborasi sponsorship dengan lebih terarah.
+            <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+              Siap memulai kolaborasi sponsorship yang lebih terarah?
             </h2>
-            <p className="mt-3 max-w-lg text-sm leading-relaxed text-background sm:text-base">
-              EO upload proposal, sponsor temukan dan respons langsung. Semua tercatat dalam satu alur yang jelas.
+            <p className="mt-3 text-sm sm:text-base leading-relaxed text-emerald-100 max-w-xl">
+              Daftarkan brand Anda untuk menemukan peluang sponsorship berkualitas, atau publikasikan event Anda untuk terhubung langsung dengan ratusan sponsor potensial.
             </p>
           </Reveal>
           <Reveal delay={0.08} className="flex flex-wrap gap-3 lg:justify-end">
@@ -380,7 +333,7 @@ export default function Home({ featuredEvents = [], categories = [], stats = {} 
             </Link>
             <Link
               href="/register?role=eo"
-              className="inline-flex h-12 items-center gap-1.5 rounded-[10px] border border-background/35 px-5 text-[15px] font-medium text-background transition-colors hover:bg-background/10 hover:text-white"
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
             >
               Daftar sebagai EO
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -396,10 +349,10 @@ function Reveal({ children, delay = 0, className }) {
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.45, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
@@ -409,8 +362,8 @@ function Reveal({ children, delay = 0, className }) {
 function Stat({ value, label }) {
   return (
     <div>
-      <p className="text-2xl font-semibold tabular-nums text-white">{value}</p>
-      <p className="mt-1 text-xs text-background/75">{label}</p>
+      <p className="text-3xl font-extrabold tabular-nums text-white">{value}</p>
+      <p className="mt-1 text-xs text-emerald-200 font-medium">{label}</p>
     </div>
   );
 }

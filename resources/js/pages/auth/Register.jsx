@@ -23,28 +23,28 @@ const roles = [
     value: 'sponsor',
     label: 'Brand Sponsor',
     icon: Briefcase,
-    description: 'Mencari event dan mengelola kerja sama pendanaan.',
+    description: 'Mencari event potensial dan mengelola kerja sama pendanaan.',
   },
   {
     value: 'eo',
     label: 'Event Organizer',
     icon: CalendarDays,
-    description: 'Menyusun event dan mengajukan proposal sponsorship.',
+    description: 'Mempublikasikan event dan mengajukan penawaran sponsorship.',
   },
 ];
 
 const registerFeatures = [
   {
     icon: Briefcase,
-    text: 'Event dan paket tampil dengan sumber data audiens yang jelas.',
+    text: 'Event dan paket sponsorship tampil dengan sumber data audiens yang jelas.',
   },
   {
     icon: ShieldCheck,
-    text: 'Verifikasi usaha menjaga kedua pihak tetap aman.',
+    text: 'Verifikasi legalitas usaha menjaga kedua pihak tetap aman.',
   },
   {
     icon: CalendarDays,
-    text: 'Penawaran dan kesepakatan tercatat dalam satu riwayat.',
+    text: 'Penawaran dan kesepakatan tercatat rapi dalam satu riwayat resmi.',
   },
 ];
 
@@ -65,7 +65,7 @@ function PasswordStrength({ value }) {
   const score = scorePassword(value);
   const tooShort = value.length < 10;
   const filled = tooShort ? 1 : Math.max(1, score);
-  const label = tooShort ? 'Minimal 10 karakter' : score <= 1 ? 'Cukup' : score === 2 ? 'Baik' : 'Kuat';
+  const label = tooShort ? 'Minimal 10 karakter' : score <= 1 ? 'Cukup' : score === 2 ? 'Baik' : 'Sangat Kuat';
 
   return (
     <div className="space-y-1.5" aria-live="polite">
@@ -77,15 +77,15 @@ function PasswordStrength({ value }) {
               'h-1.5 flex-1 rounded-full transition-colors duration-150',
               index < filled
                 ? tooShort
-                  ? 'bg-warning'
-                  : 'bg-primary-strong'
-                : 'bg-background-muted'
+                  ? 'bg-amber-400'
+                  : 'bg-emerald-600'
+                : 'bg-slate-200'
             )}
           />
         ))}
       </div>
-      <p className={cn('text-xs', tooShort ? 'text-warning-strong' : 'text-text-secondary-strong')}>
-        Kekuatan kata sandi: <span className="font-medium">{label}</span>
+      <p className={cn('text-xs', tooShort ? 'text-amber-600 font-medium' : 'text-slate-500')}>
+        Kekuatan sandi: <span className="font-semibold text-slate-800">{label}</span>
       </p>
     </div>
   );
@@ -95,12 +95,12 @@ function FormSection({ icon: Icon, title, description, children }) {
   return (
     <section className="space-y-3.5">
       <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] border border-primary/20 bg-primary/10 text-primary-strong">
-          <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+          <Icon className="h-4 w-4" aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-sm font-semibold text-text">{title}</h2>
-          {description ? <p className="mt-0.5 text-xs leading-relaxed text-text-secondary-strong">{description}</p> : null}
+          <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+          {description ? <p className="text-xs leading-relaxed text-slate-500">{description}</p> : null}
         </div>
       </div>
       {children}
@@ -140,22 +140,22 @@ export default function Register({ selectedRole = 'sponsor' }) {
 
   return (
     <AuthLayout
-      title="Buat akun SponsorIn"
-      description="Pilih peran, lengkapi identitas dasar, dan mulai dari satu berkas yang bisa dibaca."
+      title="Daftar Akun Baru"
+      description="Pilih peran Anda dan lengkapi data profil organisasi untuk memulai."
       features={registerFeatures}
-      asideTitle="Mulai dari berkas yang jelas, bukan janji."
-      asideBody="Daftarkan brand atau organisasi Anda untuk melihat peluang, mengajukan proposal, dan menyimpan riwayat kerja sama."
+      asideTitle="Mulai dari kolaborasi yang transparan dan terarah."
+      asideBody="Daftarkan brand atau kepanitiaan event Anda untuk menjelajahi peluang, menyepakati sponsorship, dan menyimpan seluruh riwayat kerja sama."
       maxWidth="max-w-[560px]"
     >
-      <Head title="Daftar Akun" />
+      <Head title="Daftar Akun Baru" />
 
       <form onSubmit={submit} className="space-y-6">
         <fieldset>
           <legend className="mb-2.5 flex items-baseline justify-between gap-3">
-            <span className="text-sm font-semibold text-text">Daftar sebagai</span>
-            <span className="text-xs text-text-secondary-strong">Pilih satu peran</span>
+            <span className="text-sm font-bold text-slate-900">Daftar Sebagai</span>
+            <span className="text-xs text-slate-500">Pilih salah satu peran</span>
           </legend>
-          <div className="grid gap-2.5 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             {roles.map((role) => {
               const Icon = role.icon;
               const isSelected = data.role === role.value;
@@ -164,10 +164,10 @@ export default function Register({ selectedRole = 'sponsor' }) {
                 <label
                   key={role.value}
                   className={cn(
-                    'relative flex cursor-pointer gap-3 rounded-[10px] border p-3 transition-colors duration-150',
+                    'relative flex cursor-pointer gap-3 rounded-xl border p-3.5 transition-all shadow-2xs',
                     isSelected
-                      ? 'border-primary-strong bg-primary/8'
-                      : 'border-border bg-surface hover:border-primary-soft hover:bg-hover'
+                      ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600/30'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                   )}
                 >
                   <input
@@ -180,24 +180,24 @@ export default function Register({ selectedRole = 'sponsor' }) {
                   />
                   <span
                     className={cn(
-                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] border',
+                      'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors',
                       isSelected
-                        ? 'border-primary-strong bg-primary-strong text-white'
-                        : 'border-border bg-background-muted text-text-secondary-strong'
+                        ? 'border-emerald-600 bg-emerald-600 text-white'
+                        : 'border-slate-200 bg-slate-100 text-slate-500'
                     )}
                   >
-                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    <Icon className="h-4.5 w-4.5" aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-semibold text-text">{role.label}</span>
+                      <span className="text-sm font-bold text-slate-900">{role.label}</span>
                       {isSelected ? (
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-strong text-white">
+                        <span className="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
                           <Check className="h-3 w-3 stroke-[3]" aria-hidden="true" />
                         </span>
                       ) : null}
                     </span>
-                    <span className="mt-1 block text-xs leading-relaxed text-text-secondary-strong">
+                    <span className="mt-1 block text-xs leading-relaxed text-slate-500">
                       {role.description}
                     </span>
                   </span>
@@ -205,16 +205,16 @@ export default function Register({ selectedRole = 'sponsor' }) {
               );
             })}
           </div>
-          {errors.role ? <p className="mt-1.5 text-xs text-danger-strong">{errors.role}</p> : null}
+          {errors.role ? <p className="mt-1.5 text-xs font-medium text-rose-600">{errors.role}</p> : null}
         </fieldset>
 
         <FormSection
           icon={User}
-          title="Identitas akun"
-          description="Email kerja aktif untuk menerima tautan verifikasi."
+          title="Identitas Akun"
+          description="Gunakan email resmi aktif untuk verifikasi dan notifikasi."
         >
-          <div className="grid gap-3.5 sm:grid-cols-2">
-            <Field label="Nama lengkap" htmlFor="name" error={errors.name} required>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Nama Lengkap Narahubung" htmlFor="name" error={errors.name} required>
               <Input
                 id="name"
                 icon={User}
@@ -223,11 +223,11 @@ export default function Register({ selectedRole = 'sponsor' }) {
                 value={data.name}
                 onChange={(event) => setData('name', event.target.value)}
                 error={errors.name}
-                placeholder="Sarah Pratama"
+                placeholder="Nama Anda..."
               />
             </Field>
 
-            <Field label="Email kerja" htmlFor="email" error={errors.email} required>
+            <Field label="Alamat Email Resmi" htmlFor="email" error={errors.email} required>
               <Input
                 id="email"
                 type="email"
@@ -236,13 +236,13 @@ export default function Register({ selectedRole = 'sponsor' }) {
                 value={data.email}
                 onChange={(event) => setData('email', event.target.value)}
                 error={errors.email}
-                placeholder="nama@perusahaan.id"
+                placeholder="nama@perusahaan.com"
               />
             </Field>
           </div>
 
           <Field
-            label={data.role === 'sponsor' ? 'Nama perusahaan / brand' : 'Nama organisasi / kepanitiaan'}
+            label={data.role === 'sponsor' ? 'Nama Perusahaan / Brand' : 'Nama Organisasi / Komunitas'}
             htmlFor="organization_name"
             error={errors.organization_name}
             required
@@ -254,20 +254,20 @@ export default function Register({ selectedRole = 'sponsor' }) {
               value={data.organization_name}
               onChange={(event) => setData('organization_name', event.target.value)}
               error={errors.organization_name}
-              placeholder={data.role === 'sponsor' ? 'PT Brand Inovasi Nusantara' : 'Komunitas Kreatif Indonesia'}
+              placeholder={data.role === 'sponsor' ? 'PT Brand Nusantara...' : 'Kepanitiaan Event Kreatif...'}
             />
           </Field>
         </FormSection>
 
         <FormSection
           icon={LockKeyhole}
-          title="Keamanan akun"
-          description="Minimal 10 karakter. Kombinasi huruf dan angka membuatnya lebih kuat."
+          title="Keamanan Sandi"
+          description="Minimal 10 karakter. Kombinasikan huruf besar, kecil, dan angka."
         >
-          <div className="grid items-start gap-3.5 sm:grid-cols-2">
+          <div className="grid items-start gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Field
-                label="Kata sandi"
+                label="Kata Sandi"
                 htmlFor="password"
                 error={errors.password}
                 required
@@ -278,7 +278,7 @@ export default function Register({ selectedRole = 'sponsor' }) {
                   value={data.password}
                   onChange={(event) => setData('password', event.target.value)}
                   error={errors.password}
-                  placeholder="Buat kata sandi"
+                  placeholder="Buat kata sandi..."
                 />
               </Field>
               <PasswordStrength value={data.password} />
@@ -286,7 +286,7 @@ export default function Register({ selectedRole = 'sponsor' }) {
 
             <div className="space-y-1.5">
               <Field
-                label="Ulangi kata sandi"
+                label="Ulangi Kata Sandi"
                 htmlFor="password_confirmation"
                 error={errors.password_confirmation}
                 required
@@ -297,33 +297,33 @@ export default function Register({ selectedRole = 'sponsor' }) {
                   value={data.password_confirmation}
                   onChange={(event) => setData('password_confirmation', event.target.value)}
                   error={errors.password_confirmation}
-                  placeholder="Ketik ulang"
+                  placeholder="Ulangi kata sandi..."
                 />
               </Field>
               {passwordMatched && !errors.password_confirmation ? (
-                <p className="flex items-center gap-1.5 text-xs text-success-strong">
+                <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-700">
                   <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                   Kata sandi cocok.
                 </p>
               ) : null}
               {passwordMismatch ? (
-                <p className="text-xs text-warning-strong">Kata sandi belum cocok.</p>
+                <p className="text-xs font-medium text-amber-600">Kata sandi belum cocok.</p>
               ) : null}
             </div>
           </div>
         </FormSection>
 
-        <Button type="submit" size="lg" className="w-full" loading={processing}>
+        <Button type="submit" size="lg" className="w-full mt-2" loading={processing}>
           {!processing ? <UserPlus className="h-4 w-4" aria-hidden="true" /> : null}
-          Buat akun
+          Daftarkan Akun Sekarang
         </Button>
       </form>
 
-      <div className="mt-5 border-t border-border pt-4 text-center text-sm text-text-secondary-strong">
+      <div className="mt-5 border-t border-slate-100 pt-4 text-center text-xs sm:text-sm text-slate-500">
         Sudah memiliki akun?{' '}
         <Link
           href="/login"
-          className="inline-flex items-center gap-1 font-medium text-primary-strong underline decoration-primary/30 underline-offset-4 transition-colors hover:text-text"
+          className="inline-flex items-center gap-1 font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
         >
           Masuk ke akun Anda
           <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

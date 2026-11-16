@@ -3,26 +3,26 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const variants = {
-  primary: 'bg-primary-strong text-white hover:bg-[#52614a] active:bg-[#47543f] border-primary-strong',
-  secondary: 'bg-background-muted text-text hover:bg-hover border-background-muted',
-  outline: 'bg-surface text-text hover:bg-hover border-border',
-  ghost: 'bg-transparent text-text-secondary-strong hover:bg-hover hover:text-text border-transparent',
-  destructive: 'bg-danger-strong text-white hover:bg-[#7c4141] active:bg-[#6d3939] border-danger-strong',
-  'destructive-outline': 'bg-surface text-danger-strong hover:bg-danger/10 border-danger/40',
+  primary: 'bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 border-emerald-600 shadow-xs hover:shadow',
+  secondary: 'bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300 border-slate-200/80',
+  outline: 'bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100 border-slate-300 shadow-xs',
+  ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 border-transparent',
+  destructive: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 border-rose-600 shadow-xs hover:shadow',
+  'destructive-outline': 'bg-white text-rose-600 hover:bg-rose-50 border-rose-200 active:bg-rose-100',
 };
 
 const sizes = {
-  sm: 'h-9 px-3 text-sm',
-  md: 'h-11 px-4 text-sm',
-  lg: 'h-12 px-5 text-[15px]',
+  sm: 'h-8 px-3 text-xs sm:text-[13px]',
+  md: 'h-10 px-4 text-sm',
+  lg: 'h-11 px-5 text-sm sm:text-base',
 };
 
 export function buttonClasses({ variant = 'primary', size = 'md', className } = {}) {
   return cn(
-    'app-button inline-flex items-center justify-center gap-2 rounded-[10px] border font-medium',
-    'transition-[background-color,border-color,color,transform,box-shadow] duration-150 ease-out',
-    'active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-    'disabled:cursor-not-allowed disabled:opacity-55 disabled:active:translate-y-0',
+    'app-button inline-flex items-center justify-center gap-2 rounded-lg border font-medium cursor-pointer select-none',
+    'transition-all duration-150 ease-out',
+    'active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+    'disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none',
     variants[variant],
     sizes[size],
     className

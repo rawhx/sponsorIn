@@ -20,7 +20,16 @@ class EventController extends Controller
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date'],
             'support_type' => ['nullable', 'string', 'max:40'],
+            'min_price' => ['nullable', 'numeric', 'min:0'],
+            'max_price' => ['nullable', 'numeric', 'min:0'],
         ]);
+
+        $minPrice = isset($filters['min_price']) ? (float) $filters['min_price'] : null;
+        $maxPrice = isset($filters['max_price']) ? (float) $filters['max_price'] : null;
+
+        if ($minPrice !== null && $maxPrice !== null && $minPrice > $maxPrice) {
+            [$minPrice, $maxPrice] = [$maxPrice, $minPrice];
+        }
 
         $events = Event::published()
             ->with(['eoOrganization', 'audienceEvidence', 'packages'])
@@ -36,6 +45,13 @@ class EventController extends Controller
             ->when($filters['support_type'] ?? null, fn ($query, $supportType) => $query->whereHas(
                 'packages',
                 fn ($query) => $query->where('support_type', $supportType)
+            ))
+            ->when($minPrice !== null || $maxPrice !== null, fn ($query) => $query->whereHas(
+                'packages',
+                fn ($query) => $query->where('currency', 'IDR')
+                    ->whereNotNull('price_amount')
+                    ->when($minPrice !== null, fn ($query) => $query->where('price_amount', '>=', $minPrice))
+                    ->when($maxPrice !== null, fn ($query) => $query->where('price_amount', '<=', $maxPrice))
             ))
             ->orderBy('date_start')
             ->paginate(9)
@@ -53,6 +69,12 @@ class EventController extends Controller
                 'support_needs' => $event->support_needs,
                 'evidence_count' => $event->audienceEvidence->count(),
                 'package_count' => $event->packages->count(),
+                'price_min' => $event->packages
+                    ->where('currency', 'IDR')
+                    ->whereNotNull('price_amount')
+                    ->filter(fn ($package) => ($minPrice === null || (float) $package->price_amount >= $minPrice)
+                        && ($maxPrice === null || (float) $package->price_amount <= $maxPrice))
+                    ->min('price_amount'),
             ]);
 
         return Inertia::render('public/Events', [
@@ -64,6 +86,8 @@ class EventController extends Controller
                 'date_from' => $request->string('date_from')->toString(),
                 'date_to' => $request->string('date_to')->toString(),
                 'support_type' => $request->string('support_type')->toString(),
+                'min_price' => $minPrice !== null ? (string) $minPrice : '',
+                'max_price' => $maxPrice !== null ? (string) $maxPrice : '',
             ],
             'categories' => Event::published()->distinct()->orderBy('category')->pluck('category'),
             'supportTypes' => collect(SupportType::cases())->map(fn ($type) => [

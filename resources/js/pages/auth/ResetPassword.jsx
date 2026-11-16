@@ -34,7 +34,7 @@ export default function ResetPassword({ token, email }) {
 
   return (
     <AuthLayout
-      title="Buat kata sandi baru"
+      title="Buat Kata Sandi Baru"
       description="Gunakan kata sandi baru minimal 10 karakter. Setelah tersimpan, Anda akan dapat masuk kembali ke akun."
       features={resetFeatures}
       asideTitle="Perbarui kredensial untuk melanjutkan kerja sama."
@@ -42,8 +42,8 @@ export default function ResetPassword({ token, email }) {
     >
       <Head title="Reset Kata Sandi" />
 
-      <form onSubmit={submit} className="space-y-4 sm:space-y-5">
-        <Field label="Alamat email" htmlFor="email" error={errors.email} required>
+      <form onSubmit={submit} className="space-y-5">
+        <Field label="Alamat Email Terdaftar" htmlFor="email" error={errors.email} required>
           <Input
             id="email"
             type="email"
@@ -52,12 +52,12 @@ export default function ResetPassword({ token, email }) {
             value={data.email}
             onChange={(event) => setData('email', event.target.value)}
             error={errors.email}
-            placeholder="nama@perusahaan.id"
+            placeholder="nama@perusahaan.com"
           />
         </Field>
 
         <Field
-          label="Kata sandi baru"
+          label="Kata Sandi Baru"
           htmlFor="password"
           error={errors.password}
           hint="Minimal 10 karakter"
@@ -70,12 +70,12 @@ export default function ResetPassword({ token, email }) {
             value={data.password}
             onChange={(event) => setData('password', event.target.value)}
             error={errors.password}
-            placeholder="Ketik kata sandi baru"
+            placeholder="Ketik kata sandi baru..."
           />
         </Field>
 
         <Field
-          label="Ulangi kata sandi baru"
+          label="Ulangi Kata Sandi Baru"
           htmlFor="password_confirmation"
           error={errors.password_confirmation}
           required
@@ -86,14 +86,14 @@ export default function ResetPassword({ token, email }) {
             value={data.password_confirmation}
             onChange={(event) => setData('password_confirmation', event.target.value)}
             error={errors.password_confirmation}
-            placeholder="Ketik ulang kata sandi baru"
+            placeholder="Ketik ulang kata sandi baru..."
           />
         </Field>
 
         <Button
           type="submit"
           size="lg"
-          className="w-full flex items-center justify-center gap-2"
+          className="w-full flex items-center justify-center gap-2 mt-2"
           disabled={processing}
         >
           {processing ? (
@@ -107,10 +107,11 @@ export default function ResetPassword({ token, email }) {
         </Button>
       </form>
 
-      <div className="mt-6 border-t border-border pt-5 text-center text-sm text-text-secondary-strong">
+      <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs sm:text-sm text-slate-500">
+        Batal atur ulang?{' '}
         <Link
           href="/login"
-          className="inline-flex items-center gap-1 font-medium text-primary-strong underline decoration-primary/30 underline-offset-4 transition-colors hover:text-text"
+          className="inline-flex items-center gap-1 font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
           Kembali ke halaman masuk
